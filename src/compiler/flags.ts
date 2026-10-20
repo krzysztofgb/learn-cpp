@@ -46,8 +46,13 @@ export function preludeVariant(options: Pick<CompileOptions, 'profile' | 'std'>)
   return options.std === PCH_STD ? options.profile : null;
 }
 
+/** The flags a learner chooses, as they'd type them for clang++ on their own machine (no wasm toolchain plumbing). */
+export function commandFlags(options: CompileOptions): string[] {
+  return [`-std=${options.std}`, ...PROFILE_FLAGS[options.profile], ...WARNING_FLAGS, ...(options.werror ? ['-Werror'] : [])];
+}
+
 export function compileFlags(options: CompileOptions): string[] {
-  return [...languageFlags(options), ...WARNING_FLAGS, ...(options.werror ? ['-Werror'] : [])];
+  return [...TOOLCHAIN_FLAGS, ...commandFlags(options)];
 }
 
 export const PROFILES: Profile[] = ['debug', 'release'];
