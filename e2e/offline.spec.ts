@@ -14,9 +14,10 @@ test('after one online compile, the course and compiler work offline', async ({ 
 
   await context.setOffline(true);
   await page.reload();
-  await page.goto('./modules/19-lock-free-programming');
+  await page.goto('./modules/19-lock-free-programming#predict');
   const card = page.locator('#predict-P1');
-  await card.getByRole('textbox').fill('0 5 5');
+  await card.getByText('It prints…', { exact: true }).click();
+  await card.getByRole('textbox', { name: 'Exact output' }).fill('0 5 5');
   await card.getByRole('button', { name: 'Commit and reveal' }).click();
   await card.getByRole('button', { name: 'Run' }).click();
   await expect((await finishedRunPanel(page, card)).getByTestId('program-output')).toHaveText('0 5 5');

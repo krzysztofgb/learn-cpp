@@ -3,12 +3,14 @@ import { finishedRunPanel, setEditorSource } from './helpers.ts';
 
 test.describe('module page', () => {
   test('a prediction unlocks Run only after committing, and runs to the answer key', async ({ page }) => {
-    await page.goto('./modules/19-lock-free-programming');
+    await page.goto('./modules/19-lock-free-programming#predict');
     const card = page.locator('#predict-P1');
     await expect(card.getByText('Answer first to run it.')).toBeVisible();
     await expect(card.getByRole('button', { name: 'Run' })).toHaveCount(0);
 
-    await card.getByRole('textbox').fill('0 5 5');
+    await card.getByText('It prints…', { exact: true }).click();
+
+    await card.getByRole('textbox', { name: 'Exact output' }).fill('0 5 5');
     await card.getByRole('button', { name: 'Commit and reveal' }).click();
     await expect(card.locator('.answer')).toContainText('The CAS fails');
 
@@ -22,7 +24,7 @@ test.describe('module page', () => {
   });
 
   test('an exercise solution runs with UBSan and is kept after a reload', async ({ page }) => {
-    await page.goto('./modules/01-types-and-initialization');
+    await page.goto('./modules/01-types-and-initialization#exercises');
     const exercise = page.locator('#exercise-E3');
     await exercise.getByText('Your solution').click();
     await setEditorSource(page, '#include <climits>\nint main(int argc, char**) { int x = INT_MAX; return x + argc; }', exercise);
@@ -38,8 +40,8 @@ test.describe('module page', () => {
 
   test('grading every interview question marks the module done', async ({ page }) => {
     await page.goto('./modules/30-probability-optional');
-    await expect(page.locator('h1')).not.toContainText('Done');
-    await page.goto('./modules/20-async-models');
+    await expect(page.locator('h1').getByText('Done', { exact: true })).toHaveCount(0);
+    await page.goto('./modules/20-async-models#interview');
     const drill = page.locator('.drill');
     await expect(drill.locator('.dot').first()).toBeVisible();
     const total = await drill.locator('.dot').count();
@@ -47,8 +49,32 @@ test.describe('module page', () => {
       await drill.getByRole('button', { name: 'Reveal answer', exact: true }).click();
       await drill.getByRole('button', { name: 'Good', exact: true }).click();
     }
-    await expect(page.locator('h1 .done-badge')).toHaveText('Done');
+    await expect(page.locator('h1').getByText('Done', { exact: true })).toBeVisible();
     await page.reload();
-    await expect(page.locator('h1 .done-badge')).toHaveText('Done');
+    await expect(page.locator('h1').getByText('Done', { exact: true })).toBeVisible();
+  });
+});
+
+test.describe('answer controls', () => {
+  test('a prose prediction takes free text and a bug item takes several findings', async ({ page }) => {
+    await page.goto('./modules/24-operating-system#predict');
+    const prose = page.locator('#predict-P1');
+    await expect(prose.getByRole('radio')).toHaveCount(0);
+    await prose.getByRole('textbox', { name: 'Your answer' }).fill('262,144 faults');
+    await prose.getByRole('button', { name: 'Commit and reveal' }).click();
+    await expect(prose.locator('.your-answer')).toContainText('262,144 faults');
+
+    await page.getByRole('tab', { name: /Spot the bug/ }).click();
+    const bug = page.locator('#ub-B1');
+    const commit = bug.getByRole('button', { name: 'Commit and reveal' });
+    await expect(commit).toBeDisabled();
+    await bug.getByRole('checkbox', { name: 'Undefined behavior' }).check();
+    await bug.getByRole('checkbox', { name: 'A bug, but defined behavior' }).check();
+    await bug.getByRole('checkbox', { name: 'Nothing wrong' }).check();
+    await expect(bug.getByRole('checkbox', { name: 'Undefined behavior' })).not.toBeChecked();
+    await bug.getByRole('checkbox', { name: 'A bug, but defined behavior' }).check();
+    await bug.getByRole('textbox').fill('printf and malloc are not async-signal-safe');
+    await commit.click();
+    await expect(bug.locator('.your-answer')).toContainText('A bug, but defined behavior. printf and malloc are not async-signal-safe');
   });
 });
