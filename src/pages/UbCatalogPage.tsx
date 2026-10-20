@@ -1,5 +1,7 @@
 import { Suspense, use, useState } from 'react';
 import { Link } from 'react-router';
+import { Select } from '../components/arc/select/select.tsx';
+import { Switch } from '../components/arc/switch/switch.tsx';
 import { UbCard } from '../components/ModuleSections.tsx';
 import { loadAllModules } from '../course/content.ts';
 import { useProgress } from '../progress/store.ts';
@@ -7,8 +9,10 @@ import { useProgress } from '../progress/store.ts';
 export function UbCatalogPage() {
   return (
     <article className="page">
-      <h1>UB and bug catalog</h1>
-      <p className="lede">Every "spot the bug" item from all modules in one place, for drilling before an interview.</p>
+      <header className="title-row">
+        <h1>UB catalog</h1>
+        <p className="subtitle">Every "spot the bug" item from all modules in one place, for drilling before an interview.</p>
+      </header>
       <Suspense fallback={<p className="muted">Loading the catalog…</p>}>
         <Catalog />
       </Suspense>
@@ -26,25 +30,18 @@ function Catalog() {
 
   return (
     <>
-      <div className="filters">
-        <label>
-          <span className="sr-only">Module</span>
-          <select value={moduleFilter} onChange={(event) => setModuleFilter(event.target.value)}>
-            <option value="all">All modules</option>
-            {modules.map((module) => (
-              <option key={module.info.slug} value={module.info.slug}>
-                {module.info.number}. {module.info.title}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="checkbox">
-          <input type="checkbox" checked={unansweredOnly} onChange={(event) => setUnansweredOnly(event.target.checked)} />
-          Unanswered only
-        </label>
-        <span className="muted small-text">
+      <div className="toolbar">
+        <Select
+          className="filter-select"
+          label="Module"
+          value={moduleFilter}
+          onValueChange={setModuleFilter}
+          options={[{ value: 'all', label: 'All modules' }, ...modules.map((module) => ({ value: module.info.slug, label: `${module.info.number}. ${module.info.title}` }))]}
+        />
+        <Switch label="Unanswered only" checked={unansweredOnly} onCheckedChange={setUnansweredOnly} />
+        <p className="toolbar-count">
           {answered} of {total} answered
-        </span>
+        </p>
       </div>
       {modules
         .filter((module) => moduleFilter === 'all' || module.info.slug === moduleFilter)

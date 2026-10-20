@@ -1,5 +1,7 @@
+import { RotateCcw } from 'lucide-react';
 import { Suspense, use, useState } from 'react';
 import { Link } from 'react-router';
+import { EmptyState } from '../components/arc/empty-state/empty-state.tsx';
 import { Flashcard } from '../components/ModuleSections.tsx';
 import { loadAllModules } from '../course/content.ts';
 import { actions, dueQuestions, useProgress } from '../progress/store.ts';
@@ -7,8 +9,10 @@ import { actions, dueQuestions, useProgress } from '../progress/store.ts';
 export function ReviewPage() {
   return (
     <article className="page">
-      <h1>Review</h1>
-      <p className="lede">Interview questions you've graded come back here when they're due: sooner if you struggled, later if they were easy.</p>
+      <header className="title-row">
+        <h1>Review</h1>
+        <p className="subtitle">Graded interview questions come back when they're due: sooner if you struggled, later if they were easy.</p>
+      </header>
       <Suspense fallback={<p className="muted">Loading questions…</p>}>
         <Review />
       </Suspense>
@@ -37,17 +41,20 @@ function Review() {
       .filter((due) => due > now)
       .sort((a, b) => a - b)[0];
     return (
-      <div className="card">
-        <p>
-          <strong>{reviewed > 0 ? `Reviewed ${reviewed}. ` : ''}Nothing is due right now.</strong>
-        </p>
-        <p className="muted">
-          {upcoming
+      <EmptyState
+        icon={<RotateCcw size={20} strokeWidth={1.75} aria-hidden="true" />}
+        title={reviewed > 0 ? `Reviewed ${reviewed}. Nothing else is due.` : 'Nothing is due right now'}
+        description={
+          upcoming
             ? `Next review: ${new Date(upcoming).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })}.`
-            : 'Grade interview questions in a module to schedule them here.'}{' '}
-          <Link to="/">Pick a module</Link>.
-        </p>
-      </div>
+            : 'Grade interview questions in a module to schedule them here.'
+        }
+        action={
+          <Link to="/" className="text-link">
+            Pick a module
+          </Link>
+        }
+      />
     );
   }
 
