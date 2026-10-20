@@ -1,22 +1,29 @@
 // Commit-before-reveal forms. Each question gets the standard control that fits its answer:
 // one outcome → radio buttons, several findings → checkboxes, open-ended → a text box.
 // The controls are Arc's (src/components/arc).
-import { useState, type FormEvent, type ReactNode } from 'react';
+import { useId, useState, type FormEvent, type ReactNode } from 'react';
 import { Button } from './arc/button/button.tsx';
 import { Checkbox } from './arc/checkbox/checkbox.tsx';
 import { RadioGroup } from './arc/radio-group/radio-group.tsx';
 import { Textarea } from './arc/textarea/textarea.tsx';
 
-function CommitForm({ onSubmit, valid, children }: { onSubmit: () => void; valid: boolean; children: ReactNode }) {
+/** `missing` says what's still needed while the answer is incomplete, so the disabled button explains itself. */
+function CommitForm({ onSubmit, missing, children }: { onSubmit: () => void; missing: string | null; children: ReactNode }) {
+  const hintId = useId();
   const submit = (event: FormEvent) => {
     event.preventDefault();
-    if (valid) onSubmit();
+    if (!missing) onSubmit();
   };
   return (
     <form className="commit-form" onSubmit={submit}>
       {children}
       <div className="commit-row">
-        <Button type="submit" size="sm" disabled={!valid}>
+        {missing && (
+          <span className="commit-hint" id={hintId}>
+            {missing}
+          </span>
+        )}
+        <Button type="submit" size="sm" disabled={missing !== null} aria-describedby={missing ? hintId : undefined}>
           Commit and reveal
         </Button>
       </div>
@@ -37,14 +44,14 @@ const OUTCOMES: { value: Outcome; label: string }[] = [
 export function PredictForm({ onCommit }: { onCommit: (answer: string) => void }) {
   const [outcome, setOutcome] = useState<Outcome | ''>('');
   const [output, setOutput] = useState('');
-  const valid = outcome !== '' && (outcome !== 'prints' || output.trim() !== '');
+  const missing = outcome === '' ? 'Choose what happens.' : outcome === 'prints' && output.trim() === '' ? 'Type the exact output.' : null;
   const submit = () => {
     const label = OUTCOMES.find((option) => option.value === outcome)!.label;
     if (outcome === 'prints') onCommit(`Prints: ${output.trim()}`);
     else onCommit(output.trim() ? `${label}: ${output.trim()}` : label);
   };
   return (
-    <CommitForm onSubmit={submit} valid={valid}>
+    <CommitForm onSubmit={submit} missing={missing}>
       <RadioGroup label="What happens when it runs?" options={OUTCOMES} value={outcome} onValueChange={(value) => setOutcome(value as Outcome)} />
       {outcome === 'prints' && <Textarea className="mono-input" label="Exact output" value={output} onChange={(event) => setOutput(event.target.value)} rows={2} />}
       {outcome === 'unspecified' && (
@@ -58,7 +65,7 @@ export function PredictForm({ onCommit }: { onCommit: (answer: string) => void }
 export function OpenAnswerForm({ label, placeholder, onCommit }: { label: string; placeholder?: string; onCommit: (answer: string) => void }) {
   const [text, setText] = useState('');
   return (
-    <CommitForm onSubmit={() => onCommit(text.trim())} valid={text.trim() !== ''}>
+    <CommitForm onSubmit={() => onCommit(text.trim())} missing={text.trim() === '' ? 'Write your answer.' : null}>
       <Textarea label={label} value={text} onChange={(event) => setText(event.target.value)} placeholder={placeholder} rows={2} />
     </CommitForm>
   );
@@ -82,7 +89,7 @@ export function FindingsForm({ onCommit }: { onCommit: (answer: string) => void 
     onCommit(explanation.trim() ? `${ordered}. ${explanation.trim()}` : ordered);
   };
   return (
-    <CommitForm onSubmit={submit} valid={findings.length > 0}>
+    <CommitForm onSubmit={submit} missing={findings.length === 0 ? 'Select at least one finding.' : null}>
       <fieldset className="choice-group">
         <legend className="field-label">What's wrong with it? Select all that apply.</legend>
         <div className="choice-list">

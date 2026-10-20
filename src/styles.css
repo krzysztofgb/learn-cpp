@@ -886,7 +886,15 @@ textarea.mono-input {
 
 .commit-row {
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   justify-content: flex-end;
+  gap: 8px 12px;
+}
+
+.commit-hint {
+  color: var(--text-secondary);
+  font-size: 13px;
 }
 
 .answer {
