@@ -1,8 +1,9 @@
-import { Check, House, ListChecks, RotateCcw, SquareTerminal, TriangleAlert, type LucideIcon } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { Check, House, ListChecks, RotateCcw, SquareTerminal, TriangleAlert, X, type LucideIcon } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink } from 'react-router';
 import { course } from '../course/course.ts';
 import { dueQuestions, useProgress } from '../progress/store.ts';
+import { Button } from './arc/button/button.tsx';
 import { Mark } from './Mark.tsx';
 
 function useDueCount(): number {
@@ -28,15 +29,29 @@ function Destination({ to, icon: Icon, label, count, onNavigate }: { to: string;
   );
 }
 
-export function Sidebar({ id, open, onNavigate }: { id: string; open: boolean; onNavigate: () => void }) {
+/**
+ * The app and course navigation. On wide screens it is part of the frame; on phones it is a drawer,
+ * where `onNavigate` closes it after a link and `onClose` closes it from its own button.
+ */
+export function Sidebar({ id, open, onNavigate, onClose }: { id: string; open: boolean; onNavigate: () => void; onClose: () => void }) {
   const progress = useProgress();
   const due = useDueCount();
+  const close = useRef<HTMLButtonElement>(null);
+  // Opening the drawer puts focus inside it.
+  useEffect(() => {
+    if (open) close.current?.focus();
+  }, [open]);
   return (
     <aside id={id} className={`sidebar${open ? ' open' : ''}`}>
-      <Link to="/" className="brand" onClick={onNavigate}>
-        <Mark />
-        <span>learn-cpp</span>
-      </Link>
+      <div className="sidebar-head">
+        <Link to="/" className="brand" onClick={onNavigate}>
+          <Mark />
+          <span>learn-cpp</span>
+        </Link>
+        <Button ref={close} variant="ghost" size="sm" className="nav-close icon-only" aria-label="Close menu" onClick={onClose}>
+          <X size={18} strokeWidth={1.75} aria-hidden="true" />
+        </Button>
+      </div>
       <nav aria-label="App">
         <ul className="nav-list">
           <Destination to="/" icon={House} label="Home" onNavigate={onNavigate} />

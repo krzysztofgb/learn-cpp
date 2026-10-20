@@ -14,6 +14,21 @@
 
 html {
   -webkit-text-size-adjust: 100%;
+  /* Keyboard focus and anchor jumps land clear of the sticky top bar (and the module tab bar, below). */
+  scroll-padding-top: calc(var(--topbar-height) + 16px);
+}
+
+a,
+button,
+summary,
+[role='tab'] {
+  touch-action: manipulation;
+}
+
+h1,
+h2,
+h3 {
+  text-wrap: balance;
 }
 
 body {
@@ -73,6 +88,24 @@ kbd {
   font-size: 12px;
 }
 
+.skip-link {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 100;
+  padding: 8px 12px;
+  border-radius: var(--radius-control);
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-weight: 500;
+  text-decoration: none;
+  transform: translateY(-200%);
+}
+
+.skip-link:focus {
+  transform: none;
+}
+
 .text-link {
   color: var(--foreground);
   font-weight: 500;
@@ -95,13 +128,23 @@ kbd {
   z-index: 20;
 }
 
+.sidebar-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.sidebar .nav-close {
+  display: none;
+}
+
 .brand {
   display: flex;
   align-items: center;
   gap: 8px;
   height: 36px;
   padding: 0 8px;
-  margin-bottom: 8px;
   color: var(--foreground);
   font-size: 15px;
   font-weight: 600;
@@ -277,11 +320,16 @@ kbd {
 }
 
 .sheet {
-  min-height: calc(100vh - var(--topbar-height) - var(--sheet-inset));
+  min-height: calc(100dvh - var(--topbar-height) - var(--sheet-inset));
   margin: 0 var(--sheet-inset) var(--sheet-inset) 0;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-surface);
+}
+
+/* Focus moves here on a route change; the ring would only frame the whole page. */
+.sheet:focus {
+  outline: none;
 }
 
 .scrim {
@@ -760,6 +808,11 @@ kbd {
   padding-top: var(--gap);
 }
 
+/* Where the tab bar is pinned too, focus has to clear both bars. */
+html:has(.tab-bar) {
+  scroll-padding-top: calc(var(--topbar-height) + 64px);
+}
+
 .tab-panel:focus-visible {
   outline-offset: 4px;
 }
@@ -1229,16 +1282,26 @@ details[open] > summary {
 /* ---------- Tablet and phone: the frame folds away, the sheet becomes the screen ---------- */
 
 @media (max-width: 900px) {
+  /* Closed, the drawer leaves the tab order (visibility flips after the slide); open, it has its own close button. */
   .sidebar {
+    visibility: hidden;
     transform: translateX(-100%);
-    transition: transform var(--duration-standard) var(--ease-standard);
+    transition:
+      transform var(--duration-standard) var(--ease-standard),
+      visibility 0s linear var(--duration-standard);
     background: var(--surface);
     border-right: 1px solid var(--border);
   }
 
   .sidebar.open {
+    visibility: visible;
     transform: none;
+    transition: transform var(--duration-standard) var(--ease-standard);
     box-shadow: var(--shadow-floating);
+  }
+
+  .sidebar .nav-close {
+    display: inline-flex;
   }
 
   .scrim {
