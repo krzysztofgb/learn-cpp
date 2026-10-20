@@ -19,7 +19,9 @@ const highlight = HighlightStyle.define([
 
 const theme = EditorView.theme({
   '&': { backgroundColor: 'var(--code-bg)', color: 'var(--foreground)', fontSize: '13.5px' },
-  '.cm-content': { fontFamily: 'var(--font-mono)', caretColor: 'var(--accent)' },
+  // On the scroller, so the line-number gutter shares the code's face.
+  '.cm-scroller': { fontFamily: 'var(--font-mono)' },
+  '.cm-content': { caretColor: 'var(--accent)' },
   '.cm-gutters': { backgroundColor: 'var(--code-bg)', color: 'var(--text-muted)', border: 'none' },
   '.cm-activeLine, .cm-activeLineGutter': { backgroundColor: 'var(--code-active)' },
   '&.cm-focused .cm-selectionBackground, .cm-selectionBackground, ::selection': { backgroundColor: 'var(--selection)' },
