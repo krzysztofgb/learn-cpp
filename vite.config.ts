@@ -1,6 +1,7 @@
 /// <reference types="vitest/config" />
 import react from '@vitejs/plugin-react';
 import { copyFileSync, existsSync, readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { defineConfig, type Plugin } from 'vite';
 import type { ToolchainManifest } from './src/compiler/manifest.ts';
 
@@ -65,6 +66,7 @@ function spaFallback(): Plugin {
 export default defineConfig({
   // BASE_PATH serves the app from a subpath, e.g. /learn-cpp/ on GitHub Pages.
   base: process.env.BASE_PATH ?? '/',
+  resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
   plugins: [react(), yowaspBrowserFs(), serviceWorker(), spaFallback()],
   optimizeDeps: { exclude: ['@yowasp/clang'], include: ['@bjorn3/browser_wasi_shim'] },
   worker: { format: 'es', plugins: () => [yowaspBrowserFs()] },
