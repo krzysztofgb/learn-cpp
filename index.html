@@ -7,11 +7,15 @@
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <title>learn-cpp</title>
     <script>
-      // Apply a saved light/dark choice before first paint (see ThemeToggle).
-      try {
-        const theme = localStorage.getItem('learn-cpp/theme');
-        if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme;
-      } catch {}
+      // Set the theme before first paint (see ThemeToggle): the saved choice, or the system's.
+      (function () {
+        let theme = null;
+        try {
+          theme = localStorage.getItem('learn-cpp/theme');
+        } catch {}
+        if (theme !== 'light' && theme !== 'dark') theme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        document.documentElement.dataset.theme = theme;
+      })();
     </script>
   </head>
   <body>

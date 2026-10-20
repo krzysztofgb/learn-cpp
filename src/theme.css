@@ -1,0 +1,132 @@
+/*
+ * The app's one token system: Arc's semantic roles (src/components/arc/foundation.css),
+ * set to the "framed sheet" direction (PLAN.md M9):
+ *   the chrome (sidebar and top bar) is one tinted frame, the work sits on a white sheet,
+ *   depth comes from one tone step and a 1px edge, never a resting shadow;
+ *   colour goes on data and the one selected state; the primary action is near-black.
+ * Every component and app style reads these roles; nothing defines a parallel palette.
+ * Dark values are tuned separately (true neutrals, elevation by lightness), not inverted.
+ */
+:root {
+  /* Surfaces: --background is the frame, --surface the sheet and cards, --surface-muted the wells. */
+  --background: #f9fbfc;
+  --surface: #ffffff;
+  --surface-raised: #ffffff;
+  --surface-muted: #f4f6f8;
+  --surface-active: #ebedee;
+
+  /* Text in three tiers, each at 4.5:1 or more on the sheet. */
+  --foreground: #131416;
+  --text-secondary: #5d5f60;
+  --text-muted: #6b6e70;
+
+  /* Lines in three steps: rules inside a surface, edges between surfaces, control borders. */
+  --border-subtle: #f0f1f2;
+  --border: #e8eaec;
+  --border-strong: #cdced1;
+
+  /* One hue, on data and the one selected state (a 2px tab underline). */
+  --accent: #1b6c80;
+  --accent-strong: #155667;
+  --accent-subtle: rgb(27 108 128 / 0.1);
+  --accent-foreground: #ffffff;
+
+  /* Selection controls and the primary action are near-black, not the accent. */
+  --primary: #1d1f20;
+  --primary-foreground: #ffffff;
+  --control-on: #1d1f20;
+  --control-glyph: #ffffff;
+
+  --success: #1e7b4f;
+  --warning: #92400e;
+  --danger: #c4242a;
+  --success-subtle: #dcfae5;
+  --warning-subtle: #fffbeb;
+  --danger-subtle: #ffedea;
+  --success-ink: #04250e;
+  --warning-ink: #92400e;
+  --danger-ink: #831c1e;
+
+  --shadow-resting: none;
+  --shadow-raised: none;
+
+  --radius-control: 6px;
+  --radius-panel: 8px;
+  --radius-surface: 16px;
+  --control-height-sm: 28px;
+  --control-height-md: 32px;
+  --control-height-lg: 36px;
+
+  --font-body: 'IBM Plex Sans Variable', system-ui, sans-serif;
+  --font-display: var(--font-body);
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --tracking-body: 0;
+  --tracking-display: -0.01em;
+  --leading-body: 1.5;
+
+  /* Shell geometry. */
+  --sidebar-width: 228px;
+  --topbar-height: 48px;
+  --sheet-inset: 8px;
+  --gap: 24px;
+  --pad: 24px;
+
+  /* Code: the sheet's own well, and a syntax palette kept inside the house colours. */
+  --code-bg: #f6f8f9;
+  --code-active: #edf1f3;
+  --selection: rgb(27 108 128 / 0.18);
+  --syntax-keyword: #155667;
+  --syntax-type: #2f70bb;
+  --syntax-string: #2b7a3d;
+  --syntax-number: #8f5e08;
+  --syntax-comment: #6b6e70;
+  --syntax-meta: #7a5410;
+  --syntax-function: #131416;
+}
+
+:root[data-theme='dark'] {
+  --background: #0e0f10;
+  --surface: #151617;
+  --surface-raised: #1b1c1e;
+  --surface-muted: #1d1e20;
+  --surface-active: #26282a;
+
+  --foreground: #f2f3f4;
+  --text-secondary: #b4b6b8;
+  --text-muted: #949699;
+
+  --border-subtle: #202123;
+  --border: #2a2b2d;
+  --border-strong: #45474a;
+
+  --accent: #5fb3c7;
+  --accent-strong: #8fd0df;
+  --accent-subtle: rgb(95 179 199 / 0.16);
+  --accent-foreground: #0e0f10;
+
+  --primary: #f2f3f4;
+  --primary-foreground: #151617;
+  --control-on: #f2f3f4;
+  --control-glyph: #151617;
+
+  --success: #3fc07a;
+  --warning: #e8b04a;
+  --danger: #ef6b7f;
+  --success-subtle: #172a1d;
+  --warning-subtle: #2a2310;
+  --danger-subtle: #2c1a20;
+  --success-ink: #3fc07a;
+  --warning-ink: #e8b04a;
+  --danger-ink: #ef6b7f;
+
+  --code-bg: #111213;
+  --code-active: #1b1d1f;
+  --selection: rgb(95 179 199 / 0.25);
+  --syntax-keyword: #6cc1d3;
+  --syntax-type: #8ab4f0;
+  --syntax-string: #86c995;
+  --syntax-number: #dbb05e;
+  --syntax-comment: #8a8d90;
+  --syntax-meta: #d2a457;
+  --syntax-function: #f2f3f4;
+}
