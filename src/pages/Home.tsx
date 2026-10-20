@@ -5,6 +5,7 @@ import { Markdown } from '../components/Markdown.tsx';
 import { allModules, course, type ModuleInfo } from '../course/course.ts';
 import { loadModule, loadOverview } from '../course/content.ts';
 import { dueQuestions, useProgress, type ModuleProgress, type Progress as Learner } from '../progress/store.ts';
+import { PageTitle } from '../components/PageTitle.tsx';
 
 type State = 'done' | 'started' | 'new';
 
@@ -141,6 +142,7 @@ export function Home() {
   const progress = useProgress();
   return (
     <article className="page home">
+      <PageTitle>{course.title}</PageTitle>
       <header className="title-row">
         <h1>{course.title}</h1>
         <p className="subtitle">30 modules in 8 phases. Every code sample compiles and runs here, with undefined behavior caught by a sanitizer.</p>

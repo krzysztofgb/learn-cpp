@@ -13,6 +13,7 @@ import type { ModuleContent } from '../course/types.ts';
 import { useCompileOptions } from '../hooks/useCompileOptions.ts';
 import { actions, isModuleDone, useModuleProgress, type ModuleProgress } from '../progress/store.ts';
 import { NotFound } from './NotFound.tsx';
+import { PageTitle } from '../components/PageTitle.tsx';
 
 const PHASE_NOTES: Record<number, string> = {
   5: "Threads don't run in the browser yet: threaded examples open in Compiler Explorer with ThreadSanitizer. Single-threaded atomics run here.",
@@ -178,6 +179,7 @@ function ModuleView({ module, phase }: { module: ModuleInfo; phase: Phase }) {
 
   return (
     <article className="page module-page">
+      <PageTitle>{`${module.number}. ${module.title}`}</PageTitle>
       <header className="title-row">
         <h1>
           {module.title}

@@ -5,10 +5,12 @@ import { EmptyState } from '../components/arc/empty-state/empty-state.tsx';
 import { Flashcard } from '../components/ModuleSections.tsx';
 import { loadAllModules } from '../course/content.ts';
 import { actions, dueQuestions, useProgress } from '../progress/store.ts';
+import { PageTitle } from '../components/PageTitle.tsx';
 
 export function ReviewPage() {
   return (
     <article className="page">
+      <PageTitle>Review</PageTitle>
       <header className="title-row">
         <h1>Review</h1>
         <p className="subtitle">Graded interview questions come back when they're due: sooner if you struggled, later if they were easy.</p>

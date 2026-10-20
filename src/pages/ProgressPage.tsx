@@ -6,10 +6,12 @@ import { Badge } from '../components/arc/badge/badge.tsx';
 import { Button } from '../components/arc/button/button.tsx';
 import { Dialog, DialogClose, DialogContent } from '../components/arc/dialog/dialog.tsx';
 import Toast from '../components/arc/toast/toast.tsx';
+import { PageTitle } from '../components/PageTitle.tsx';
 
 export function ProgressPage() {
   return (
     <article className="page">
+      <PageTitle>Progress</PageTitle>
       <header className="title-row with-actions">
         <div>
           <h1>Progress</h1>

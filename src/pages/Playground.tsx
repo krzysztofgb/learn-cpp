@@ -6,6 +6,7 @@ import { commandFlags } from '../compiler/flags.ts';
 import { useCompileOptions } from '../hooks/useCompileOptions.ts';
 import { useRunner } from '../hooks/useRunner.ts';
 import { Button } from '../components/arc/button/button.tsx';
+import { PageTitle } from '../components/PageTitle.tsx';
 
 const SAMPLE = `#include <climits>
 #include <print>
@@ -29,6 +30,7 @@ export function Playground() {
 
   return (
     <article className="page wide playground">
+      <PageTitle>Playground</PageTitle>
       <header className="title-row">
         <h1>Playground</h1>
         <p className="subtitle">
