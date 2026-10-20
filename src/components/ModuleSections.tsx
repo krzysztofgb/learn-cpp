@@ -1,52 +1,25 @@
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, useState } from 'react';
 import type { Exercise, PredictItem, Question, UbItem } from '../course/types.ts';
 import { useCompileOptions } from '../hooks/useCompileOptions.ts';
 import { useRunner } from '../hooks/useRunner.ts';
 import { actions, useModuleProgress, type Grade } from '../progress/store.ts';
+import { FindingsForm, OpenAnswerForm, PredictForm } from './AnswerForms.tsx';
 import { CodeBlock } from './CodeBlock.tsx';
 import { LazyCodeEditor as CodeEditor } from './LazyCodeEditor.tsx';
 import { InlineMarkdown, Markdown } from './Markdown.tsx';
 import { RunPanel } from './RunPanel.tsx';
-
-const QUICK_ANSWERS = ['UB', "Doesn't compile", 'Implementation-defined', 'Unspecified'];
-
-function CommitForm({ label, placeholder, quick, onCommit }: { label: string; placeholder: string; quick?: string[]; onCommit: (answer: string) => void }) {
-  const [draft, setDraft] = useState('');
-  const submit = (event: FormEvent) => {
-    event.preventDefault();
-    if (draft.trim()) onCommit(draft.trim());
-  };
-  return (
-    <form className="commit-form" onSubmit={submit}>
-      <label>
-        <span className="field-label">{label}</span>
-        <textarea value={draft} onChange={(event) => setDraft(event.target.value)} placeholder={placeholder} rows={2} />
-      </label>
-      <div className="commit-row">
-        {quick && (
-          <div className="chips" role="group" aria-label="Quick answers">
-            {quick.map((answer) => (
-              <button key={answer} type="button" className="chip" onClick={() => setDraft(answer)}>
-                {answer}
-              </button>
-            ))}
-          </div>
-        )}
-        <button type="submit" className="button primary small" disabled={!draft.trim()}>
-          Commit and reveal
-        </button>
-      </div>
-    </form>
-  );
-}
+import { Button } from './arc/button/button.tsx';
+import { Badge } from './arc/badge/badge.tsx';
+import { Checkbox } from './arc/checkbox/checkbox.tsx';
 
 export function PredictCard({ slug, item }: { slug: string; item: PredictItem }) {
   const attempt = useModuleProgress(slug).predictions[item.id];
+  const commit = (answer: string) => actions.commitPrediction(slug, item.id, answer);
   return (
     <article className="card" id={`predict-${item.id}`}>
       <header className="card-header">
         <h3>{item.id}</h3>
-        {attempt && <span className="badge ok">Answered</span>}
+        {attempt && <Badge size="sm">Answered</Badge>}
       </header>
       {item.prompt && <Markdown text={item.prompt} />}
       {item.snippet && <CodeBlock snippet={item.snippet} locked={!attempt} label={`${item.id} code`} />}
@@ -62,7 +35,11 @@ export function PredictCard({ slug, item }: { slug: string; item: PredictItem })
           {item.answer.why && <Markdown text={item.answer.why} />}
         </div>
       ) : (
-        <CommitForm label="What does it print?" placeholder="Exact output, or UB / doesn't compile" quick={QUICK_ANSWERS} onCommit={(answer) => actions.commitPrediction(slug, item.id, answer)} />
+        item.snippet ? (
+          <PredictForm onCommit={commit} />
+        ) : (
+          <OpenAnswerForm label="Your answer" onCommit={commit} />
+        )
       )}
     </article>
   );
@@ -74,7 +51,7 @@ export function UbCard({ slug, item }: { slug: string; item: UbItem }) {
     <article className="card" id={`ub-${item.id}`}>
       <header className="card-header">
         <h3>{item.id}</h3>
-        {attempt && <span className="badge ok">Answered</span>}
+        {attempt && <Badge size="sm">Answered</Badge>}
       </header>
       {item.prompt && <Markdown text={item.prompt} />}
       {item.snippet && <CodeBlock snippet={item.snippet} locked={!attempt} label={`${item.id} code`} />}
@@ -87,11 +64,14 @@ export function UbCard({ slug, item }: { slug: string; item: UbItem }) {
           <Markdown text={item.answer} />
         </div>
       ) : (
-        <CommitForm label="What's wrong, which rule does it break, and how would you fix it?" placeholder="e.g. signed overflow when x == INT_MAX; check before adding" onCommit={(answer) => actions.commitUb(slug, item.id, answer)} />
+        <FindingsForm onCommit={(answer) => actions.commitUb(slug, item.id, answer)} />
       )}
     </article>
   );
 }
+
+/** The course grades exercises ★ (warm-up) to ★★★ (interview-hard); the words say it without the glyphs. */
+const DIFFICULTY: Record<number, string> = { 1: 'Warm-up', 2: 'Standard', 3: 'Interview-hard' };
 
 const STARTER = '#include <print>\n\nint main() {\n    std::println("hello");\n}\n';
 
@@ -113,12 +93,10 @@ export function ExerciseCard({ slug, item }: { slug: string; item: Exercise }) {
     <article className="card" id={`exercise-${item.id}`}>
       <header className="card-header">
         <h3>
-          {item.id} <span className="stars" aria-label={`${item.stars} of 3 stars`}>{'★'.repeat(item.stars)}</span> {item.title}
+          {item.id} {item.title}
         </h3>
-        <label className="done-toggle">
-          <input type="checkbox" checked={saved?.done ?? false} onChange={(event) => actions.saveExercise(slug, item.id, { done: event.target.checked })} />
-          Done
-        </label>
+        <Badge size="sm">{DIFFICULTY[item.stars] ?? 'Standard'}</Badge>
+        <Checkbox className="done-toggle" label="Done" checked={saved?.done ?? false} onCheckedChange={(checked) => actions.saveExercise(slug, item.id, { done: checked === true })} />
       </header>
       <Markdown text={item.body} />
       <details className="solution">
@@ -127,9 +105,9 @@ export function ExerciseCard({ slug, item }: { slug: string; item: Exercise }) {
           <CodeEditor value={code} onChange={setCode} onRun={run} label={`${item.id} solution`} />
           <div className="editor-toolbar">
             <span className="muted small-text">Saved in this browser · 15 s time limit</span>
-            <button type="button" className="button primary small" onClick={run} disabled={runner.running}>
-              {runner.running ? 'Running…' : 'Run'}
-            </button>
+            <Button size="sm" onClick={run} loading={runner.running}>
+              Run
+            </Button>
           </div>
         </div>
         <RunPanel state={runner} />
@@ -226,18 +204,18 @@ export function Flashcard({ question, position, onGrade }: { question: Question;
           </div>
           <div className="grade-row" role="group" aria-label="How did you do?">
             {GRADES.map(({ grade, label, hint }) => (
-              <button key={grade} type="button" className={`button small grade-${grade}`} onClick={() => onGrade(grade)} title={hint}>
+              <Button key={grade} size="sm" variant="secondary" onClick={() => onGrade(grade)} title={hint}>
                 {label}
-              </button>
+              </Button>
             ))}
           </div>
         </>
       ) : (
         <div className="grade-row">
           <span className="muted small-text">Answer out loud in 60–90 seconds, then check.</span>
-          <button type="button" className="button primary small" onClick={() => setRevealed(true)}>
+          <Button size="sm" onClick={() => setRevealed(true)}>
             Reveal answer
-          </button>
+          </Button>
         </div>
       )}
     </article>
