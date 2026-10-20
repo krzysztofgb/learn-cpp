@@ -1,34 +1,24 @@
 import type { CompileOptions, CppStd, Profile } from '../compiler/flags.ts';
+import SegmentedControl from './arc/segmented-control/segmented-control.tsx';
+import { Switch } from './arc/switch/switch.tsx';
 
-const PROFILE_LABELS: Record<Profile, string> = {
-  debug: 'Debug: -O0 + UBSan',
-  release: 'Release: -O2, no sanitizer',
-};
+const PROFILES = [
+  { value: 'debug', label: 'Debug · UBSan' },
+  { value: 'release', label: 'Release · O2' },
+];
 
+const STANDARDS = [
+  { value: 'c++23', label: 'C++23' },
+  { value: 'c++2c', label: 'C++26' },
+];
+
+/** The build settings every Run button uses: profile, standard and -Werror. */
 export function RunOptions({ options, onChange }: { options: CompileOptions; onChange: (options: CompileOptions) => void }) {
   return (
     <div className="run-options">
-      <label>
-        <span className="sr-only">Build profile</span>
-        <select value={options.profile} onChange={(event) => onChange({ ...options, profile: event.target.value as Profile })}>
-          {(Object.keys(PROFILE_LABELS) as Profile[]).map((profile) => (
-            <option key={profile} value={profile}>
-              {PROFILE_LABELS[profile]}
-            </option>
-          ))}
-        </select>
-      </label>
-      <label>
-        <span className="sr-only">C++ standard</span>
-        <select value={options.std} onChange={(event) => onChange({ ...options, std: event.target.value as CppStd })}>
-          <option value="c++23">C++23</option>
-          <option value="c++2c">C++26 (slower: no precompiled header)</option>
-        </select>
-      </label>
-      <label className="checkbox">
-        <input type="checkbox" checked={options.werror} onChange={(event) => onChange({ ...options, werror: event.target.checked })} />
-        -Werror
-      </label>
+      <SegmentedControl label="Build" options={PROFILES} value={options.profile} onValueChange={(value) => onChange({ ...options, profile: value as Profile })} />
+      <SegmentedControl label="C++ standard" options={STANDARDS} value={options.std} onValueChange={(value) => onChange({ ...options, std: value as CppStd })} />
+      <Switch label="-Werror" checked={options.werror} onCheckedChange={(werror) => onChange({ ...options, werror })} />
     </div>
   );
 }

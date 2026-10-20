@@ -9,6 +9,7 @@ import { useRunner } from '../hooks/useRunner.ts';
 import { LazyCodeEditor as CodeEditor } from './LazyCodeEditor.tsx';
 import { highlightCpp } from './highlight.tsx';
 import { RunPanel } from './RunPanel.tsx';
+import { Button } from './arc/button/button.tsx';
 
 interface CodeBlockProps {
   snippet: Snippet;
@@ -56,28 +57,28 @@ export function CodeBlock({ snippet, locked = false, sanitizers, settings, label
       {cpp && (
         <div className="code-actions">
           {canRun && (
-            <button type="button" className="button primary small" onClick={run} disabled={runner.running}>
-              {runner.running ? 'Running…' : 'Run'}
-            </button>
+            <Button size="sm" onClick={run} loading={runner.running}>
+              Run
+            </Button>
           )}
           {snippet.run === 'local' && locked && <span className="muted small-text">Answer first to run it.</span>}
           {snippet.run === 'local' && !locked && (
-            <button type="button" className="button small" onClick={() => setEditing((value) => !value)} aria-pressed={editing}>
+            <Button size="sm" variant="secondary" onClick={() => setEditing((value) => !value)} aria-pressed={editing}>
               {editing ? 'Done editing' : 'Edit'}
-            </button>
+            </Button>
           )}
           {snippet.run !== 'none' && !locked && (
-            <a className="button small" href={godboltUrl(code, snippet.kind, sanitizerSet)} target="_blank" rel="noreferrer">
+            <a className="link-button small" href={godboltUrl(code, snippet.kind, sanitizerSet)} target="_blank" rel="noreferrer">
               Compiler Explorer ↗
             </a>
           )}
-          <button type="button" className="button small ghost" onClick={() => void copy()}>
+          <Button size="sm" variant="ghost" onClick={() => void copy()}>
             {copied ? 'Copied' : 'Copy'}
-          </button>
+          </Button>
           {editing && code !== snippet.code && (
-            <button type="button" className="button small ghost" onClick={() => setCode(snippet.code)}>
+            <Button size="sm" variant="ghost" onClick={() => setCode(snippet.code)}>
               Reset
-            </button>
+            </Button>
           )}
         </div>
       )}
