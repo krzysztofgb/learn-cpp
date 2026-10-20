@@ -1,0 +1,241 @@
+{
+  "title": "C++ for Quant Dev Interviews",
+  "phases": [
+    {
+      "number": 1,
+      "title": "Core language",
+      "defaultRunner": "local",
+      "modules": [
+        {
+          "number": 1,
+          "slug": "01-types-and-initialization",
+          "title": "Types and initialization",
+          "topics": "Integer promotion, usual arithmetic conversions, signed overflow UB, every initialization form, narrowing, most vexing parse, `const` vs `constexpr`"
+        },
+        {
+          "number": 2,
+          "slug": "02-pointers-references-arrays",
+          "title": "Pointers, references, arrays",
+          "topics": "Decay, pointer arithmetic rules, const correctness, string literals, `nullptr`"
+        },
+        {
+          "number": 3,
+          "slug": "03-compilation-model",
+          "title": "Compilation model",
+          "topics": "Translation units, linkage, ODR, `inline`, name lookup, ADL, overload resolution"
+        },
+        {
+          "number": 4,
+          "slug": "04-classes",
+          "title": "Classes",
+          "topics": "Member init order, special members, Rule of 0/3/5, `explicit`, operator overloading, `mutable`"
+        },
+        {
+          "number": 5,
+          "slug": "05-object-lifetime",
+          "title": "Object lifetime",
+          "topics": "Storage durations, RAII, temporaries and lifetime extension, dangling, static init order fiasco"
+        },
+        {
+          "number": 6,
+          "slug": "06-polymorphism",
+          "title": "Polymorphism",
+          "topics": "vtable/vptr layout, slicing, virtual destructors, virtuals in constructors, diamond, devirtualization, EBO"
+        },
+        {
+          "number": 7,
+          "slug": "07-error-handling",
+          "title": "Error handling",
+          "topics": "Exception safety guarantees, unwinding, `noexcept`, `std::expected`, `-fno-exceptions`"
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "title": "Value semantics and memory",
+      "defaultRunner": "local",
+      "modules": [
+        {
+          "number": 8,
+          "slug": "08-value-categories-and-moves",
+          "title": "Value categories and moves",
+          "topics": "lvalue/prvalue/xvalue, `std::move` vs `std::forward`, forwarding references, copy elision, NRVO"
+        },
+        {
+          "number": 9,
+          "slug": "09-smart-pointers",
+          "title": "Smart pointers",
+          "topics": "`unique_ptr` deleters, `shared_ptr` control block and atomic refcount, `weak_ptr`, cycles"
+        },
+        {
+          "number": 10,
+          "slug": "10-raw-memory",
+          "title": "Raw memory",
+          "topics": "Placement new, alignment, padding, strict aliasing, `bit_cast`, `std::launder`, `start_lifetime_as`"
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "title": "Standard library",
+      "defaultRunner": "local",
+      "modules": [
+        {
+          "number": 11,
+          "slug": "11-containers",
+          "title": "Containers",
+          "topics": "Growth and invalidation, SSO, `string_view` traps, tree vs hash, `flat_map`, `span`, `mdspan`, `inplace_vector`"
+        },
+        {
+          "number": 12,
+          "slug": "12-algorithms-and-ranges",
+          "title": "Algorithms and ranges",
+          "topics": "Views, laziness, dangling, `nth_element`, strict weak ordering"
+        },
+        {
+          "number": 13,
+          "slug": "13-utilities",
+          "title": "Utilities",
+          "topics": "`variant`/`visit`, `optional`, `std::function` vs `function_ref`, `chrono`, `format`, `<bit>`, `<random>`"
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "title": "Generic and compile-time",
+      "defaultRunner": "local",
+      "modules": [
+        {
+          "number": 14,
+          "slug": "14-templates",
+          "title": "Templates",
+          "topics": "Deduction, specialization, NTTPs, variadics, folds, CTAD, two-phase lookup"
+        },
+        {
+          "number": 15,
+          "slug": "15-metaprogramming",
+          "title": "Metaprogramming",
+          "topics": "Type traits, SFINAE, CRTP, policies, `if constexpr`, concepts, `consteval`/`constinit`"
+        },
+        {
+          "number": 16,
+          "slug": "16-cpp20-to-cpp26",
+          "title": "C++20 to C++26",
+          "topics": "Modules, coroutines, `<=>`, deducing `this`, pack indexing, reflection, contracts, erroneous behavior, hardened library"
+        }
+      ]
+    },
+    {
+      "number": 5,
+      "title": "Concurrency and memory model",
+      "defaultRunner": "godbolt",
+      "modules": [
+        {
+          "number": 17,
+          "slug": "17-synchronization",
+          "title": "Synchronization",
+          "topics": "`jthread`, locks, deadlock, condition variables, `latch`/`barrier`/`semaphore`, atomic wait"
+        },
+        {
+          "number": 18,
+          "slug": "18-memory-model",
+          "title": "Memory model",
+          "topics": "Happens-before, data races, every memory order, fences, litmus tests, ARM vs x86"
+        },
+        {
+          "number": 19,
+          "slug": "19-lock-free-programming",
+          "title": "Lock-free programming",
+          "topics": "CAS, ABA, hazard pointers, RCU, epochs, SPSC/MPMC queues, seqlocks, false sharing"
+        },
+        {
+          "number": 20,
+          "slug": "20-async-models",
+          "title": "Async models",
+          "topics": "Thread pools, work stealing, `std::execution`, coroutine executors"
+        }
+      ]
+    },
+    {
+      "number": 6,
+      "title": "Performance and low latency",
+      "defaultRunner": "local",
+      "modules": [
+        {
+          "number": 21,
+          "slug": "21-hardware",
+          "title": "Hardware",
+          "topics": "Caches, TLB, huge pages, branch prediction, out-of-order execution, SIMD, NUMA"
+        },
+        {
+          "number": 22,
+          "slug": "22-low-latency-techniques",
+          "title": "Low-latency techniques",
+          "topics": "Data-oriented design, SoA vs AoS, arenas and pools, `pmr`, branchless code, LTO/PGO, pinning"
+        },
+        {
+          "number": 23,
+          "slug": "23-measurement",
+          "title": "Measurement",
+          "topics": "Benchmark pitfalls, tail latency, histograms, coordinated omission, profilers"
+        }
+      ]
+    },
+    {
+      "number": 7,
+      "title": "Systems and networking",
+      "defaultRunner": "godbolt",
+      "modules": [
+        {
+          "number": 24,
+          "slug": "24-operating-system",
+          "title": "Operating system",
+          "topics": "Virtual memory, page faults, `mmap`, syscall cost, scheduling, shared memory"
+        },
+        {
+          "number": 25,
+          "slug": "25-networking",
+          "title": "Networking",
+          "topics": "TCP vs UDP, `TCP_NODELAY`, multicast, epoll/kqueue/io_uring, reactor, kernel bypass, timestamping"
+        },
+        {
+          "number": 26,
+          "slug": "26-trading-domain",
+          "title": "Trading domain",
+          "topics": "FIX, ITCH/OUCH, SBE, binary decoding, order books, tick-to-trade"
+        }
+      ]
+    },
+    {
+      "number": 8,
+      "title": "Interview gauntlet",
+      "defaultRunner": "local",
+      "modules": [
+        {
+          "number": 27,
+          "slug": "27-ub-and-trick-question-gauntlet",
+          "title": "UB and trick-question gauntlet",
+          "topics": "Mixed drills across all modules"
+        },
+        {
+          "number": 28,
+          "slug": "28-implement-from-scratch",
+          "title": "Implement from scratch",
+          "topics": "`vector`, SSO string, `shared_ptr`, `std::function`, hash map, LRU, thread pool, order book, matching engine"
+        },
+        {
+          "number": 29,
+          "slug": "29-system-design",
+          "title": "System design",
+          "topics": "Market data handler, order gateway, risk checks, off-hot-path logging"
+        },
+        {
+          "number": 30,
+          "slug": "30-probability-optional",
+          "title": "Probability (optional)",
+          "topics": "Brainteasers and mental math"
+        }
+      ]
+    }
+  ]
+}
