@@ -1,4 +1,4 @@
-# Module 29: System design for quant dev
+# Module 29: System design
 
 Trading system design rounds differ from web-scale ones: the priorities are microseconds, determinism, correctness under failure, and recovery, not horizontal scaling. Your distributed-systems background (Kafka, Postgres, payments) is a real asset for the replay, recovery and audit parts; the new part is the single-box, nanosecond-budget thinking.
 

@@ -1,6 +1,6 @@
 # learn-cpp
 
-An interactive course, "C++ for Quant Dev Interviews": 30 modules from integer promotion to lock-free queues and tick-to-trade. Every snippet compiles and runs **in your browser**: clang 22 runs as WebAssembly and builds C++23 to wasm32-wasi, with exceptions and trap-mode UBSan. Anything WebAssembly can't do faithfully (threads, GCC, x86 assembly, TSan) opens in a prefilled Compiler Explorer session.
+An interactive course, "C++ for Low-Latency Systems": 30 modules from integer promotion to lock-free queues and tick-to-trade. Every snippet compiles and runs **in your browser**: clang 22 runs as WebAssembly and builds C++23 to wasm32-wasi, with exceptions and trap-mode UBSan. Anything WebAssembly can't do faithfully (threads, GCC, x86 assembly, TSan) opens in a prefilled Compiler Explorer session.
 
 Each module has notes, "predict the output" and "spot the bug" items (you commit an answer before the key and the Run button unlock), graded exercises with a saved editor, and interview-question flashcards with spaced repetition. Progress stays in the browser, with JSON export and import. After the first compile, the course and compiler also work offline.
 

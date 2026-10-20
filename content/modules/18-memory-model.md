@@ -1,6 +1,6 @@
 # Module 18: The C++ memory model
 
-This is the topic quant dev interviews probe hardest. Know the definitions precisely, be able to reason about litmus tests, and know how memory orders map to x86 and ARM instructions. Your M-series Mac is a gift here: ARM reorders more aggressively than x86, so ordering bugs that hide on x86 show up on your machine.
+This is the topic low-latency C++ interviews probe hardest. Know the definitions precisely, be able to reason about litmus tests, and know how memory orders map to x86 and ARM instructions. Your M-series Mac is a gift here: ARM reorders more aggressively than x86, so ordering bugs that hide on x86 show up on your machine.
 
 ## Notes
 

@@ -321,7 +321,7 @@ Explain in three sentences why `f` becomes `return x`, `g` keeps an operation, a
 
 ## Interview questions
 
-Answer each out loud in 60–90 seconds, then check the key. These come up in quant dev phone screens nearly word for word.
+Answer each out loud in 60–90 seconds, then check the key. These come up in C++ phone screens nearly word for word.
 
 1. What's the difference between undefined, unspecified and implementation-defined behavior? Give an example of each.
 2. Why is signed overflow UB while unsigned overflow wraps? What does the compiler gain from the UB?

@@ -1,6 +1,6 @@
 # Module 26: The trading domain
 
-Quant dev interviewers don't expect you to be a trader, but they expect fluency in the systems vocabulary: order books, matching, protocols, feeds and risk checks. These are also the most common design and coding exercises in onsite rounds.
+Interviewers for low-latency roles don't expect you to be a trader, but they expect fluency in the systems vocabulary: order books, matching, protocols, feeds and risk checks. These are also the most common design and coding exercises in onsite rounds.
 
 ## Notes
 

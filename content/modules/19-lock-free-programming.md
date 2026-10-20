@@ -1,6 +1,6 @@
 # Module 19: Lock-free programming
 
-"Implement an SPSC queue" is one of the most common quant dev interview questions, usually followed by "now make it faster" and "what about multiple producers?". This module builds on Module 18; reread its memory order table before starting.
+"Implement an SPSC queue" is one of the most common low-latency C++ interview questions, usually followed by "now make it faster" and "what about multiple producers?". This module builds on Module 18; reread its memory order table before starting.
 
 ## Notes
 

@@ -1,6 +1,6 @@
 # Module 28: Implement from scratch
 
-These are the coding problems quant dev loops actually use. Each one tests the same three things: correct C++ (lifetimes, exception safety, no UB), sensible data structure choices, and how you talk about performance. Practice each under a timer, in a plain editor, then compile with `-Wall -Wextra -fsanitize=address,undefined` (and `-fsanitize=thread` for concurrent ones) and run your tests.
+These are the coding problems low-latency C++ interview loops actually use. Each one tests the same three things: correct C++ (lifetimes, exception safety, no UB), sensible data structure choices, and how you talk about performance. Practice each under a timer, in a plain editor, then compile with `-Wall -Wextra -fsanitize=address,undefined` (and `-fsanitize=thread` for concurrent ones) and run your tests.
 
 ## How to practice
 

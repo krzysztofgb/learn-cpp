@@ -1,6 +1,6 @@
 # Module 9: Smart pointers
 
-Smart pointers encode ownership in the type system. In quant interviews you'll often be asked to implement `unique_ptr` or `shared_ptr` on a whiteboard, and to explain why `shared_ptr` is usually kept off hot paths.
+Smart pointers encode ownership in the type system. In C++ interviews you'll often be asked to implement `unique_ptr` or `shared_ptr` on a whiteboard, and to explain why `shared_ptr` is usually kept off hot paths.
 
 ## Notes
 

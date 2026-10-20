@@ -1,6 +1,6 @@
 # Module 25: Networking
 
-Market data arrives over UDP multicast and orders leave over TCP, so quant dev interviews cover both protocols, the sockets API, I/O multiplexing and kernel bypass. Your Go background helps here: you've used the sockets layer, just through `net` and the runtime's netpoller (which is epoll on Linux and kqueue on macOS underneath).
+Market data arrives over UDP multicast and orders leave over TCP, so low-latency interviews cover both protocols, the sockets API, I/O multiplexing and kernel bypass. Your Go background helps here: you've used the sockets layer, just through `net` and the runtime's netpoller (which is epoll on Linux and kqueue on macOS underneath).
 
 ## Notes
 

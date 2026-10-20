@@ -1,6 +1,6 @@
 # Module 30 (optional): Probability, brainteasers and mental math
 
-Many quant dev loops include one round of probability or puzzles, lighter than for quant researchers but still expected. A few techniques solve most of them. Every numeric answer below was checked by exact calculation or Monte Carlo simulation.
+Many low-latency C++ interview loops include one round of probability or puzzles, lighter than for research roles but still expected. A few techniques solve most of them. Every numeric answer below was checked by exact calculation or Monte Carlo simulation.
 
 ## Notes
 
