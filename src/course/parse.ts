@@ -175,7 +175,8 @@ function parseUb(lines: Line[], answerLines: Line[]): Section<UbItem> {
 
 function parseExercises(lines: Line[], hintLines: Line[]): Section<Exercise> {
   const hints = parseLabeledAnswers(hintLines, 'E');
-  const { intro, items } = splitMarkers(lines, /^\*\*(E\d+)\s*(★*)\s*(.*?)\*\*\s*/);
+  // The course source marks difficulty with stars; the UI shows it in words.
+  const { intro, items } = splitMarkers(lines, /^\*\*(E\d+)\s*(★*)\s*(.*?)\*\*\s*/); // taste-skill-ignore
   return {
     intro: join(intro),
     items: items.map(({ match, lines: itemLines }) => {
