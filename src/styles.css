@@ -631,11 +631,15 @@ kbd {
 
 /* ---------- Run options and the run pipeline ---------- */
 
-.run-options {
+.run-options-controls {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 8px 12px;
+}
+
+.run-options-toggle {
+  display: none;
 }
 
 .run-panel {
@@ -1366,12 +1370,56 @@ details[open] > summary {
     padding: 0 16px;
   }
 
+  html:has(.tab-bar) {
+    scroll-padding-top: calc(var(--topbar-height) + 16px);
+  }
+
+  /* Build settings fold behind one line naming the current choice. */
+  .run-options {
+    width: 100%;
+  }
+
+  .run-options-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    min-height: 40px;
+    padding: 0;
+    border: none;
+    background: none;
+    color: var(--foreground);
+    font: inherit;
+    font-size: 13px;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .run-options-toggle svg {
+    margin-left: auto;
+    transition: transform var(--duration-fast) var(--ease-standard);
+  }
+
+  .run-options-toggle[aria-expanded='true'] svg {
+    transform: rotate(180deg);
+  }
+
+  .run-options-controls:not([data-open]) {
+    display: none;
+  }
+
+  /* iOS zooms into any field set below 16px. */
+  .app textarea,
+  .app input:not([type='checkbox'], [type='radio']) {
+    font-size: 16px;
+  }
+
   .playground .cm-editor {
     height: auto;
     min-height: 280px;
   }
 
-  .tab-bar .run-options {
+  .tab-bar .run-options-controls {
     padding-bottom: 10px;
   }
 

@@ -1,6 +1,6 @@
 import * as TabsPrimitive from '@radix-ui/react-tabs';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
-import { Suspense, use, useEffect, type ReactNode } from 'react';
+import { Suspense, use, useEffect, useRef, type ReactNode } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router';
 import { Badge } from '../components/arc/badge/badge.tsx';
 import { Button } from '../components/arc/button/button.tsx';
@@ -161,6 +161,17 @@ function ModuleView({ module, phase }: { module: ModuleInfo; phase: Phase }) {
     if (content && (progress.done ?? false) !== done) actions.setDone(module.slug, done);
   }, [content, done, progress.done, module.slug]);
 
+  const tabList = useRef<HTMLDivElement>(null);
+  // On a narrow screen the tab row scrolls sideways; keep the selected tab in view (horizontally only, never the page).
+  useEffect(() => {
+    const list = tabList.current;
+    const tab = list?.querySelector<HTMLElement>('[data-state="active"]');
+    if (!list || !tab) return;
+    const box = list.getBoundingClientRect();
+    const at = tab.getBoundingClientRect();
+    if (at.left < box.left || at.right > box.right) list.scrollLeft += at.left - box.left - (box.width - at.width) / 2;
+  }, [location.hash]);
+
   if (!content) {
     return (
       <article className="page">
@@ -194,7 +205,7 @@ function ModuleView({ module, phase }: { module: ModuleInfo; phase: Phase }) {
 
       <TabsPrimitive.Root value={active} onValueChange={select} className="module-tabs">
         <div className="tab-bar">
-          <TabsPrimitive.List className="tab-list" aria-label="Module sections">
+          <TabsPrimitive.List ref={tabList} className="tab-list" aria-label="Module sections">
             {tabs.map((tab) => (
               <TabsPrimitive.Trigger key={tab.id} value={tab.id} className="tab">
                 {tab.label}
