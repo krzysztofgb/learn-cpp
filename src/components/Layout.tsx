@@ -50,7 +50,7 @@ export function Layout() {
 
   return (
     <div className="app">
-      <a className="skip-link" href="#main">
+      <a className="skip-link" href="#main" inert={navOpen}>
         Skip to content
       </a>
       <Sidebar id="course-nav" open={navOpen} onNavigate={() => setNavOpen(false)} onClose={closeNav} />

@@ -42,7 +42,8 @@ export function Sidebar({ id, open, onNavigate, onClose }: { id: string; open: b
     if (open) close.current?.focus();
   }, [open]);
   return (
-    <aside id={id} className={`sidebar${open ? ' open' : ''}`}>
+    // Open (phones only: the menu button opens it), it is a modal dialog over an inert page.
+    <aside id={id} className={`sidebar${open ? ' open' : ''}`} {...(open ? { role: 'dialog', 'aria-modal': true, 'aria-label': 'Menu' } : {})}>
       <div className="sidebar-head">
         <Link to="/" className="brand" onClick={onNavigate}>
           <Mark />
