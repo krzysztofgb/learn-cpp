@@ -22,7 +22,7 @@ The first `dev` or `build` runs `scripts/build-toolchain.ts`. It downloads the c
 | --- | --- |
 | `npm run lint` | ESLint |
 | `npm test` | Vitest unit tests (parser, wrapper, packs, traps, progress, Compiler Explorer links) |
-| `npm run build` | Typecheck (`tsc -b`) and production build, including the service worker |
+| `npm run build` | Typecheck with [tsrs](https://github.com/oxc-project/tsrs) (the Rust port of the TypeScript 7 checker; `tsc -b` gives the same diagnostics, about 15× slower) and production build, including the service worker |
 | `npm run test:e2e` | Playwright against the production build in Chromium, Firefox and WebKit |
 | `npm run check:content` | Compiles every course snippet and runs predictions against the answer key |
 | `npm run toolchain` | Rebuilds the toolchain assets |
