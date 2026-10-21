@@ -812,6 +812,11 @@ kbd {
   padding-top: var(--gap);
 }
 
+/* Panels kept mounted (forceMount) are hidden here rather than by Radix. */
+.tab-panel[data-state='inactive'] {
+  display: none;
+}
+
 /* Where the tab bar is pinned too, focus has to clear both bars. */
 html:has(.tab-bar) {
   scroll-padding-top: calc(var(--topbar-height) + 64px);

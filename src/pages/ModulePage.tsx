@@ -28,6 +28,8 @@ interface Tab {
   label: string;
   /** Done and total, shown after the label. */
   count?: [number, number];
+  /** Stays mounted while another tab is shown, so an answer being written survives a look at the notes. */
+  keepMounted?: boolean;
   body: ReactNode;
 }
 
@@ -67,6 +69,7 @@ function buildTabs(content: ModuleContent, slug: string, progress: ModuleProgres
   if (content.predict.items.length > 0) {
     tabs.push({
       id: 'predict',
+      keepMounted: true,
       label: 'Predict',
       count: [content.predict.items.filter((item) => progress.predictions[item.id]).length, content.predict.items.length],
       body: (
@@ -83,6 +86,7 @@ function buildTabs(content: ModuleContent, slug: string, progress: ModuleProgres
   if (content.ub.items.length > 0) {
     tabs.push({
       id: 'ub',
+      keepMounted: true,
       label: 'Spot the bug',
       count: [content.ub.items.filter((item) => progress.ub[item.id]).length, content.ub.items.length],
       body: (
@@ -99,6 +103,7 @@ function buildTabs(content: ModuleContent, slug: string, progress: ModuleProgres
   if (content.exercises.items.length > 0) {
     tabs.push({
       id: 'exercises',
+      keepMounted: true,
       label: 'Exercises',
       count: [content.exercises.items.filter((item) => progress.exercises[item.id]?.done).length, content.exercises.items.length],
       body: (
@@ -224,7 +229,7 @@ function ModuleView({ module, phase }: { module: ModuleInfo; phase: Phase }) {
           <RunOptions options={options} onChange={setOptions} />
         </div>
         {tabs.map((tab) => (
-          <TabsPrimitive.Content key={tab.id} value={tab.id} className="tab-panel">
+          <TabsPrimitive.Content key={tab.id} value={tab.id} forceMount={tab.keepMounted || undefined} className="tab-panel">
             {tab.body}
             <nav className="pager" aria-label="Continue">
               {following ? (

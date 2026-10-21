@@ -62,6 +62,17 @@ test('an old numbered module URL redirects and keeps its tab', async ({ page }) 
 });
 
 test.describe('answer controls', () => {
+  test('an unsent prediction survives a look at the notes', async ({ page }) => {
+    await page.goto('./modules/classes#predict');
+    const card = page.locator('#predict-P2');
+    await card.getByText('It prints…', { exact: true }).click();
+    await card.getByRole('textbox', { name: 'Exact output' }).fill('my careful prediction');
+    await page.getByRole('tab', { name: /^Notes/ }).click();
+    await expect(card).toBeHidden();
+    await page.getByRole('tab', { name: /^Predict/ }).click();
+    await expect(card.getByRole('textbox', { name: 'Exact output' })).toHaveValue('my careful prediction');
+  });
+
   test('a prose prediction takes free text and a bug item takes several findings', async ({ page }) => {
     await page.goto('./modules/operating-system#predict');
     const prose = page.locator('#predict-P1');
