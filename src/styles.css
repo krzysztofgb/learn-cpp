@@ -953,16 +953,18 @@ textarea.mono-input {
 
 details.solution,
 details.hint {
-  margin-top: 12px;
+  margin-top: 6px;
 }
 
+/* Padding (not flex, which would drop the disclosure triangle) makes the row a 33px target. */
 details > summary {
+  padding: 6px 0;
   cursor: pointer;
   font-weight: 500;
 }
 
 details[open] > summary {
-  margin-bottom: 10px;
+  margin-bottom: 4px;
 }
 
 .answer-reveal > summary {
@@ -1480,6 +1482,10 @@ details[open] > summary {
   .dot {
     width: 28px;
     height: 28px;
+  }
+
+  details > summary {
+    padding: 10px 0;
   }
 }
 
