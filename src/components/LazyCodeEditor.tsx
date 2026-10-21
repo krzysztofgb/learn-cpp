@@ -1,4 +1,5 @@
 import { lazy, Suspense, type ComponentProps } from 'react';
+import { StaticCode } from './StaticCode.tsx';
 
 // CodeMirror is only needed once someone edits code, so it stays out of the main bundle.
 const CodeEditor = lazy(async () => ({ default: (await import('./CodeEditor.tsx')).CodeEditor }));
@@ -6,11 +7,7 @@ const CodeEditor = lazy(async () => ({ default: (await import('./CodeEditor.tsx'
 export function LazyCodeEditor(props: ComponentProps<typeof CodeEditor>) {
   return (
     <Suspense
-      fallback={
-        <pre className="code-static" aria-busy="true">
-          <code>{props.value}</code>
-        </pre>
-      }
+      fallback={<StaticCode code={props.value} cpp busy />}
     >
       <CodeEditor {...props} />
     </Suspense>

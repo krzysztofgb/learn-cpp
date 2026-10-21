@@ -7,6 +7,7 @@ import { useCompileOptions } from '../hooks/useCompileOptions.ts';
 import { useRunner } from '../hooks/useRunner.ts';
 import { Button } from '../components/arc/button/button.tsx';
 import { PageTitle } from '../components/PageTitle.tsx';
+import { CodeSettings } from '../components/CodeSettings.tsx';
 
 const SAMPLE = `#include <climits>
 #include <print>
@@ -42,6 +43,7 @@ export function Playground() {
         <Button onClick={run} loading={runner.running}>
           Run
         </Button>
+        <CodeSettings />
       </div>
       <div className="playground-grid">
         <div className="editor-block">

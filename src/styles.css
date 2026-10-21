@@ -582,13 +582,48 @@ kbd {
   overflow: hidden;
 }
 
+/* Size, tab width, wrapping and numbering follow the code settings (StaticCode sets them). */
 .code-static {
   margin: 0;
   padding: 12px 14px;
-  font-size: 13.5px;
   line-height: 1.55;
   overflow-x: auto;
-  tab-size: 4;
+  white-space: pre;
+}
+
+.code-static code {
+  display: block;
+}
+
+.code-static.wrap {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.code-static .line {
+  display: block;
+  min-height: 1lh;
+}
+
+.code-static.numbered code {
+  counter-reset: line;
+}
+
+/* Numbers sit in a gutter sized to the longest number; a wrapped line continues past it. */
+.code-static.numbered .line {
+  position: relative;
+  padding-left: calc(var(--line-digits) * 1ch + 2ch);
+}
+
+.code-static.numbered .line::before {
+  counter-increment: line;
+  content: counter(line);
+  position: absolute;
+  left: 0;
+  width: calc(var(--line-digits) * 1ch);
+  color: var(--text-muted);
+  text-align: right;
+  user-select: none;
 }
 
 .code-actions {
@@ -676,6 +711,54 @@ kbd {
 }
 
 /* ---------- Run options and the run pipeline ---------- */
+
+/* ---------- Code settings ---------- */
+
+/* The gear sits at the end of a code block's actions. */
+.code-actions .code-settings-trigger {
+  margin-left: auto;
+}
+
+.toolbar-end {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Never taller than the space Radix finds beside the trigger: on a short screen the panel scrolls instead of leaving the viewport. */
+.code-settings {
+  display: grid;
+  gap: 16px;
+  width: 19rem;
+  max-height: var(--radix-popover-content-available-height);
+  overflow-y: auto;
+}
+
+.code-settings fieldset {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.code-settings legend {
+  margin-bottom: 10px;
+  padding: 0;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.code-settings .setting {
+  display: grid;
+  gap: 6px;
+  font-size: 14px;
+}
+
+.code-settings > button {
+  justify-self: start;
+}
 
 .run-options-controls {
   display: flex;
@@ -1499,13 +1582,6 @@ details[open] > summary {
   .filter-select {
     min-width: 0;
     width: 100%;
-  }
-
-  /* Wrap rather than scroll: a puzzle's trailing comment must not hide past the edge. The editor wraps too. */
-  .code-static {
-    font-size: 12.5px;
-    white-space: pre-wrap;
-    overflow-wrap: anywhere;
   }
 }
 

@@ -1,10 +1,24 @@
+import { autocompletion, closeBrackets, closeBracketsKeymap, completionKeymap } from '@codemirror/autocomplete';
+import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
 import { cpp } from '@codemirror/lang-cpp';
-import { HighlightStyle, syntaxHighlighting } from '@codemirror/language';
-import { EditorState } from '@codemirror/state';
-import { EditorView, keymap } from '@codemirror/view';
+import { bracketMatching, foldGutter, foldKeymap, HighlightStyle, indentOnInput, indentUnit, syntaxHighlighting } from '@codemirror/language';
+import { highlightSelectionMatches, searchKeymap } from '@codemirror/search';
+import { Compartment, EditorState, type Extension } from '@codemirror/state';
+import {
+  crosshairCursor,
+  drawSelection,
+  dropCursor,
+  EditorView,
+  highlightActiveLine,
+  highlightActiveLineGutter,
+  highlightSpecialChars,
+  keymap,
+  lineNumbers,
+  rectangularSelection,
+} from '@codemirror/view';
 import { tags } from '@lezer/highlight';
-import { basicSetup } from 'codemirror';
 import { useEffect, useLayoutEffect, useRef } from 'react';
+import { FONT_SIZE_PX, useCodeSettings, type CodeSettings } from '../settings/codeSettings.ts';
 
 // Colors come from CSS tokens, so the editor follows the app's light and dark themes.
 const highlight = HighlightStyle.define([
@@ -18,7 +32,7 @@ const highlight = HighlightStyle.define([
 ]);
 
 const theme = EditorView.theme({
-  '&': { backgroundColor: 'var(--code-bg)', color: 'var(--foreground)', fontSize: '13.5px' },
+  '&': { backgroundColor: 'var(--code-bg)', color: 'var(--foreground)' },
   // On the scroller, so the line-number gutter shares the code's face.
   '.cm-scroller': { fontFamily: 'var(--font-mono)' },
   '.cm-content': { caretColor: 'var(--accent)' },
@@ -28,6 +42,45 @@ const theme = EditorView.theme({
   '&.cm-focused': { outline: 'none' },
   '.cm-cursor': { borderLeftColor: 'var(--accent)' },
 });
+
+/** CodeMirror's basicSetup, minus the parts the code settings switch on and off. */
+const base: Extension[] = [
+  highlightSpecialChars(),
+  history(),
+  drawSelection(),
+  dropCursor(),
+  EditorState.allowMultipleSelections.of(true),
+  indentOnInput(),
+  bracketMatching(),
+  autocompletion(),
+  rectangularSelection(),
+  crosshairCursor(),
+  highlightSelectionMatches(),
+  keymap.of([...closeBracketsKeymap, ...defaultKeymap, ...searchKeymap, ...historyKeymap, ...foldKeymap, ...completionKeymap]),
+];
+
+/** One compartment per setting, so a change reconfigures open editors in place. */
+const parts = {
+  lineNumbers: new Compartment(),
+  wrap: new Compartment(),
+  highlight: new Compartment(),
+  activeLine: new Compartment(),
+  closeBrackets: new Compartment(),
+  indent: new Compartment(),
+  fontSize: new Compartment(),
+};
+
+function configure(settings: CodeSettings): Record<keyof typeof parts, Extension> {
+  return {
+    lineNumbers: settings.lineNumbers ? [lineNumbers(), foldGutter()] : [],
+    wrap: settings.wrap ? EditorView.lineWrapping : [],
+    highlight: settings.highlight ? syntaxHighlighting(highlight) : [],
+    activeLine: settings.activeLine ? [highlightActiveLine(), highlightActiveLineGutter()] : [],
+    closeBrackets: settings.closeBrackets ? closeBrackets() : [],
+    indent: [EditorState.tabSize.of(settings.tabSize), indentUnit.of(' '.repeat(settings.tabSize))],
+    fontSize: EditorView.theme({ '&': { fontSize: `${FONT_SIZE_PX[settings.fontSize]}px` } }),
+  };
+}
 
 interface CodeEditorProps {
   value: string;
@@ -41,23 +94,24 @@ interface CodeEditorProps {
 export function CodeEditor({ value, onChange, onRun, readOnly = false, label }: CodeEditorProps) {
   const host = useRef<HTMLDivElement>(null);
   const view = useRef<EditorView | null>(null);
-  const callbacks = useRef({ onChange, onRun });
+  const settings = useCodeSettings();
+  const callbacks = useRef({ onChange, onRun, settings });
   useLayoutEffect(() => {
-    callbacks.current = { onChange, onRun };
+    callbacks.current = { onChange, onRun, settings };
   });
 
   useEffect(() => {
+    const configured = configure(callbacks.current.settings);
     const editor = new EditorView({
       parent: host.current!,
       state: EditorState.create({
         doc: value,
         extensions: [
           keymap.of([{ key: 'Mod-Enter', run: () => (callbacks.current.onRun?.(), true) }]),
-          basicSetup,
+          base,
           cpp(),
           theme,
-          syntaxHighlighting(highlight),
-          EditorView.lineWrapping,
+          ...Object.entries(parts).map(([name, part]) => part.of(configured[name as keyof typeof parts])),
           EditorState.readOnly.of(readOnly),
           EditorView.editable.of(!readOnly),
           EditorView.contentAttributes.of({ 'aria-label': label }),
@@ -72,9 +126,14 @@ export function CodeEditor({ value, onChange, onRun, readOnly = false, label }: 
       editor.destroy();
       view.current = null;
     };
-    // The editor owns its document after mount; `value` changes from outside are synced below.
+    // The editor owns its document after mount; `value` and settings changes are applied below.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [readOnly, label]);
+
+  useEffect(() => {
+    const configured = configure(settings);
+    view.current?.dispatch({ effects: Object.entries(parts).map(([name, part]) => part.reconfigure(configured[name as keyof typeof parts])) });
+  }, [settings]);
 
   useEffect(() => {
     const editor = view.current;

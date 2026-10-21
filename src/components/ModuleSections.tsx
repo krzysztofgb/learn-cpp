@@ -11,6 +11,7 @@ import { RunPanel } from './RunPanel.tsx';
 import { Button } from './arc/button/button.tsx';
 import { Badge } from './arc/badge/badge.tsx';
 import { Checkbox } from './arc/checkbox/checkbox.tsx';
+import { CodeSettings } from './CodeSettings.tsx';
 
 export function PredictCard({ slug, item }: { slug: string; item: PredictItem }) {
   const attempt = useModuleProgress(slug).predictions[item.id];
@@ -105,9 +106,12 @@ export function ExerciseCard({ slug, item }: { slug: string; item: Exercise }) {
           <CodeEditor value={code} onChange={setCode} onRun={run} label={`${item.label} solution`} />
           <div className="editor-toolbar">
             <span className="muted small-text">Saved in this browser · 15 s time limit</span>
-            <Button size="sm" onClick={run} loading={runner.running}>
-              Run
-            </Button>
+            <span className="toolbar-end">
+              <CodeSettings />
+              <Button size="sm" onClick={run} loading={runner.running}>
+                Run
+              </Button>
+            </span>
           </div>
         </div>
         <RunPanel state={runner} />

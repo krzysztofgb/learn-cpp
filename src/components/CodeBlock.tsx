@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import type { RunSettings } from '../compiler/client.ts';
 import { wrapSnippet } from '../compiler/wrap.ts';
 import { isCppLang } from '../course/fence.ts';
@@ -7,9 +7,10 @@ import { godboltUrl, type SanitizerSet } from '../godbolt/clientstate.ts';
 import { useCompileOptions } from '../hooks/useCompileOptions.ts';
 import { useRunner } from '../hooks/useRunner.ts';
 import { LazyCodeEditor as CodeEditor } from './LazyCodeEditor.tsx';
-import { highlightCpp } from './highlight.tsx';
 import { RunPanel } from './RunPanel.tsx';
+import { StaticCode } from './StaticCode.tsx';
 import { Button } from './arc/button/button.tsx';
+import { CodeSettings } from './CodeSettings.tsx';
 
 interface CodeBlockProps {
   snippet: Snippet;
@@ -30,7 +31,6 @@ export function CodeBlock({ snippet, locked = false, sanitizers, settings, label
   const [options] = useCompileOptions();
   const runner = useRunner();
   const cpp = isCppLang(snippet.lang);
-  const highlighted = useMemo(() => (cpp ? highlightCpp(code) : [code]), [code, cpp]);
   const canRun = snippet.run === 'local' && !locked;
   const run = () => void runner.run(wrapSnippet(code, snippet.kind), options, settings);
   const sanitizerSet = sanitizers ?? (THREADS.test(code) ? 'threads' : 'memory');
@@ -50,9 +50,7 @@ export function CodeBlock({ snippet, locked = false, sanitizers, settings, label
       {editing ? (
         <CodeEditor value={code} onChange={setCode} onRun={canRun ? run : undefined} label={`${label} (editable)`} />
       ) : (
-        <pre className="code-static" aria-label={label}>
-          <code>{highlighted}</code>
-        </pre>
+        <StaticCode code={code} cpp={cpp} label={label} />
       )}
       {cpp && (
         <div className="code-actions">
@@ -80,6 +78,7 @@ export function CodeBlock({ snippet, locked = false, sanitizers, settings, label
               Reset
             </Button>
           )}
+          <CodeSettings />
         </div>
       )}
       {snippet.note && <figcaption className="code-note">{snippet.note}</figcaption>}
