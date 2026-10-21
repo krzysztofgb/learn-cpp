@@ -29,23 +29,23 @@ The first `dev` or `build` runs `scripts/build-toolchain.ts`. It downloads the c
 
 ## Content
 
-Modules live in `content/modules/NN-slug.md` in the course's own Markdown format. C++ code fences carry run metadata:
+The course lives in `content/` as Markdown and YAML: `course.yaml` orders the modules, and each module
+folder holds its notes plus one file per kind of item (predict, bugs, exercises, interview), each item a
+block with its answer inside it. It is compiled at build time, so numbering is derived from order and a
+mistake fails the build with its file and line. [content/README.md](content/README.md) describes the format.
 
-````markdown
-```cpp kind=fragment run=local note="Shown under the code"
-cout << sizeof(long);
-```
-````
-
-- `kind`: `program` (has `main`) or `fragment` (wrapped in `main`, with declarations hoisted above it).
-- `run`: `local` (runs in the browser), `godbolt` (Compiler Explorer only), or `none` (an excerpt).
-
-After editing content, run `npm run check:content`.
+| Command | What it does |
+| --- | --- |
+| `npm run content:new -- module <slug>` | Scaffolds a module and lists it in `course.yaml` |
+| `npm run content:new -- predict <module> <id>` | Appends an item block (also `bug`, `exercise`, `question`) |
+| `npm run content:lint` | Checks structure, ids, answers and references (seconds) |
+| `npm run check:content` | Also compiles every snippet and runs predictions against their answers (minutes) |
 
 ## Architecture
 
 - `src/compiler/`: the in-browser toolchain. One long-lived compiler worker (`compile.ts`, shared with the Node scripts) and a fresh runner worker per program (`execute.ts`), killed on timeout. Traps are mapped to UB / terminate / assert / out-of-bounds.
-- `src/course/`: the course structure (`content/course.json`) and the module parser.
+- `scripts/content/`: the content compiler and its Vite plugin (one chunk per module), plus the authoring scripts.
+- `src/course/`: the compiled course's types and loaders.
 - `src/progress/`: the progress store (localStorage) and review scheduling.
 - `src/godbolt/`: Compiler Explorer ClientState links.
 - `src/sw/`: the service worker; its file list is generated at build time.
