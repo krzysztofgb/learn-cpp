@@ -14,7 +14,11 @@ test('after one online compile, the course and compiler work offline', async ({ 
 
   await context.setOffline(true);
   await page.reload();
-  await page.goto('./modules/lock-free-programming#predict');
+  await expect(page.getByRole('heading', { level: 1, name: 'Playground' })).toBeVisible();
+  // Navigate inside the app, as a learner would: a second page.goto straight after the offline
+  // reload was sometimes aborted by Firefox (NS_BINDING_ABORTED).
+  await page.getByRole('navigation', { name: 'Course modules' }).getByRole('link', { name: /Lock-free programming/ }).click();
+  await page.getByRole('tab', { name: /^Predict/ }).click();
   const card = page.locator('#predict-P1');
   await card.getByText('It prints…', { exact: true }).click();
   await card.getByRole('textbox', { name: 'Exact output' }).fill('0 5 5');
