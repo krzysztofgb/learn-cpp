@@ -25,8 +25,7 @@ Compile every exercise twice: once with Clang and once with GCC. When the two di
 
 ```bash
 # Debug build: warnings as errors, plus address and UB sanitizers
-clang++ -std=c++23 -O0 -g -Wall -Wextra -Wpedantic -Wconversion -Wshadow -Werror \
-  -fsanitize=address,undefined -fno-omit-frame-pointer ex.cpp -o ex
+clang++ -std=c++23 -O0 -g -Wall -Wextra -Wpedantic -Wconversion -Wshadow -Werror -fsanitize=address,undefined -fno-omit-frame-pointer ex.cpp -o ex
 
 # Concurrency modules: the thread sanitizer replaces address (they can't be combined)
 clang++ -std=c++23 -O1 -g -fsanitize=thread ex.cpp -o ex

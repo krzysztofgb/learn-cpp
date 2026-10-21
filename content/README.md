@@ -1,8 +1,6 @@
 # Course content
 
-Everything the app teaches lives here as plain Markdown and YAML. It is compiled at build time
-(`scripts/content/compile.ts`), so a mistake fails the build with its file and line instead of
-showing up as missing content. In `npm run dev`, saving a file reloads the page.
+Everything the app teaches lives here as plain Markdown and YAML. It is compiled at build time (`scripts/content/compile.ts`), so a mistake fails the build with its file and line instead of showing up as missing content. In `npm run dev`, saving a file reloads the page.
 
 ```
 content/
@@ -22,9 +20,7 @@ Every file in a module folder except `module.yaml` is optional: a tab appears on
 
 ## Order and numbers
 
-Nothing stores a number. A module's number comes from its position in `course.yaml`; notes
-sections are numbered `<module>.<n>` in order; items are labelled P1, U1, E1, Q1 by position.
-Moving a line or a block renumbers everything, including cross-references.
+Nothing stores a number. A module's number comes from its position in `course.yaml`; notes sections are numbered `<module>.<n>` in order; items are labelled P1, U1, E1, Q1 by position. Moving a line or a block renumbers everything, including cross-references.
 
 ```yaml
 title: C++ for Low-Latency Systems
@@ -48,13 +44,11 @@ numberSections: false      # optional: don't number notes.md's ### sections
 
 ## notes.md
 
-Plain Markdown. Each `###` heading is a numbered section ("19.4 SPSC ring buffer"); write the
-heading without its number.
+Plain Markdown. Each `###` heading is a numbered section ("19.4 SPSC ring buffer"); write the heading without its number.
 
 ## Items
 
-`predict.md`, `bugs.md`, `exercises.md` and `interview.md` hold blocks. Text before the first block is
-the tab's introduction. Each block has an id and keeps its answer inside it, after a marker line:
+`predict.md`, `bugs.md`, `exercises.md` and `interview.md` hold blocks. Text before the first block is the tab's introduction. Each block has an id and keeps its answer inside it, after a marker line:
 
 ````md
 :::predict{#cas-fails}
@@ -91,13 +85,9 @@ The model answer.
 :::
 ````
 
-- **Ids** are what saved progress is keyed by. Pick a short name when adding an item and never change
-  it: a new id means learners lose their answer to that item. Ids must be unique within a file.
-  (Items migrated from the old format kept their old ids, such as `P3` or `B1`; their labels are still
-  derived from position.)
+- **Ids** are what saved progress is keyed by. Pick a short name when adding an item and never change it: a new id means learners lose their answer to that item. Ids must be unique within a file. (Items migrated from the old format kept their old ids, such as `P3` or `B1`; their labels are still derived from position.)
 - **Exercise levels:** `warm-up`, `standard` or `interview-hard`. Quote a title with `'…'` if it contains `"`.
-- In predict and bug blocks, the first code block is the snippet: it is locked until the learner
-  commits an answer.
+- In predict and bug blocks, the first code block is the snippet: it is locked until the learner commits an answer.
 
 ## Code blocks
 
@@ -109,8 +99,7 @@ The info string after the language carries run metadata:
 | `kind` | `program` (has `main`) or `fragment` (wrapped in a `main` with common headers) | detected |
 | `note` | why it can't run here, or what differs in the browser; shown beside it | none |
 
-A note that contains backticks needs a tilde fence (`~~~cpp note="…"`), because Markdown doesn't allow
-backticks in a backtick fence's info string.
+A note that contains backticks needs a tilde fence (`~~~cpp note="…"`), because Markdown doesn't allow backticks in a backtick fence's info string.
 
 ## References
 
@@ -124,8 +113,7 @@ A reference to a module or section that doesn't exist fails the build.
 
 ## answers.md
 
-Reference solutions and model outlines that don't belong to a single item. Each `##` heading becomes
-its own reveal in the Answer key tab.
+Reference solutions and model outlines that don't belong to a single item. Each `##` heading becomes its own reveal in the Answer key tab.
 
 ## Common tasks
 
@@ -140,5 +128,4 @@ its own reveal in the Answer key tab.
 ## Checks
 
 - `npm run content:lint`: structure, ids, answers, references and folders `course.yaml` doesn't list (a second or two).
-- `npm run check:content`: also compiles every runnable snippet with the in-browser toolchain and checks
-  that predictions print what their answers say (a few minutes).
+- `npm run check:content`: also compiles every runnable snippet with the in-browser toolchain and checks that predictions print what their answers say (a few minutes).
