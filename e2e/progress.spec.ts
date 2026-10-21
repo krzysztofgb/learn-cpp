@@ -10,6 +10,7 @@ test('progress exports, resets and imports back', async ({ page }) => {
   await expect(card.locator('.answer')).toBeVisible();
 
   await page.goto('./progress');
+  await expect(page.getByRole('table', { name: 'Progress by module' })).toBeVisible();
   const row = page.getByRole('row', { name: /Pointers, references/ });
   await expect(row).toContainText('1/8');
 

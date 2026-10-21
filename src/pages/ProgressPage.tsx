@@ -162,6 +162,7 @@ function ProgressTable() {
   return (
     <div className="table-wrap">
       <table className="data-table">
+        <caption className="sr-only">Progress by module</caption>
         <thead>
           <tr>
             <th scope="col">Module</th>
