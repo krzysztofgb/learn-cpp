@@ -123,7 +123,8 @@ function BackupControls() {
         </DialogContent>
       </Dialog>
 
-      {toast && <Toast title={toast.title} description={toast.description} open onOpenChange={(open) => !open && setToast(null)} />}
+      {/* A toast with a sentence to read stays up longer than a one-line confirmation. */}
+      {toast && <Toast title={toast.title} description={toast.description} duration={toast.description ? 8000 : undefined} open onOpenChange={(open) => !open && setToast(null)} />}
     </div>
   );
 }
