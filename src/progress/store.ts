@@ -43,6 +43,8 @@ const STORAGE_KEY = 'learn-cpp/progress';
 const DAY = 24 * 60 * 60 * 1000;
 
 export const emptyModule = (): ModuleProgress => ({ predictions: {}, ub: {}, exercises: {}, questions: {} });
+const NOT_PROGRESS = 'This is not a learn-cpp progress file. Choose a file saved with Export progress.';
+
 const emptyProgress = (): Progress => ({ version: 2, modules: {}, options: DEFAULT_OPTIONS });
 
 /**
@@ -50,9 +52,15 @@ const emptyProgress = (): Progress => ({ version: 2, modules: {}, options: DEFAU
  * v1 keyed modules by numbered slugs ("19-lock-free-programming"); v2 drops the number, which now comes from course order.
  */
 export function parseProgress(text: string): Progress {
-  const value = JSON.parse(text) as { version?: unknown; modules?: unknown; options?: Partial<CompileOptions> };
+  let value: { version?: unknown; modules?: unknown; options?: Partial<CompileOptions> } | null;
+  try {
+    value = JSON.parse(text) as typeof value;
+  } catch {
+    // The parser's own message ("Unexpected token…") means nothing to a learner.
+    throw new Error(NOT_PROGRESS);
+  }
   if ((value?.version !== 1 && value?.version !== 2) || typeof value.modules !== 'object' || value.modules === null) {
-    throw new Error('This is not a learn-cpp progress file.');
+    throw new Error(NOT_PROGRESS);
   }
   const modules: Record<string, ModuleProgress> = {};
   for (const [slug, module] of Object.entries(value.modules as Record<string, Partial<ModuleProgress>>)) {

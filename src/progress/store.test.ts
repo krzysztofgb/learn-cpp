@@ -18,7 +18,7 @@ describe('parseProgress', () => {
   it('rejects anything that is not a progress file', () => {
     expect(() => parseProgress('{"version":3,"modules":{}}')).toThrow(/not a learn-cpp progress file/);
     expect(() => parseProgress('[]')).toThrow();
-    expect(() => parseProgress('not json')).toThrow();
+    expect(() => parseProgress('not json')).toThrow('This is not a learn-cpp progress file. Choose a file saved with Export progress.');
   });
 });
 
