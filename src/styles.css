@@ -502,11 +502,6 @@ kbd {
   overflow-wrap: break-word;
 }
 
-/* About 70-75 characters a line (measured in Plex Sans at 16px); code and tables keep the full column. */
-.prose > :is(p, ul, ol, blockquote, h2, h3, h4) {
-  max-width: 33em;
-}
-
 .prose h2 {
   margin: 32px 0 10px;
   font-size: 18px;
