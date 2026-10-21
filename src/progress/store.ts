@@ -34,7 +34,7 @@ export interface ModuleProgress {
 }
 
 export interface Progress {
-  version: 1;
+  version: 2;
   modules: Record<string, ModuleProgress>;
   options: CompileOptions;
 }
@@ -43,17 +43,22 @@ const STORAGE_KEY = 'learn-cpp/progress';
 const DAY = 24 * 60 * 60 * 1000;
 
 export const emptyModule = (): ModuleProgress => ({ predictions: {}, ub: {}, exercises: {}, questions: {} });
-const emptyProgress = (): Progress => ({ version: 1, modules: {}, options: DEFAULT_OPTIONS });
+const emptyProgress = (): Progress => ({ version: 2, modules: {}, options: DEFAULT_OPTIONS });
 
-/** Accepts only a well-formed v1 document; anything else is rejected rather than half-loaded. */
+/**
+ * Accepts only a well-formed v1 or v2 document; anything else is rejected rather than half-loaded.
+ * v1 keyed modules by numbered slugs ("19-lock-free-programming"); v2 drops the number, which now comes from course order.
+ */
 export function parseProgress(text: string): Progress {
-  const value = JSON.parse(text) as Partial<Progress>;
-  if (value?.version !== 1 || typeof value.modules !== 'object' || value.modules === null) {
+  const value = JSON.parse(text) as { version?: unknown; modules?: unknown; options?: Partial<CompileOptions> };
+  if ((value?.version !== 1 && value?.version !== 2) || typeof value.modules !== 'object' || value.modules === null) {
     throw new Error('This is not a learn-cpp progress file.');
   }
   const modules: Record<string, ModuleProgress> = {};
-  for (const [slug, module] of Object.entries(value.modules)) modules[slug] = { ...emptyModule(), ...module };
-  return { version: 1, modules, options: { ...DEFAULT_OPTIONS, ...value.options } };
+  for (const [slug, module] of Object.entries(value.modules as Record<string, Partial<ModuleProgress>>)) {
+    modules[value.version === 1 ? slug.replace(/^\d+-/, '') : slug] = { ...emptyModule(), ...module };
+  }
+  return { version: 2, modules, options: { ...DEFAULT_OPTIONS, ...value.options } };
 }
 
 function load(): Progress {

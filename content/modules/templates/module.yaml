@@ -1,0 +1,3 @@
+title: Templates
+topics: Deduction, specialization, NTTPs, variadics, folds, CTAD, two-phase lookup
+intro: "Templates are how C++ gets zero-cost abstraction: code is generated per type at compile time, so it can be fully inlined. Go generics are mostly implemented with dictionaries and GC shape stenciling; C++ templates are always fully monomorphized."

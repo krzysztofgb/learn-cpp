@@ -3,7 +3,7 @@ import { finishedRunPanel, setEditorSource } from './helpers.ts';
 
 test.describe('module page', () => {
   test('a prediction unlocks Run only after committing, and runs to the answer key', async ({ page }) => {
-    await page.goto('./modules/19-lock-free-programming#predict');
+    await page.goto('./modules/lock-free-programming#predict');
     const card = page.locator('#predict-P1');
     await expect(card.getByText('Answer first to run it.')).toBeVisible();
     await expect(card.getByRole('button', { name: 'Run' })).toHaveCount(0);
@@ -24,7 +24,7 @@ test.describe('module page', () => {
   });
 
   test('an exercise solution runs with UBSan and is kept after a reload', async ({ page }) => {
-    await page.goto('./modules/01-types-and-initialization#exercises');
+    await page.goto('./modules/types-and-initialization#exercises');
     const exercise = page.locator('#exercise-E3');
     await exercise.getByText('Your solution').click();
     await setEditorSource(page, '#include <climits>\nint main(int argc, char**) { int x = INT_MAX; return x + argc; }', exercise);
@@ -39,9 +39,9 @@ test.describe('module page', () => {
   });
 
   test('grading every interview question marks the module done', async ({ page }) => {
-    await page.goto('./modules/30-probability-optional');
+    await page.goto('./modules/probability-optional');
     await expect(page.locator('h1').getByText('Done', { exact: true })).toHaveCount(0);
-    await page.goto('./modules/20-async-models#interview');
+    await page.goto('./modules/async-models#interview');
     const drill = page.locator('.drill');
     await expect(drill.locator('.dot').first()).toBeVisible();
     const total = await drill.locator('.dot').count();
@@ -55,9 +55,15 @@ test.describe('module page', () => {
   });
 });
 
+test('an old numbered module URL redirects and keeps its tab', async ({ page }) => {
+  await page.goto('./modules/19-lock-free-programming#predict');
+  await expect(page).toHaveURL(/\/modules\/lock-free-programming#predict$/);
+  await expect(page.getByRole('tab', { name: /Predict/ })).toHaveAttribute('aria-selected', 'true');
+});
+
 test.describe('answer controls', () => {
   test('a prose prediction takes free text and a bug item takes several findings', async ({ page }) => {
-    await page.goto('./modules/24-operating-system#predict');
+    await page.goto('./modules/operating-system#predict');
     const prose = page.locator('#predict-P1');
     await expect(prose.getByRole('radio')).toHaveCount(0);
     await prose.getByRole('textbox', { name: 'Your answer' }).fill('262,144 faults');

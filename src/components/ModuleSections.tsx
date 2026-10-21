@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import type { Exercise, PredictItem, Question, UbItem } from '../course/types.ts';
+import type { Exercise, Level, PredictItem, Question, UbItem } from '../course/types.ts';
 import { useCompileOptions } from '../hooks/useCompileOptions.ts';
 import { useRunner } from '../hooks/useRunner.ts';
 import { actions, useModuleProgress, type Grade } from '../progress/store.ts';
@@ -18,11 +18,11 @@ export function PredictCard({ slug, item }: { slug: string; item: PredictItem })
   return (
     <article className="card" id={`predict-${item.id}`}>
       <header className="card-header">
-        <h3>{item.id}</h3>
+        <h3>{item.label}</h3>
         {attempt && <Badge size="sm">Answered</Badge>}
       </header>
       {item.prompt && <Markdown text={item.prompt} />}
-      {item.snippet && <CodeBlock snippet={item.snippet} locked={!attempt} label={`${item.id} code`} />}
+      {item.snippet && <CodeBlock snippet={item.snippet} locked={!attempt} label={`${item.label} code`} />}
       {item.after && <Markdown text={item.after} />}
       {attempt ? (
         <div className="answer">
@@ -50,11 +50,11 @@ export function UbCard({ slug, item }: { slug: string; item: UbItem }) {
   return (
     <article className="card" id={`ub-${item.id}`}>
       <header className="card-header">
-        <h3>{item.id}</h3>
+        <h3>{item.label}</h3>
         {attempt && <Badge size="sm">Answered</Badge>}
       </header>
       {item.prompt && <Markdown text={item.prompt} />}
-      {item.snippet && <CodeBlock snippet={item.snippet} locked={!attempt} label={`${item.id} code`} />}
+      {item.snippet && <CodeBlock snippet={item.snippet} locked={!attempt} label={`${item.label} code`} />}
       {item.after && <Markdown text={item.after} />}
       {attempt ? (
         <div className="answer">
@@ -71,7 +71,7 @@ export function UbCard({ slug, item }: { slug: string; item: UbItem }) {
 }
 
 /** The course grades exercises ★ (warm-up) to ★★★ (interview-hard); the words say it without the glyphs. */
-const DIFFICULTY: Record<number, string> = { 1: 'Warm-up', 2: 'Standard', 3: 'Interview-hard' };
+const DIFFICULTY: Record<Level, string> = { 'warm-up': 'Warm-up', standard: 'Standard', 'interview-hard': 'Interview-hard' };
 
 const STARTER = '#include <print>\n\nint main() {\n    std::println("hello");\n}\n';
 
@@ -93,16 +93,16 @@ export function ExerciseCard({ slug, item }: { slug: string; item: Exercise }) {
     <article className="card" id={`exercise-${item.id}`}>
       <header className="card-header">
         <h3>
-          {item.id} {item.title}
+          {item.label} {item.title}
         </h3>
-        <Badge size="sm">{DIFFICULTY[item.stars] ?? 'Standard'}</Badge>
+        <Badge size="sm">{DIFFICULTY[item.level]}</Badge>
         <Checkbox className="done-toggle" label="Done" checked={saved?.done ?? false} onCheckedChange={(checked) => actions.saveExercise(slug, item.id, { done: checked === true })} />
       </header>
       <Markdown text={item.body} />
       <details className="solution">
         <summary>Your solution</summary>
         <div className="editor-block">
-          <CodeEditor value={code} onChange={setCode} onRun={run} label={`${item.id} solution`} />
+          <CodeEditor value={code} onChange={setCode} onRun={run} label={`${item.label} solution`} />
           <div className="editor-toolbar">
             <span className="muted small-text">Saved in this browser · 15 s time limit</span>
             <Button size="sm" onClick={run} loading={runner.running}>

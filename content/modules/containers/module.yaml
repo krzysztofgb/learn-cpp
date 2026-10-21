@@ -1,0 +1,3 @@
+title: Containers
+topics: Growth and invalidation, SSO, `string_view` traps, tree vs hash, `flat_map`, `span`, `mdspan`, `inplace_vector`
+intro: Container choice dominates the performance of most C++ systems, and invalidation rules are a reliable source of UB questions. Know the big-O, and also know that cache behavior often beats big-O for the sizes trading systems use.

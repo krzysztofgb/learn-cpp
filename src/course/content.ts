@@ -1,19 +1,15 @@
-import { allModules, type ModuleInfo } from './course.ts';
-import { parseModule } from './parse.ts';
+import { loadOverview as overviewChunk, modules } from 'virtual:learn-cpp/course';
+import { allModules } from './course.ts';
 import type { ModuleContent } from './types.ts';
-
-// Each module's Markdown is its own chunk, fetched when the module is opened.
-const sources = import.meta.glob<string>('../../content/modules/*.md', { query: '?raw', import: 'default' });
-const overviewSource = import.meta.glob<string>('../../content/overview.md', { query: '?raw', import: 'default' });
 
 const cache = new Map<string, Promise<ModuleContent | undefined>>();
 
-/** Stable per slug, so it can be passed to React's `use()`. */
+/** A module's content, fetched as its own chunk; stable per slug, so it can be passed to React's `use()`. */
 export function loadModule(slug: string): Promise<ModuleContent | undefined> {
   let pending = cache.get(slug);
   if (!pending) {
-    const load = sources[`../../content/modules/${slug}.md`];
-    pending = load ? load().then(parseModule) : Promise.resolve(undefined);
+    const load = modules[slug];
+    pending = load ? load().then((chunk) => chunk.default) : Promise.resolve(undefined);
     cache.set(slug, pending);
   }
   return pending;
@@ -22,27 +18,14 @@ export function loadModule(slug: string): Promise<ModuleContent | undefined> {
 let overview: Promise<string> | undefined;
 
 export function loadOverview(): Promise<string> {
-  const load = overviewSource['../../content/overview.md'];
-  overview ??= load ? load() : Promise.resolve('');
+  overview ??= overviewChunk().then((chunk) => chunk.default);
   return overview;
 }
 
-export function hasModuleContent(slug: string): boolean {
-  return `../../content/modules/${slug}.md` in sources;
-}
+let everything: Promise<ModuleContent[]> | undefined;
 
-
-export interface LoadedModule {
-  info: ModuleInfo;
-  content: ModuleContent;
-}
-
-let everything: Promise<LoadedModule[]> | undefined;
-
-/** Every module's content, for cross-module views (review, UB catalog, progress). */
-export function loadAllModules(): Promise<LoadedModule[]> {
-  everything ??= Promise.all(allModules.map(async (info) => ({ info, content: await loadModule(info.slug) }))).then((modules) =>
-    modules.filter((module): module is LoadedModule => module.content !== undefined),
-  );
+/** Every module's content, in course order, for cross-module views (review, UB catalog, progress). */
+export function loadAllModules(): Promise<ModuleContent[]> {
+  everything ??= Promise.all(allModules.map((info) => loadModule(info.slug))).then((modules) => modules.filter((module) => module !== undefined));
   return everything;
 }

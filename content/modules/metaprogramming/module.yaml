@@ -1,0 +1,3 @@
+title: Metaprogramming
+topics: Type traits, SFINAE, CRTP, policies, `if constexpr`, concepts, `consteval`/`constinit`
+intro: "Trading codebases push work to compile time: dispatch, configuration, lookup tables and interface checks, so the hot path does less. You need to read and write traits, concepts and CRTP fluently."

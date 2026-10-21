@@ -1,0 +1,3 @@
+title: Classes
+topics: Member init order, special members, Rule of 0/3/5, `explicit`, operator overloading, `mutable`
+intro: The compiler writes up to six member functions for you, and the rules for when it does are the most asked class-design question in C++ interviews. Get them exact.

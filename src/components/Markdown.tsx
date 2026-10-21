@@ -1,7 +1,8 @@
 import type { Element } from 'hast';
 import ReactMarkdown, { type Components } from 'react-markdown';
+import { Link } from 'react-router';
 import remarkGfm from 'remark-gfm';
-import { snippetFromFence } from '../course/parse.ts';
+import { snippetFromFence } from '../course/fence.ts';
 import { CodeBlock } from './CodeBlock.tsx';
 
 /** One line of Markdown (inline code, emphasis, links) without a wrapping paragraph. */
@@ -27,6 +28,8 @@ const components: Components = {
     return <CodeBlock snippet={snippetFromFence(`${language} ${meta}`, textOf(code).replace(/\n$/, ''))} />;
   },
   a({ href, children }) {
+    // Links between modules (from :mod[…] references) stay inside the app.
+    if (href?.startsWith('/')) return <Link to={href}>{children}</Link>;
     const external = href?.startsWith('http');
     return (
       <a href={href} {...(external ? { target: '_blank', rel: 'noreferrer' } : {})}>

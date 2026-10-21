@@ -1,0 +1,3 @@
+title: Memory model
+topics: Happens-before, data races, every memory order, fences, litmus tests, ARM vs x86
+intro: "This is the topic low-latency C++ interviews probe hardest. Know the definitions precisely, be able to reason about litmus tests, and know how memory orders map to x86 and ARM instructions. Your M-series Mac is a gift here: ARM reorders more aggressively than x86, so ordering bugs that hide on x86 show up on your machine."

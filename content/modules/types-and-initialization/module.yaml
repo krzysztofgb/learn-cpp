@@ -1,0 +1,3 @@
+title: Types and initialization
+topics: Integer promotion, usual arithmetic conversions, signed overflow UB, every initialization form, narrowing, most vexing parse, `const` vs `constexpr`
+intro: "Most C++ bugs that pass code review come from the rules in this module: implicit conversions, overflow, and initialization. Interviewers use them for warm-up questions because a wrong answer reveals a Go- or Java-shaped mental model fast."

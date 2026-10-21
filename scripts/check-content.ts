@@ -2,38 +2,23 @@
 //   - every `run=local` snippet compiles (unless it's a P/U item whose answer is a compile error)
 //   - every runnable prediction prints what its answer key says, when the answer is a single
 //     `inline code` value; snippets carrying a `note` (a known browser difference) are reported, not failed.
-// Usage: npm run check:content [-- <module number>...]   (no numbers: all modules, 4 at a time)
+// Usage: npm run check:content [-- <module number or slug>...]   (none: all modules, 4 at a time)
 import { spawn } from 'node:child_process';
-import { readdirSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { DEFAULT_OPTIONS } from '../src/compiler/flags.ts';
 import { wrapSnippet } from '../src/compiler/wrap.ts';
-import { isCppLang, parseModule, snippetFromFence } from '../src/course/parse.ts';
-import type { Snippet } from '../src/course/types.ts';
+import { isCppLang } from '../src/course/fence.ts';
+import type { ModuleContent } from '../src/course/types.ts';
+import { compileCourse, fsReader, moduleSnippets } from './content/compile.ts';
 import { compile, run } from './lib/node-toolchain.ts';
 
-const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
-const MODULES = join(ROOT, 'content/modules');
+const CONTENT = join(dirname(fileURLToPath(import.meta.url)), '../content');
 const COMPILE_ERROR_ANSWER = /(?:doesn't|does not|won't|fails to|not) compile|compile(?:-time)? error|ill-formed|is an error/i;
 
 interface Finding {
   level: 'fail' | 'info';
   message: string;
-}
-
-function fences(markdown: string): Snippet[] {
-  const snippets: Snippet[] = [];
-  const lines = markdown.split('\n');
-  for (let i = 0; i < lines.length; i++) {
-    const open = /^(`{3,})(.*)$/.exec(lines[i]!);
-    if (!open) continue;
-    let end = i + 1;
-    while (end < lines.length && lines[end]!.trim() !== open[1]) end++;
-    snippets.push(snippetFromFence(open[2]!, lines.slice(i + 1, end).join('\n')));
-    i = end;
-  }
-  return snippets;
 }
 
 /** The single exact output an answer names, e.g. "`0 5 5`"; undefined when it isn't checkable. */
@@ -42,19 +27,16 @@ function expectedOutput(answer: string): string | undefined {
   return codes.length === 1 && answer.replace(/`[^`]*`/, '').trim() === '' ? codes[0] : undefined;
 }
 
-async function checkModule(file: string): Promise<Finding[]> {
-  const markdown = readFileSync(join(MODULES, file), 'utf8');
-  const module = parseModule(markdown);
+async function checkModule(module: ModuleContent): Promise<Finding[]> {
   const findings: Finding[] = [];
-  const label = file.replace(/\.md$/, '');
   const predictions = new Map(module.predict.items.filter((item) => item.snippet).map((item) => [item.snippet!.code, item]));
   const bugs = new Map(module.ub.items.filter((item) => item.snippet).map((item) => [item.snippet!.code, item]));
 
-  for (const snippet of fences(markdown)) {
+  for (const snippet of moduleSnippets(module)) {
     if (!isCppLang(snippet.lang) || snippet.run !== 'local') continue;
     const prediction = predictions.get(snippet.code);
     const bug = bugs.get(snippet.code);
-    const where = `${label} ${prediction?.id ?? bug?.id ?? `"${snippet.code.split('\n')[0]!.slice(0, 50)}"`}`;
+    const where = `${module.slug} ${prediction?.label ?? bug?.label ?? `"${snippet.code.split('\n')[0]!.slice(0, 50)}"`}`;
     const answer = prediction ? `${prediction.answer.output} ${prediction.answer.why}` : bug?.answer;
     const compiled = await compile(wrapSnippet(snippet.code, snippet.kind), DEFAULT_OPTIONS);
     const expectsError = answer !== undefined && COMPILE_ERROR_ANSWER.test(answer);
@@ -78,14 +60,13 @@ async function checkModule(file: string): Promise<Finding[]> {
 }
 
 async function main() {
-  const numbers = process.argv.slice(2).map(Number);
-  const files = readdirSync(MODULES)
-    .filter((file) => file.endsWith('.md'))
-    .sort();
+  // Arguments pick modules by number or slug; none checks them all.
+  const picked = process.argv.slice(2);
+  const { modules } = compileCourse(fsReader(CONTENT));
 
-  if (numbers.length === 0) {
+  if (picked.length === 0) {
     // Fan out: one child process per module, 4 at a time (each loads its own compiler).
-    const queue = files.map((file) => String(Number(file.slice(0, 2))));
+    const queue = modules.map((module) => module.slug);
     let failed = false;
     const worker = async () => {
       for (let next = queue.shift(); next; next = queue.shift()) {
@@ -109,11 +90,11 @@ async function main() {
   }
 
   let failed = false;
-  for (const file of files.filter((name) => numbers.includes(Number(name.slice(0, 2))))) {
-    const findings = await checkModule(file);
+  for (const module of modules.filter((m) => picked.includes(m.slug) || picked.includes(String(m.number)))) {
+    const findings = await checkModule(module);
     for (const finding of findings) console.log(`${finding.level === 'fail' ? 'FAIL' : 'note'} ${finding.message}`);
     failed ||= findings.some((finding) => finding.level === 'fail');
-    console.log(`${failed ? '✗' : '✓'} ${file}`);
+    console.log(`${failed ? '✗' : '✓'} ${module.number}. ${module.slug}`);
   }
   process.exitCode = failed ? 1 : 0;
 }

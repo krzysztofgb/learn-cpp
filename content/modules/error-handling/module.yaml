@@ -1,0 +1,3 @@
+title: Error handling
+topics: Exception safety guarantees, unwinding, `noexcept`, `std::expected`, `-fno-exceptions`
+intro: C++ offers exceptions, error codes, `std::optional` and `std::expected`, and trading firms disagree about which to use. Interviewers want you to know the exception safety guarantees, how `noexcept` changes container behavior, and the latency trade-offs.

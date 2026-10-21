@@ -14,7 +14,7 @@ test('after one online compile, the course and compiler work offline', async ({ 
 
   await context.setOffline(true);
   await page.reload();
-  await page.goto('./modules/19-lock-free-programming#predict');
+  await page.goto('./modules/lock-free-programming#predict');
   const card = page.locator('#predict-P1');
   await card.getByText('It prints…', { exact: true }).click();
   await card.getByRole('textbox', { name: 'Exact output' }).fill('0 5 5');

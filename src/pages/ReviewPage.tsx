@@ -32,8 +32,8 @@ function Review() {
   const queue = dueQuestions(progress, now)
     .sort((a, b) => a.due - b.due)
     .flatMap(({ slug, id }) => {
-      const module = modules.find((m) => m.info.slug === slug);
-      const question = module?.content.questions.items.find((q) => q.id === id);
+      const module = modules.find((m) => m.slug === slug);
+      const question = module?.questions.items.find((q) => q.id === id);
       return module && question ? [{ module, question }] : [];
     });
 
@@ -64,14 +64,14 @@ function Review() {
   return (
     <>
       <p className="muted">
-        {queue.length} due · from <Link to={`/modules/${module.info.slug}#interview`}>Module {module.info.number}: {module.info.title}</Link>
+        {queue.length} due · from <Link to={`/modules/${module.slug}#interview`}>Module {module.number}: {module.title}</Link>
       </p>
       <Flashcard
-        key={`${module.info.slug}:${question.id}:${reviewed}`}
+        key={`${module.slug}:${question.id}:${reviewed}`}
         question={question}
-        position={`Module ${module.info.number}, question ${question.id.slice(1)}`}
+        position={`Module ${module.number}, question ${question.label.slice(1)}`}
         onGrade={(grade) => {
-          actions.gradeQuestion(module.info.slug, question.id, grade);
+          actions.gradeQuestion(module.slug, question.id, grade);
           setReviewed((count) => count + 1);
         }}
       />

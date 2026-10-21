@@ -1,0 +1,3 @@
+title: C++20 to C++26
+topics: Modules, coroutines, `<=>`, deducing `this`, pack indexing, reflection, contracts, erroneous behavior, hardened library
+intro: "Interviewers increasingly ask what modern features you've used and which C++26 additions matter for trading. This module surveys the features not covered elsewhere and goes deep on the two most-asked: coroutines and `<=>`. Compiler support for C++26 is partial; check the compiler support table on cppreference before relying on a feature."

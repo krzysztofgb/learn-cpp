@@ -1,0 +1,3 @@
+title: Compilation model
+topics: Translation units, linkage, ODR, `inline`, name lookup, ADL, overload resolution
+intro: Go compiles packages as units and has no headers. C++ compiles each source file separately and stitches them together at link time, which creates a class of bugs (ODR violations) that the compiler is not required to diagnose.

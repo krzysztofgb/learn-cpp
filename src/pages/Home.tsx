@@ -2,8 +2,9 @@ import { Suspense, use, useState } from 'react';
 import { Link } from 'react-router';
 import { Progress } from '../components/arc/progress/progress.tsx';
 import { Markdown } from '../components/Markdown.tsx';
-import { allModules, course, type ModuleInfo } from '../course/course.ts';
+import { allModules, course } from '../course/course.ts';
 import { loadModule, loadOverview } from '../course/content.ts';
+import type { ModuleInfo } from '../course/types.ts';
 import { dueQuestions, useProgress, type ModuleProgress, type Progress as Learner } from '../progress/store.ts';
 import { PageTitle } from '../components/PageTitle.tsx';
 

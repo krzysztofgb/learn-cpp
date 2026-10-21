@@ -1,0 +1,3 @@
+title: Measurement
+topics: Benchmark pitfalls, tail latency, histograms, coordinated omission, profilers
+intro: In trading, a claim about latency without a measurement is worthless, and a measurement without the right methodology is worse. Interviewers ask how you'd measure latency, what percentiles mean, and what goes wrong with microbenchmarks.

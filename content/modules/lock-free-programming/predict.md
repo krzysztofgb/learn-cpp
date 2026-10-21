@@ -1,0 +1,50 @@
+:::predict{#P1}
+```cpp
+std::atomic<int> a{5};
+int expected = 3;
+bool ok = a.compare_exchange_strong(expected, 10);
+cout << ok << ' ' << expected << ' ' << a;
+```
+::answer
+`0 5 5`
+
+The CAS fails and writes the current value into `expected`.
+:::
+
+:::predict{#P2}
+```cpp
+struct Counters {
+    alignas(64) std::atomic<long> a;
+    alignas(64) std::atomic<long> b;
+};
+cout << sizeof(Counters) << ' ' << alignof(Counters);
+```
+::answer
+`128 64`
+
+Each member starts on its own 64-byte boundary.
+:::
+
+:::predict{#P3}
+A ring buffer of 8 slots uses masked indices `head` and `tail` in \[0, 7\] with `head == tail` meaning empty and no separate count. How many items can it hold? What changes with free-running 64-bit indices?
+::answer
+7; with free-running indices, 8
+
+With masked indices, full and empty would both look like `head == tail`, so one slot stays empty. Free-running indices make full `tail - head == 8`.
+:::
+
+:::predict{#P4}
+A Treiber stack holds `A → B → C`. Thread 1 starts `pop`: reads `head = A`, `next = B`, then is preempted. Thread 2 pops `A`, pops `B`, frees both, then pushes a new node allocated at `A`'s old address. Thread 1 resumes and does `CAS(head, A, B)`. What happens?
+::answer
+Corruption
+
+The CAS succeeds because `head` equals `A` again, installing freed `B` as the head: use-after-free and a corrupted stack.
+:::
+
+:::predict{#P5}
+Two threads each increment their own `std::atomic<long>` 100M times with relaxed `fetch_add`. In version 1 the counters are adjacent in a struct; in version 2 they're 128 bytes apart. Roughly how do the run times compare on your Mac?
+::answer
+Adjacent is several times slower
+
+Every increment invalidates the other core's copy of the shared line. On Apple M-series, 128-byte separation is needed because lines are 128 bytes.
+:::

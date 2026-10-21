@@ -9,7 +9,7 @@ The course has 30 modules in 8 phases, from first principles to C++26, written f
 5. **Interview questions:** questions asked verbatim in low-latency C++ interviews. Answer out loud in 60–90 seconds, then check.
 6. **Answer key:** each answer stays hidden until you commit to your own. Running a snippet unlocks at the same time.
 
-Undefined behavior (UB) and trick questions run through every module, so by Module 27 the catalog is review. Mark a module done only when you can answer its interview questions without notes.
+Undefined behavior (UB) and trick questions run through every module, so by :mod[ub-and-trick-question-gauntlet] the catalog is review. Mark a module done only when you can answer its interview questions without notes.
 
 ## Setup
 

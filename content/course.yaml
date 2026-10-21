@@ -1,0 +1,48 @@
+title: C++ for Low-Latency Systems
+phases:
+  - title: Core language
+    modules:
+      - types-and-initialization
+      - pointers-references-arrays
+      - compilation-model
+      - classes
+      - object-lifetime
+      - polymorphism
+      - error-handling
+  - title: Value semantics and memory
+    modules:
+      - value-categories-and-moves
+      - smart-pointers
+      - raw-memory
+  - title: Standard library
+    modules:
+      - containers
+      - algorithms-and-ranges
+      - utilities
+  - title: Generic and compile-time
+    modules:
+      - templates
+      - metaprogramming
+      - cpp20-to-cpp26
+  - title: Concurrency and memory model
+    modules:
+      - synchronization
+      - memory-model
+      - lock-free-programming
+      - async-models
+  - title: Performance and low latency
+    modules:
+      - hardware
+      - low-latency-techniques
+      - measurement
+  - title: Systems and networking
+    modules:
+      - operating-system
+      - networking
+      - trading-domain
+  - title: Interview gauntlet
+    modules:
+      - ub-and-trick-question-gauntlet
+      - implement-from-scratch
+      - system-design
+      - probability-optional

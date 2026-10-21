@@ -2,7 +2,7 @@ import { readFile } from 'node:fs/promises';
 import { expect, test } from '@playwright/test';
 
 test('progress exports, resets and imports back', async ({ page }) => {
-  await page.goto('./modules/02-pointers-references-arrays#predict');
+  await page.goto('./modules/pointers-references-arrays#predict');
   const card = page.locator('#predict-P1');
   await card.getByText('It prints…', { exact: true }).click();
   await card.getByRole('textbox', { name: 'Exact output' }).fill('40 10');
@@ -17,7 +17,7 @@ test('progress exports, resets and imports back', async ({ page }) => {
   await page.getByRole('button', { name: 'Export progress' }).click();
   const download = await downloadPromise;
   const exported = await readFile((await download.path())!, 'utf8');
-  expect(JSON.parse(exported).modules['02-pointers-references-arrays'].predictions.P1.answer).toBe('Prints: 40 10');
+  expect(JSON.parse(exported).modules['pointers-references-arrays'].predictions.P1.answer).toBe('Prints: 40 10');
 
   await page.getByRole('button', { name: 'Reset all' }).click();
   await page.getByRole('dialog').getByRole('button', { name: 'Delete progress' }).click();

@@ -1,0 +1,3 @@
+title: Raw memory
+topics: Placement new, alignment, padding, strict aliasing, `bit_cast`, `std::launder`, `start_lifetime_as`
+intro: Low-latency code builds objects in preallocated memory and decodes network buffers directly. That puts you right at the rules for object lifetime, alignment and strict aliasing, where "it works on my machine" code is often UB that a future compiler version will break.

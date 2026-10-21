@@ -1,3 +1,6 @@
+// The course as the app receives it: compiled at build time from content/ (see content/README.md and
+// scripts/content/compile.ts) into one JSON chunk per module plus a small index. Every Markdown string
+// here is ready to render: cross-references are resolved and notes sections are numbered.
 import type { SnippetKind } from '../compiler/wrap.ts';
 
 /** How a code block can be run: in the browser, only in Compiler Explorer, or not at all (an excerpt). */
@@ -12,63 +15,82 @@ export interface Snippet {
   note?: string;
 }
 
+export interface ModuleInfo {
+  /** Position in the course, from course.yaml order. */
+  number: number;
+  slug: string;
+  title: string;
+  /** Markdown, one line. */
+  topics: string;
+}
+
+export interface Phase {
+  number: number;
+  title: string;
+  modules: ModuleInfo[];
+}
+
+export interface Course {
+  title: string;
+  phases: Phase[];
+}
+
 export interface Section<T> {
+  /** Markdown before the first item. */
   intro: string;
   items: T[];
 }
 
-export interface PredictItem {
+/**
+ * Every item has a stable `id` (saved progress is keyed by it; it never changes when items move)
+ * and a `label` from its position ("P1", "U3"), which is what the learner sees.
+ */
+interface Item {
   id: string;
-  /** Markdown before the code (the question, when there's no code). */
+  label: string;
+}
+
+export interface PredictItem extends Item {
+  /** Markdown before the code (the whole question, when there's no code). */
   prompt: string;
   snippet?: Snippet;
-  /** Markdown after the code, if any. */
+  /** Markdown after the code. */
   after: string;
+  /** `output`: the answer's first block (what prints); `why`: the rest. */
   answer: { output: string; why: string };
 }
 
-export interface UbItem {
-  id: string;
+export interface UbItem extends Item {
   prompt: string;
   snippet?: Snippet;
   after: string;
   answer: string;
 }
 
-export interface Exercise {
-  id: string;
-  stars: number;
+export type Level = 'warm-up' | 'standard' | 'interview-hard';
+
+export interface Exercise extends Item {
+  level: Level;
   title: string;
   /** Markdown, including any code blocks. */
   body: string;
   hint?: string;
 }
 
-export interface Question {
-  id: string;
+export interface Question extends Item {
   question: string;
   answer: string;
 }
 
-export type SectionKind = 'notes' | 'predict' | 'ub' | 'exercises' | 'questions' | 'extra';
-
-/** A module's `##` sections in document order; `extra` sections (e.g. "How to practice") are plain Markdown. */
-export interface LayoutSection {
-  kind: SectionKind;
-  heading: string;
-  /** Markdown body, for `notes` and `extra` sections. */
-  body?: string;
-}
-
-export interface ModuleContent {
-  title: string;
+export interface ModuleContent extends ModuleInfo {
+  /** Markdown shown above the tabs. */
   intro: string;
-  layout: LayoutSection[];
-  notes: string;
+  /** The reading tab: "Notes", or "Guide" for modules that are all practice. */
+  reading?: { label: string; body: string };
   predict: Section<PredictItem>;
   ub: Section<UbItem>;
   exercises: Section<Exercise>;
   questions: Section<Question>;
-  /** Answer-key subsections not tied to a part above (reference solutions, model outlines…), shown on request. */
+  /** Reference material shown on request (model answers, reference solutions), one part per `##` of answers.md. */
   answerKey: { heading: string; body: string }[];
 }

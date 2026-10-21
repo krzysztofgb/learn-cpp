@@ -141,11 +141,11 @@ function Ratio({ done, total }: { done: number; total: number }) {
 function ProgressTable() {
   const modules = use(loadAllModules());
   const progress = useProgress();
-  const rows = modules.map(({ info, content }) => {
-    const module = progress.modules[info.slug];
+  const rows = modules.map((content) => {
+    const module = progress.modules[content.slug];
     const questionIds = content.questions.items.map((q) => q.id);
     return {
-      info,
+      info: content,
       predict: [Object.keys(module?.predictions ?? {}).length, content.predict.items.length] as const,
       bugs: [Object.keys(module?.ub ?? {}).length, content.ub.items.length] as const,
       exercises: [Object.values(module?.exercises ?? {}).filter((e) => e.done).length, content.exercises.items.length] as const,

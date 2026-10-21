@@ -1,0 +1,3 @@
+title: Pointers, references, arrays
+topics: Decay, pointer arithmetic rules, const correctness, string literals, `nullptr`
+intro: "Go hides most of this: slices carry their length and there's no pointer arithmetic. C++ arrays lose their size the moment you pass them, and pointer arithmetic has sharp edges that interviewers probe."

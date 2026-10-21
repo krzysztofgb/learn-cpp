@@ -1,0 +1,3 @@
+title: Value categories and moves
+topics: lvalue/prvalue/xvalue, `std::move` vs `std::forward`, forwarding references, copy elision, NRVO
+intro: Move semantics let C++ transfer ownership of resources instead of copying them. Interviewers test whether you know that `std::move` moves nothing, that a named rvalue reference is an lvalue, and when copies are elided entirely.

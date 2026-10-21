@@ -1,0 +1,3 @@
+title: Polymorphism
+topics: vtable/vptr layout, slicing, virtual destructors, virtuals in constructors, diamond, devirtualization, EBO
+intro: "Interviewers at trading firms ask how virtual dispatch works at the machine level and what it costs, because the answer decides whether it belongs on a hot path. Go interfaces are a useful comparison: Go stores the method table in the interface value (a fat pointer); C++ stores a pointer to it inside every object."

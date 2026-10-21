@@ -1,0 +1,3 @@
+title: Hardware
+topics: Caches, TLB, huge pages, branch prediction, out-of-order execution, SIMD, NUMA
+intro: At nanosecond scale, performance is mostly about memory access patterns and branch behavior, not instruction counts. Interviewers expect latency numbers from memory and the ability to predict which of two loops is faster and why.

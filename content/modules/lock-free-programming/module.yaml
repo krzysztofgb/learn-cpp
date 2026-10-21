@@ -1,0 +1,3 @@
+title: Lock-free programming
+topics: CAS, ABA, hazard pointers, RCU, epochs, SPSC/MPMC queues, seqlocks, false sharing
+intro: '"Implement an SPSC queue" is one of the most common low-latency C++ interview questions, usually followed by "now make it faster" and "what about multiple producers?". This module builds on :mod[memory-model]; reread its memory order table before starting.'

@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import type { RunSettings } from '../compiler/client.ts';
 import { wrapSnippet } from '../compiler/wrap.ts';
-import { isCppLang } from '../course/parse.ts';
+import { isCppLang } from '../course/fence.ts';
 import type { Snippet } from '../course/types.ts';
 import { godboltUrl, type SanitizerSet } from '../godbolt/clientstate.ts';
 import { useCompileOptions } from '../hooks/useCompileOptions.ts';

@@ -1,0 +1,3 @@
+title: Utilities
+topics: "`variant`/`visit`, `optional`, `std::function` vs `function_ref`, `chrono`, `format`, `<bit>`, `<random>`"
+intro: These vocabulary types (`optional`, `variant`, `function`, lambdas, `chrono`) appear in every codebase. Interview questions focus on how they're implemented and what they cost.

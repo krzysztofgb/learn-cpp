@@ -26,15 +26,15 @@ export function UbCatalogPage() {
 }
 
 function Catalog() {
-  const modules = use(loadAllModules()).filter((module) => module.content.ub.items.length > 0);
+  const modules = use(loadAllModules()).filter((module) => module.ub.items.length > 0);
   const progress = useProgress();
   const [moduleFilter, setModuleFilter] = useState('all');
   const [unansweredOnly, setUnansweredOnly] = useState(false);
-  const total = modules.reduce((n, module) => n + module.content.ub.items.length, 0);
-  const answered = modules.reduce((n, module) => n + Object.keys(progress.modules[module.info.slug]?.ub ?? {}).length, 0);
+  const total = modules.reduce((n, module) => n + module.ub.items.length, 0);
+  const answered = modules.reduce((n, module) => n + Object.keys(progress.modules[module.slug]?.ub ?? {}).length, 0);
   const shown = modules
-    .filter((module) => moduleFilter === 'all' || module.info.slug === moduleFilter)
-    .map((module) => ({ module, items: module.content.ub.items.filter((item) => !unansweredOnly || !progress.modules[module.info.slug]?.ub[item.id]) }))
+    .filter((module) => moduleFilter === 'all' || module.slug === moduleFilter)
+    .map((module) => ({ module, items: module.ub.items.filter((item) => !unansweredOnly || !progress.modules[module.slug]?.ub[item.id]) }))
     .filter(({ items }) => items.length > 0);
 
   return (
@@ -45,7 +45,7 @@ function Catalog() {
           label="Module"
           value={moduleFilter}
           onValueChange={setModuleFilter}
-          options={[{ value: 'all', label: 'All modules' }, ...modules.map((module) => ({ value: module.info.slug, label: `${module.info.number}. ${module.info.title}` }))]}
+          options={[{ value: 'all', label: 'All modules' }, ...modules.map((module) => ({ value: module.slug, label: `${module.number}. ${module.title}` }))]}
         />
         <Switch label="Unanswered only" checked={unansweredOnly} onCheckedChange={setUnansweredOnly} />
         <p className="toolbar-count">
@@ -65,14 +65,14 @@ function Catalog() {
         />
       )}
       {shown.map(({ module, items }) => (
-        <section key={module.info.slug} className="module-section">
+        <section key={module.slug} className="module-section">
           <h2>
-            <Link to={`/modules/${module.info.slug}#ub`}>
-              {module.info.number}. {module.info.title}
+            <Link to={`/modules/${module.slug}#ub`}>
+              {module.number}. {module.title}
             </Link>
           </h2>
           {items.map((item) => (
-            <UbCard key={item.id} slug={module.info.slug} item={item} />
+            <UbCard key={item.id} slug={module.slug} item={item} />
           ))}
         </section>
       ))}

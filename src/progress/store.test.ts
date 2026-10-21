@@ -8,8 +8,15 @@ describe('parseProgress', () => {
     expect(progress.options).toEqual({ profile: 'debug', std: 'c++23', werror: false });
   });
 
-  it('rejects anything that is not a v1 progress file', () => {
-    expect(() => parseProgress('{"version":2,"modules":{}}')).toThrow(/not a learn-cpp progress file/);
+  it('moves v1 modules to slugs without their number', () => {
+    const progress = parseProgress(JSON.stringify({ version: 1, modules: { '19-lock-free-programming': { done: true } } }));
+    expect(progress.version).toBe(2);
+    expect(Object.keys(progress.modules)).toEqual(['lock-free-programming']);
+    expect(parseProgress(JSON.stringify(progress)).modules['lock-free-programming']?.done).toBe(true);
+  });
+
+  it('rejects anything that is not a progress file', () => {
+    expect(() => parseProgress('{"version":3,"modules":{}}')).toThrow(/not a learn-cpp progress file/);
     expect(() => parseProgress('[]')).toThrow();
     expect(() => parseProgress('not json')).toThrow();
   });

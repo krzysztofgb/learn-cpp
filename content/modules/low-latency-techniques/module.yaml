@@ -1,0 +1,3 @@
+title: Low-latency techniques
+topics: Data-oriented design, SoA vs AoS, arenas and pools, `pmr`, branchless code, LTO/PGO, pinning
+intro: This module turns :mod[hardware]'s hardware facts into coding rules. Interviewers often ask open questions like "how would you make this faster?" or "what would you avoid on the hot path?"; the answer is a checklist you should be able to recite and justify.

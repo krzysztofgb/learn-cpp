@@ -1,0 +1,3 @@
+title: Object lifetime
+topics: Storage durations, RAII, temporaries and lifetime extension, dangling, static init order fiasco
+intro: Go's garbage collector keeps anything reachable alive. In C++, every object has a precise start and end of life, and most memory-safety bugs are uses of an object outside that window. RAII, the core C++ idiom, ties resource ownership to it.

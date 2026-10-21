@@ -1,15 +1,15 @@
 import * as TabsPrimitive from '@radix-ui/react-tabs';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { Suspense, use, useEffect, useRef, type ReactNode } from 'react';
-import { Link, useLocation, useNavigate, useParams } from 'react-router';
+import { Link, Navigate, useLocation, useNavigate, useParams } from 'react-router';
 import { Badge } from '../components/arc/badge/badge.tsx';
 import { Button } from '../components/arc/button/button.tsx';
 import { InlineMarkdown, Markdown } from '../components/Markdown.tsx';
 import { ExerciseCard, PredictCard, QuestionDrill, UbCard } from '../components/ModuleSections.tsx';
 import { RunOptions } from '../components/RunOptions.tsx';
-import { allModules, findModule, type ModuleInfo, type Phase } from '../course/course.ts';
+import { allModules, findModule } from '../course/course.ts';
 import { loadModule } from '../course/content.ts';
-import type { ModuleContent } from '../course/types.ts';
+import type { ModuleContent, ModuleInfo, Phase } from '../course/types.ts';
 import { useCompileOptions } from '../hooks/useCompileOptions.ts';
 import { actions, isModuleDone, useModuleProgress, type ModuleProgress } from '../progress/store.ts';
 import { NotFound } from './NotFound.tsx';
@@ -32,8 +32,14 @@ interface Tab {
 }
 
 export function ModulePage() {
-  const found = findModule(useParams().slug);
-  if (!found) return <NotFound />;
+  const { slug } = useParams();
+  const { hash } = useLocation();
+  const found = findModule(slug);
+  if (!found) {
+    // Module URLs used to start with the module's number ("/modules/19-lock-free-programming").
+    const renamed = findModule(slug?.replace(/^\d+-/, ''));
+    return renamed ? <Navigate to={`/modules/${renamed.module.slug}${hash}`} replace /> : <NotFound />;
+  }
   return (
     <Suspense fallback={<p className="muted">Loading module…</p>}>
       <ModuleView key={found.module.slug} module={found.module} phase={found.phase} />
@@ -43,24 +49,21 @@ export function ModulePage() {
 
 const strong = (module: ModuleProgress, id: string) => ['good', 'easy'].includes(module.questions[id]?.grade ?? '');
 
-/** One tab per part of the module, in reading order. Sections without their own part ("How to use it", "Prompt 1") read in the first tab. */
+/** One tab per part of the module that has content, in a fixed order. */
 function buildTabs(content: ModuleContent, slug: string, progress: ModuleProgress): Tab[] {
   const tabs: Tab[] = [];
-  const reading = content.layout.filter((section) => section.kind === 'notes' || section.kind === 'extra');
-  if (reading.length > 0) {
-    const hasNotes = reading.some((section) => section.kind === 'notes');
+  if (content.reading) {
     tabs.push({
       id: 'notes',
-      label: hasNotes ? 'Notes' : 'Guide',
-      body: reading.map((section, index) => (
-        <section key={index} className="reading-section">
-          {section.kind === 'extra' || reading.length > 1 ? <h2>{section.heading}</h2> : <h2 className="sr-only">{section.heading}</h2>}
-          <Markdown text={section.body ?? ''} />
+      label: content.reading.label,
+      body: (
+        <section className="reading-section">
+          <h2 className="sr-only">{content.reading.label}</h2>
+          <Markdown text={content.reading.body} />
         </section>
-      )),
+      ),
     });
   }
-  const heading = (kind: string) => content.layout.find((section) => section.kind === kind)?.heading;
   if (content.predict.items.length > 0) {
     tabs.push({
       id: 'predict',
@@ -68,7 +71,7 @@ function buildTabs(content: ModuleContent, slug: string, progress: ModuleProgres
       count: [content.predict.items.filter((item) => progress.predictions[item.id]).length, content.predict.items.length],
       body: (
         <>
-          <h2 className="sr-only">{heading('predict')}</h2>
+          <h2 className="sr-only">Predict the output</h2>
           {content.predict.intro && <Markdown text={content.predict.intro} />}
           {content.predict.items.map((item) => (
             <PredictCard key={item.id} slug={slug} item={item} />
@@ -84,7 +87,7 @@ function buildTabs(content: ModuleContent, slug: string, progress: ModuleProgres
       count: [content.ub.items.filter((item) => progress.ub[item.id]).length, content.ub.items.length],
       body: (
         <>
-          <h2 className="sr-only">{heading('ub')}</h2>
+          <h2 className="sr-only">Spot the bug</h2>
           {content.ub.intro && <Markdown text={content.ub.intro} />}
           {content.ub.items.map((item) => (
             <UbCard key={item.id} slug={slug} item={item} />

@@ -1,0 +1,3 @@
+title: Async models
+topics: Thread pools, work stealing, `std::execution`, coroutine executors
+intro: "Outside the hot path, trading systems still run plenty of concurrent work: risk aggregation, reference data loading, logging, analytics. This module covers thread pools, work stealing, futures, C++26 senders/receivers and coroutine executors. On the hot path itself, the usual answer is different: one pinned thread per core, busy-polling, no scheduler at all."

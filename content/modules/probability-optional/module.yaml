@@ -1,0 +1,3 @@
+title: Probability (optional)
+topics: Brainteasers and mental math
+intro: Many low-latency C++ interview loops include one round of probability or puzzles, lighter than for research roles but still expected. A few techniques solve most of them. Every numeric answer below was checked by exact calculation or Monte Carlo simulation.

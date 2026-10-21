@@ -1,0 +1,3 @@
+title: Algorithms and ranges
+topics: Views, laziness, dangling, `nth_element`, strict weak ordering
+intro: The standard algorithms are well-tested and often vectorized; knowing them saves interview time and bugs. Ranges (C++20) add composable lazy views, which bring their own surprises about when code actually runs.

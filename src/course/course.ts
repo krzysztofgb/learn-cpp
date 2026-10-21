@@ -1,27 +1,7 @@
-import courseJson from '../../content/course.json' with { type: 'json' };
+import { course } from 'virtual:learn-cpp/course';
+import type { ModuleInfo, Phase } from './types.ts';
 
-export type Runner = 'local' | 'godbolt' | 'prose';
-
-export interface ModuleInfo {
-  number: number;
-  slug: string;
-  title: string;
-  topics: string;
-}
-
-export interface Phase {
-  number: number;
-  title: string;
-  defaultRunner: Runner;
-  modules: ModuleInfo[];
-}
-
-export interface Course {
-  title: string;
-  phases: Phase[];
-}
-
-export const course = courseJson as Course;
+export { course };
 
 export const allModules: ModuleInfo[] = course.phases.flatMap((phase) => phase.modules);
 

@@ -1,0 +1,5 @@
+title: UB and trick-question gauntlet
+topics: Mixed drills across all modules
+intro: 'This module is pure drilling, mixing material from every earlier module the way interviewers do. Treat each round as timed: about 30 seconds per snippet, answer out loud, then check. Every "predict the output" answer in Round 1 was compiled and run with GCC 13 and Clang 18 (C++20, x86-64 Linux); both agreed.'
+readingLabel: Guide
+numberSections: false
