@@ -67,6 +67,7 @@ function Review() {
         {queue.length} due · from <Link to={`/modules/${module.slug}#interview`}>Module {module.number}: {module.title}</Link>
       </p>
       <Flashcard
+        headingLevel={2}
         key={`${module.slug}:${question.id}:${reviewed}`}
         question={question}
         position={`Module ${module.number}, question ${question.label.slice(1)}`}

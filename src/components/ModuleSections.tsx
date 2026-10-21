@@ -182,14 +182,16 @@ export function QuestionDrill({ slug, questions }: { slug: string; questions: Qu
   );
 }
 
-export function Flashcard({ question, position, onGrade }: { question: Question; position: string; onGrade: (grade: Grade) => void }) {
+/** `headingLevel` follows the page: h3 under a module's tab heading, h2 directly under Review's h1. */
+export function Flashcard({ question, position, onGrade, headingLevel = 3 }: { question: Question; position: string; onGrade: (grade: Grade) => void; headingLevel?: 2 | 3 }) {
+  const Heading = headingLevel === 2 ? 'h2' : 'h3';
   const [revealed, setRevealed] = useState(false);
   const elapsed = useElapsedSeconds(!revealed);
   const minutes = `${Math.floor(elapsed / 60)}:${String(elapsed % 60).padStart(2, '0')}`;
   return (
     <article className="card flashcard">
       <header className="card-header">
-        <h3>{position}</h3>
+        <Heading>{position}</Heading>
         {!revealed && (
           <span className={`timer${elapsed > TARGET_SECONDS ? ' over' : ''}`} aria-label={`${elapsed} seconds`}>
             {minutes}
