@@ -1,5 +1,5 @@
 import { CheckCheck } from 'lucide-react';
-import { Suspense, use, useState } from 'react';
+import { memo, Suspense, use, useEffect, useRef, useState, type ReactNode } from 'react';
 import { Link } from 'react-router';
 import { Button } from '../components/arc/button/button.tsx';
 import { EmptyState } from '../components/arc/empty-state/empty-state.tsx';
@@ -9,6 +9,32 @@ import { UbCard } from '../components/ModuleSections.tsx';
 import { loadAllModules } from '../course/content.ts';
 import { useProgress } from '../progress/store.ts';
 import { PageTitle } from '../components/PageTitle.tsx';
+
+// Filters re-render the list; cards whose props didn't change are skipped.
+const CatalogCard = memo(UbCard);
+
+/** Average rendered card height (measured at 1440 px), used to reserve space for cards not yet rendered. */
+const CARD_HEIGHT = 650;
+
+/**
+ * Renders its cards once the section comes within a screen or so of the viewport, and keeps them
+ * after that. 154 cards at once blocked a mid-range phone for over half a second.
+ */
+function LazySection({ count, children }: { count: number; children: ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [near, setNear] = useState(() => typeof IntersectionObserver === 'undefined');
+  useEffect(() => {
+    if (near || !ref.current) return;
+    const observer = new IntersectionObserver((entries) => entries.some((entry) => entry.isIntersecting) && setNear(true), { rootMargin: '1200px 0px' });
+    observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, [near]);
+  return (
+    <div ref={ref} style={near ? undefined : { minHeight: count * CARD_HEIGHT }}>
+      {near ? children : null}
+    </div>
+  );
+}
 
 export function UbCatalogPage() {
   return (
@@ -71,9 +97,11 @@ function Catalog() {
               {module.number}. {module.title}
             </Link>
           </h2>
-          {items.map((item) => (
-            <UbCard key={item.id} slug={module.slug} item={item} />
-          ))}
+          <LazySection count={items.length}>
+            {items.map((item) => (
+              <CatalogCard key={item.id} slug={module.slug} item={item} />
+            ))}
+          </LazySection>
         </section>
       ))}
     </>
