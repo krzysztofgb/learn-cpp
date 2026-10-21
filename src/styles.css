@@ -728,6 +728,18 @@ kbd {
   font-size: 13px;
 }
 
+.run-detail {
+  margin: 0 12px 10px;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.run-detail code {
+  display: block;
+  margin-top: 4px;
+  overflow-wrap: anywhere;
+}
+
 .run-empty .command {
   margin: 0 12px 12px;
   padding: 8px 10px;

@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import type { RunResult } from '../compiler/client.ts';
+import { describeFailure } from '../compiler/failure.ts';
 import type { Stage } from '../compiler/protocol.ts';
 import type { RunnerState } from '../hooks/useRunner.ts';
 import { Badge } from './arc/badge/badge.tsx';
@@ -90,10 +91,20 @@ export function RunPanel({ state, empty }: { state: RunnerState; empty?: ReactNo
         </pre>
       )}
       {!running && !result && empty && <div className="run-empty">{empty}</div>}
-      {!running && result && output.length === 0 && result.status !== 'compile-error' && <p className="run-note">No output.</p>}
+      {!running && result && output.length === 0 && result.status !== 'compile-error' && result.status !== 'error' && <p className="run-note">No output.</p>}
       {result?.truncated && <p className="run-note">Output truncated at 256 KB.</p>}
       {result?.status === 'timeout' && <p className="run-note">The program ran longer than the time limit and was stopped.</p>}
-      {result?.status === 'error' && <p className="run-note">{result.error}</p>}
+      {result?.status === 'error' && (
+        <>
+          <p className="run-note">{describeFailure(result.error ?? '')}</p>
+          {result.error && (
+            <details className="run-detail">
+              <summary>Details</summary>
+              <code>{result.error}</code>
+            </details>
+          )}
+        </>
+      )}
       {result?.trap && !['abort', 'terminate'].includes(result.trap.kind) && (
         <p className="run-note">
           WebAssembly trap: <code>{result.trap.message}</code>

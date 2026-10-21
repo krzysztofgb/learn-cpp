@@ -13,3 +13,12 @@ test('a page whose code fails to download shows a recoverable error inside the a
   await page.getByRole('link', { name: 'Go to the course home' }).click();
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('C++ for Low-Latency Systems');
 });
+
+test('a compiler that cannot download says what to do next', async ({ page }) => {
+  await page.route(/\/toolchain\//, (route) => route.abort());
+  await page.goto('./playground');
+  await page.getByRole('button', { name: 'Run' }).click();
+  const panel = page.locator('.run-panel');
+  await expect(panel).toContainText('Couldn’t download the compiler. Check your connection and run again', { timeout: 30_000 });
+  await expect(panel.getByText('Details')).toBeVisible();
+});
