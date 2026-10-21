@@ -14,6 +14,7 @@ import { useCompileOptions } from '../hooks/useCompileOptions.ts';
 import { actions, isModuleDone, useModuleProgress, type ModuleProgress } from '../progress/store.ts';
 import { NotFound } from './NotFound.tsx';
 import { PageTitle } from '../components/PageTitle.tsx';
+import { PageSkeleton } from '../components/PageSkeleton.tsx';
 
 const PHASE_NOTES: Record<number, string> = {
   5: "Threads don't run in the browser yet: threaded examples open in Compiler Explorer with ThreadSanitizer. Single-threaded atomics run here.",
@@ -43,7 +44,13 @@ export function ModulePage() {
     return renamed ? <Navigate to={`/modules/${renamed.module.slug}${hash}`} replace /> : <NotFound />;
   }
   return (
-    <Suspense fallback={<p className="muted">Loading module…</p>}>
+    <Suspense
+      fallback={
+        <div className="page">
+          <PageSkeleton label="Loading module…" title tabs blocks={[220, 160]} />
+        </div>
+      }
+    >
       <ModuleView key={found.module.slug} module={found.module} phase={found.phase} />
     </Suspense>
   );

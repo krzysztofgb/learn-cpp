@@ -9,6 +9,7 @@ import { UbCard } from '../components/ModuleSections.tsx';
 import { loadAllModules } from '../course/content.ts';
 import { useProgress } from '../progress/store.ts';
 import { PageTitle } from '../components/PageTitle.tsx';
+import { PageSkeleton } from '../components/PageSkeleton.tsx';
 
 // Filters re-render the list; cards whose props didn't change are skipped.
 const CatalogCard = memo(UbCard);
@@ -44,7 +45,7 @@ export function UbCatalogPage() {
         <h1>UB catalog</h1>
         <p className="subtitle">Every "spot the bug" item from all modules in one place, for drilling before an interview.</p>
       </header>
-      <Suspense fallback={<p className="muted">Loading the catalog…</p>}>
+      <Suspense fallback={<PageSkeleton label="Loading the catalog…" blocks={[40, 420, 420]} />}>
         <Catalog />
       </Suspense>
     </article>

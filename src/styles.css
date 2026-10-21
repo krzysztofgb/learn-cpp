@@ -448,6 +448,52 @@ kbd {
   background: color-mix(in srgb, var(--primary) 86%, var(--surface));
 }
 
+/* ---------- Loading placeholders ---------- */
+
+/* Held invisible for 150 ms, so a fast load never flashes them; then a short fade. */
+.page-skeleton {
+  animation: skeleton-in var(--duration-standard) var(--ease-standard) 150ms both;
+}
+
+@keyframes skeleton-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.bone {
+  display: block;
+  border-radius: var(--radius-control);
+  background: var(--surface-muted);
+}
+
+.skeleton-title {
+  display: grid;
+  gap: 10px;
+  margin: 8px 0 var(--gap);
+}
+
+.skeleton-title .bone:first-child {
+  width: 40%;
+  height: 26px;
+}
+
+.skeleton-title .bone:last-child {
+  width: 65%;
+  height: 16px;
+}
+
+.skeleton-tabs {
+  height: 45px;
+  margin: 0 0 var(--gap);
+  border-bottom: 1px solid var(--border);
+}
+
+.skeleton-block {
+  margin-bottom: 16px;
+  border-radius: var(--radius-panel);
+}
+
 /* ---------- Prose ---------- */
 
 .prose {
@@ -1490,6 +1536,11 @@ details[open] > summary {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  /* Keep the delay, drop the fade. */
+  .page-skeleton {
+    animation-duration: 0s;
+  }
+
   .sidebar,
   .sidebar.open,
   .run-options-toggle svg {

@@ -7,6 +7,7 @@ import { Button } from '../components/arc/button/button.tsx';
 import { Dialog, DialogClose, DialogContent } from '../components/arc/dialog/dialog.tsx';
 import Toast from '../components/arc/toast/toast.tsx';
 import { PageTitle } from '../components/PageTitle.tsx';
+import { PageSkeleton } from '../components/PageSkeleton.tsx';
 
 export function ProgressPage() {
   return (
@@ -19,7 +20,7 @@ export function ProgressPage() {
         </div>
         <BackupControls />
       </header>
-      <Suspense fallback={<p className="muted">Loading modules…</p>}>
+      <Suspense fallback={<PageSkeleton label="Loading modules…" blocks={[560]} />}>
         <ProgressTable />
       </Suspense>
     </article>

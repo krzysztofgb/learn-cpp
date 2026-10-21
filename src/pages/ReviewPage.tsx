@@ -6,6 +6,7 @@ import { Flashcard } from '../components/ModuleSections.tsx';
 import { loadAllModules } from '../course/content.ts';
 import { actions, dueQuestions, useProgress } from '../progress/store.ts';
 import { PageTitle } from '../components/PageTitle.tsx';
+import { PageSkeleton } from '../components/PageSkeleton.tsx';
 
 export function ReviewPage() {
   return (
@@ -15,7 +16,7 @@ export function ReviewPage() {
         <h1>Review</h1>
         <p className="subtitle">Graded interview questions come back when they're due: sooner if you struggled, later if they were easy.</p>
       </header>
-      <Suspense fallback={<p className="muted">Loading questions…</p>}>
+      <Suspense fallback={<PageSkeleton label="Loading questions…" blocks={[300]} />}>
         <Review />
       </Suspense>
     </article>

@@ -30,7 +30,7 @@ test('progress exports, resets and imports back', async ({ page }) => {
   const dialog = page.getByRole('dialog');
   await expect(dialog).toContainText('backup.json: 1 module started, 1 answer');
   await dialog.getByRole('button', { name: 'Replace progress' }).click();
-  await expect(page.getByRole('status')).toContainText('Imported backup.json');
+  await expect(page.getByRole('status').filter({ hasText: 'Imported backup.json' })).toBeVisible();
   await expect(row).toContainText('1/8');
 });
 
@@ -39,6 +39,6 @@ test('a bad import is rejected with a message', async ({ page }) => {
   const chooserPromise = page.waitForEvent('filechooser');
   await page.getByRole('button', { name: 'Import…' }).click();
   await (await chooserPromise).setFiles({ name: 'other.json', mimeType: 'application/json', buffer: Buffer.from('{"hello":1}') });
-  await expect(page.getByRole('status')).toContainText('This is not a learn-cpp progress file.');
+  await expect(page.getByRole('status').filter({ hasText: 'This is not a learn-cpp progress file.' })).toBeVisible();
   await expect(page.getByRole('dialog')).toHaveCount(0);
 });
