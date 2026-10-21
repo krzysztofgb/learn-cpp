@@ -29,3 +29,21 @@ test('code settings change every snippet and editor, and are remembered', async 
   await expect(page.locator('.cm-lineNumbers')).toHaveCount(1);
   await expect(page.locator('.cm-content')).toHaveClass(/cm-lineWrapping/);
 });
+
+test('vim key bindings load when chosen', async ({ page }) => {
+  await page.goto('./playground');
+  await expect(page.locator('.cm-content')).toContainText('#include <climits>');
+  await page.getByRole('button', { name: 'Code settings' }).click();
+  await page.getByRole('dialog', { name: 'Code settings' }).getByRole('button', { name: 'Vim' }).click();
+  await page.keyboard.press('Escape');
+
+  await page.locator('.cm-content').click();
+  await expect(page.locator('.cm-fat-cursor')).toBeVisible();
+  await page.keyboard.press('Escape');
+  await page.keyboard.type('ggdd');
+  await expect(page.locator('.cm-content')).not.toContainText('#include <climits>');
+
+  await page.getByRole('button', { name: 'Code settings' }).click();
+  await page.getByRole('dialog', { name: 'Code settings' }).getByRole('button', { name: 'Standard' }).click();
+  await expect(page.locator('.cm-fat-cursor')).toHaveCount(0);
+});

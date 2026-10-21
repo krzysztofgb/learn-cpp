@@ -41,6 +41,10 @@ const theme = EditorView.theme({
   '&.cm-focused .cm-selectionBackground, .cm-selectionBackground, ::selection': { backgroundColor: 'var(--selection)' },
   '&.cm-focused': { outline: 'none' },
   '.cm-cursor': { borderLeftColor: 'var(--accent)' },
+  // Vim: the block cursor and the mode line.
+  '.cm-fat-cursor': { background: 'var(--accent)', color: 'var(--accent-foreground)' },
+  '&:not(.cm-focused) .cm-fat-cursor': { background: 'none', outline: '1px solid var(--accent)' },
+  '.cm-vim-panel': { padding: '2px 8px', fontFamily: 'var(--font-mono)', fontSize: '12px', color: 'var(--text-secondary)', backgroundColor: 'var(--surface)' },
 });
 
 /** CodeMirror's basicSetup, minus the parts the code settings switch on and off. */
@@ -58,6 +62,13 @@ const base: Extension[] = [
   highlightSelectionMatches(),
   keymap.of([...closeBracketsKeymap, ...defaultKeymap, ...searchKeymap, ...historyKeymap, ...foldKeymap, ...completionKeymap]),
 ];
+
+/** Vim bindings load only for someone who picks them; the editor reconfigures once they arrive. */
+let vimBindings: Promise<Extension> | undefined;
+const loadVim = () => (vimBindings ??= import('@replit/codemirror-vim').then(({ vim }) => vim({ status: true })));
+
+/** Placed first, so Vim's keys win over the default keymap. */
+const keysPart = new Compartment();
 
 /** One compartment per setting, so a change reconfigures open editors in place. */
 const parts = {
@@ -107,6 +118,7 @@ export function CodeEditor({ value, onChange, onRun, readOnly = false, label }: 
       state: EditorState.create({
         doc: value,
         extensions: [
+          keysPart.of([]),
           keymap.of([{ key: 'Mod-Enter', run: () => (callbacks.current.onRun?.(), true) }]),
           base,
           cpp(),
@@ -134,6 +146,20 @@ export function CodeEditor({ value, onChange, onRun, readOnly = false, label }: 
     const configured = configure(settings);
     view.current?.dispatch({ effects: Object.entries(parts).map(([name, part]) => part.reconfigure(configured[name as keyof typeof parts])) });
   }, [settings]);
+
+  useEffect(() => {
+    if (settings.keys !== 'vim') {
+      view.current?.dispatch({ effects: keysPart.reconfigure([]) });
+      return;
+    }
+    let current = true;
+    void loadVim().then((bindings) => {
+      if (current) view.current?.dispatch({ effects: keysPart.reconfigure(bindings) });
+    });
+    return () => {
+      current = false;
+    };
+  }, [settings.keys]);
 
   useEffect(() => {
     const editor = view.current;

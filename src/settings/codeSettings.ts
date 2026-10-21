@@ -3,6 +3,7 @@
 import { useSyncExternalStore } from 'react';
 
 export type FontSize = 'small' | 'medium' | 'large';
+export type Keys = 'standard' | 'vim';
 
 export interface CodeSettings {
   /** Wrap long lines instead of scrolling sideways. */
@@ -17,6 +18,7 @@ export interface CodeSettings {
   fontSize: FontSize;
   /** Spaces per indent level, and the width of a tab character. */
   tabSize: 2 | 4;
+  keys: Keys;
 }
 
 export const DEFAULT_CODE_SETTINGS: CodeSettings = {
@@ -27,6 +29,7 @@ export const DEFAULT_CODE_SETTINGS: CodeSettings = {
   closeBrackets: true,
   fontSize: 'medium',
   tabSize: 4,
+  keys: 'standard',
 };
 
 export const FONT_SIZE_PX: Record<FontSize, number> = { small: 12, medium: 13.5, large: 15 };
@@ -45,6 +48,7 @@ export function parseCodeSettings(text: string | null): CodeSettings {
   const flag = (name: 'wrap' | 'lineNumbers' | 'highlight' | 'activeLine' | 'closeBrackets') =>
     typeof stored[name] === 'boolean' ? (stored[name] as boolean) : DEFAULT_CODE_SETTINGS[name];
   const fontSize = stored.fontSize as FontSize;
+  const keys = stored.keys as Keys;
   return {
     wrap: flag('wrap'),
     lineNumbers: flag('lineNumbers'),
@@ -53,6 +57,7 @@ export function parseCodeSettings(text: string | null): CodeSettings {
     closeBrackets: flag('closeBrackets'),
     fontSize: typeof fontSize === 'string' && Object.hasOwn(FONT_SIZE_PX, fontSize) ? fontSize : DEFAULT_CODE_SETTINGS.fontSize,
     tabSize: stored.tabSize === 2 || stored.tabSize === 4 ? stored.tabSize : DEFAULT_CODE_SETTINGS.tabSize,
+    keys: keys === 'standard' || keys === 'vim' ? keys : DEFAULT_CODE_SETTINGS.keys,
   };
 }
 

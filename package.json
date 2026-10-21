@@ -39,6 +39,7 @@
     "@radix-ui/react-select": "^2.4.1",
     "@radix-ui/react-switch": "^1.4.1",
     "@radix-ui/react-tabs": "^1.2.1",
+    "@replit/codemirror-vim": "^6.4.0",
     "@yowasp/clang": "22.0.0-git20542-10",
     "lucide-react": "^1.60.0",
     "motion": "^14.4.0",

@@ -8,7 +8,7 @@ describe('parseCodeSettings', () => {
   });
 
   it('keeps valid fields and replaces malformed ones', () => {
-    const parsed = parseCodeSettings(JSON.stringify({ wrap: false, fontSize: 'large', tabSize: 8, lineNumbers: 'yes' }));
+    const parsed = parseCodeSettings(JSON.stringify({ wrap: false, fontSize: 'large', tabSize: 8, keys: 'emacs', lineNumbers: 'yes' }));
     expect(parsed).toEqual({ ...DEFAULT_CODE_SETTINGS, wrap: false, fontSize: 'large' });
     expect(parseCodeSettings(JSON.stringify({ fontSize: 'toString' })).fontSize).toBe('medium');
   });

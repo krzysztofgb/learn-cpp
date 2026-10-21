@@ -1,5 +1,5 @@
 import { Settings2 } from 'lucide-react';
-import { DEFAULT_CODE_SETTINGS, setCodeSettings, useCodeSettings, type FontSize } from '../settings/codeSettings.ts';
+import { DEFAULT_CODE_SETTINGS, setCodeSettings, useCodeSettings, type FontSize, type Keys } from '../settings/codeSettings.ts';
 import { Button } from './arc/button/button.tsx';
 import { Popover, PopoverContent, PopoverTrigger } from './arc/popover/popover.tsx';
 import SegmentedControl from './arc/segmented-control/segmented-control.tsx';
@@ -9,6 +9,11 @@ const FONT_SIZES = [
   { value: 'small', label: 'Small' },
   { value: 'medium', label: 'Medium' },
   { value: 'large', label: 'Large' },
+];
+
+const KEYS = [
+  { value: 'standard', label: 'Standard' },
+  { value: 'vim', label: 'Vim' },
 ];
 
 const INDENTS = [
@@ -45,6 +50,10 @@ export function CodeSettings() {
           <div className="setting">
             <span aria-hidden="true">Indent</span>
             <SegmentedControl label="Indent" options={INDENTS} value={String(settings.tabSize)} onValueChange={(value) => setCodeSettings({ tabSize: value === '2' ? 2 : 4 })} />
+          </div>
+          <div className="setting">
+            <span aria-hidden="true">Key bindings</span>
+            <SegmentedControl label="Key bindings" options={KEYS} value={settings.keys} onValueChange={(value) => setCodeSettings({ keys: value as Keys })} />
           </div>
         </fieldset>
         <Button size="sm" variant="ghost" onClick={() => setCodeSettings(DEFAULT_CODE_SETTINGS)}>
