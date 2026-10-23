@@ -922,13 +922,18 @@ kbd {
   z-index: 5;
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
+  /* Tabs sit on the bottom rule; the build settings keep their own space above and below, even when they wrap. */
+  align-items: flex-end;
   justify-content: space-between;
-  gap: 8px 16px;
+  gap: 0 16px;
   margin: 0 calc(-1 * var(--pad));
   padding: 0 var(--pad);
   background: var(--surface);
   border-bottom: 1px solid var(--border);
+}
+
+.tab-bar .run-options {
+  padding-block: 8px;
 }
 
 .tab-list {
