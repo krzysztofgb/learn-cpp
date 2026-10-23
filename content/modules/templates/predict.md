@@ -6,7 +6,14 @@ int arr[10];
 by_val(arr); by_ref(arr);
 ~~~
 
-**P2a**
+::answer
+` 8 40  `
+
+By value decays to `int*`; by reference keeps `int[10]`.
+:::
+
+:::predict{#P2a}
+Predict the output.
 
 ```cpp kind=fragment run=local
 template <class T> void f(T)  { cout << 'a'; }
@@ -14,8 +21,14 @@ template <class T> void f(T*) { cout << 'b'; }
 template <> void f(int*)      { cout << 'c'; }
 int* p = nullptr; f(p);
 ```
+::answer
+`c`
 
-**P2b** (same declarations, but the specialization comes second)
+The specialization is declared after both primaries, so it specializes the more specialized one, `f(T*)` with `T = int`. Overload resolution picks `f(T*)` for an `int*`, and its specialization runs.
+:::
+
+:::predict{#P2b}
+The same declarations as the previous item, but the specialization comes second.
 
 ```cpp kind=fragment run=local
 template <class T> void f(T)  { cout << 'a'; }
@@ -24,9 +37,9 @@ template <class T> void f(T*) { cout << 'b'; }
 int* p = nullptr; f(p);
 ```
 ::answer
-` 8 40  `
+`b`
 
-By value decays to `int*`; by reference keeps `int[10]`.
+When the specialization was declared, only `f(T)` existed, so it specializes `f(T)` with `T = int*`. Overload resolution still picks the primary `f(T*)`, which has no specialization, so it prints `b`.
 :::
 
 :::predict{#P3}

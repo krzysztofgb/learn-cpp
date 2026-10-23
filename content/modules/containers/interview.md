@@ -5,7 +5,7 @@ When full, allocate a larger block (geometric growth), move elements, free the o
 :::
 
 :::question{#Q2}
-Why might a growth factor of :sec[types-and-initialization/floating-point-in-one-paragraph] be preferred over 2?
+Why might a growth factor of 1.5 be preferred over 2?
 ::answer
 With 2×, the sum of all previously freed blocks is always smaller than the next request, so the allocator can never reuse them; below the golden ratio, it eventually can.
 :::

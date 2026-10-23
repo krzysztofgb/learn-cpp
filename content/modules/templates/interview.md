@@ -1,7 +1,7 @@
 :::question{#Q1}
 How does template argument deduction work for `T`, `T&` and `T&&` parameters?
 ::answer
-See table 14.2: by value decays and strips top-level cv; `T&` preserves cv and arrays; `T&&` deduces `U&` for lvalues and `U` for rvalues. No implicit conversions during deduction.
+See :sec[templates/argument-deduction]: by value decays and strips top-level cv; `T&` preserves cv and arrays; `T&&` deduces `U&` for lvalues and `U` for rvalues. No implicit conversions during deduction.
 :::
 
 :::question{#Q2}
@@ -13,7 +13,7 @@ The language doesn't allow it. Use overloading, or delegate to a class template 
 :::question{#Q3}
 What's the difference between specializing and overloading a function template?
 ::answer
-Overloads compete in resolution. A specialization doesn't compete; it's only used if its primary template wins, which leads to surprises like P2b.
+Overloads compete in resolution. A specialization doesn't compete; it's only used if its primary template wins, which leads to surprises like the Predict item where the specialization is declared before `f(T*)` exists.
 :::
 
 :::question{#Q4}
@@ -53,7 +53,9 @@ Deducing class template arguments from constructor arguments. A deduction guide 
 :::
 
 :::question{#Q10}
-Compare C++ templates with Go generics.
+How do C++ templates compare with generics that compile one shared body for all type arguments?
 ::answer
-C++ instantiates a separate copy per type (fast, inlinable, bigger binaries, slower builds) and type-checks at instantiation (concepts add earlier checks). Go type-checks generics up front and shares code across types with the same GC shape, passing a dictionary, which is smaller but often slower.
+C++ instantiates a separate copy per type: calls are direct and inlinable, at the cost of bigger binaries and slower builds, and each instantiation is type-checked when it's created (concepts add checks at the call site). Shared-body generics type-check the generic code once against its constraints and pass a table of operations (a dictionary) at run time: smaller binaries and faster builds, but indirect calls that block inlining. C++ gets the shared-body model by hand through type erasure (`std::function`, virtual interfaces).
+
+> **Coming from Go?** Go is the shared-body kind, with a twist: it generates one copy per GC shape (all pointer types share one) and passes a dictionary, so generic Go code is smaller but often slower than the equivalent C++ template.
 :::

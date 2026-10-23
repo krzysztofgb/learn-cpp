@@ -31,7 +31,7 @@ Selecting an overload by passing an empty tag object whose type encodes a proper
 :::question{#Q6}
 `constexpr` vs `consteval` vs `constinit`?
 ::answer
-See :mod[types-and-initialization] table 1.8: may run at compile time / must run at compile time / static initialization guaranteed but mutable.
+See :sec[types-and-initialization/the-const-family]: may run at compile time / must run at compile time / static initialization guaranteed but mutable.
 :::
 
 :::question{#Q7}
