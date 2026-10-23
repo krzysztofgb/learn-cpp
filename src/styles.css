@@ -1080,6 +1080,81 @@ textarea.mono-input {
   background: var(--surface-muted);
 }
 
+/* Graded answers: a tint and an icon-and-word verdict (never colour alone). */
+.answer[data-verdict='correct'] {
+  background: var(--success-subtle);
+}
+
+.answer[data-verdict='partly'] {
+  background: var(--warning-subtle);
+}
+
+.answer[data-verdict='wrong'] {
+  background: var(--danger-subtle);
+}
+
+.verdict {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 8px;
+  font-weight: 600;
+}
+
+[data-verdict='correct'] > .verdict {
+  color: var(--success-ink);
+}
+
+[data-verdict='partly'] > .verdict {
+  color: var(--warning-ink);
+}
+
+[data-verdict='wrong'] > .verdict {
+  color: var(--danger-ink);
+}
+
+.choice-key {
+  display: grid;
+  gap: 6px;
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
+}
+
+.choice-key li {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  color: var(--text-secondary);
+}
+
+.choice-key li svg,
+.choice-key-blank {
+  flex: none;
+  width: 14px;
+  transform: translateY(2px);
+}
+
+.choice-key li[data-state='right'] {
+  color: var(--foreground);
+  font-weight: 600;
+}
+
+.choice-key li[data-state='right'] svg {
+  color: var(--success);
+}
+
+.choice-key li[data-state='wrong-pick'] svg {
+  color: var(--danger);
+}
+
+.choice-key-yours {
+  margin-left: 8px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 400;
+}
+
 .answer-actions {
   display: flex;
   justify-content: flex-end;

@@ -109,25 +109,33 @@ test.describe('answer controls', () => {
     await expect(card.getByRole('textbox', { name: 'Exact output' })).toHaveValue('my careful prediction');
   });
 
-  test('a prose prediction takes free text and a bug item takes several findings', async ({ page }) => {
+  test('answers are graded: a multiple-choice miss, then a bug answered partly and then right', async ({ page }) => {
     await page.goto('./modules/operating-system#predict');
-    const prose = page.locator('#predict-P1');
-    await expect(prose.getByRole('radio')).toHaveCount(0);
-    await prose.getByRole('textbox', { name: 'Your answer' }).fill('262,144 faults');
-    await prose.getByRole('button', { name: 'Commit and reveal' }).click();
-    await expect(prose.locator('.your-answer')).toContainText('262,144 faults');
+    const choice = page.locator('#predict-P1');
+    await expect(choice.getByRole('textbox')).toHaveCount(0);
+    await choice.getByText('One fault; 1 GB resident as soon as', { exact: false }).click();
+    await choice.getByRole('button', { name: 'Commit and reveal' }).click();
+    await expect(choice.locator('.verdict')).toHaveText('Not quite');
+    await expect(choice.locator('.choice-key [data-state="right"]')).toContainText('near zero resident before');
+    await expect(choice.getByRole('button', { name: 'Try again' })).toBeVisible();
 
     await page.getByRole('tab', { name: /Spot the bug/ }).click();
     const bug = page.locator('#ub-B1');
     const commit = bug.getByRole('button', { name: 'Commit and reveal' });
     await expect(commit).toBeDisabled();
+    await expect(bug.getByRole('textbox')).toHaveCount(0);
     await bug.getByRole('checkbox', { name: 'Undefined behavior' }).check();
-    await bug.getByRole('checkbox', { name: 'A bug, but defined behavior' }).check();
     await bug.getByRole('checkbox', { name: 'Nothing wrong' }).check();
     await expect(bug.getByRole('checkbox', { name: 'Undefined behavior' })).not.toBeChecked();
+    await bug.getByRole('checkbox', { name: 'Undefined behavior' }).check();
     await bug.getByRole('checkbox', { name: 'A bug, but defined behavior' }).check();
-    await bug.getByRole('textbox').fill('printf and malloc are not async-signal-safe');
     await commit.click();
-    await expect(bug.locator('.your-answer')).toContainText('A bug, but defined behavior. printf and malloc are not async-signal-safe');
+    await expect(bug.locator('.verdict')).toHaveText('Partly right');
+
+    await bug.getByRole('button', { name: 'Try again' }).click();
+    await bug.getByRole('checkbox', { name: 'Undefined behavior' }).check();
+    await bug.getByRole('button', { name: 'Commit and reveal' }).click();
+    await expect(bug.locator('.verdict')).toHaveText('Correct');
+    await expect(bug.getByRole('button', { name: 'Answer again' })).toBeVisible();
   });
 });

@@ -1,9 +1,12 @@
+import { Check, CircleDot, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-import type { Exercise, Level, PredictItem, Question, UbItem } from '../course/types.ts';
+import { gradeFindings, gradePrediction, type PredictionAnswer, type Verdict } from '../course/grade.ts';
+import type { Choice, Exercise, Level, PredictItem, Question, UbItem } from '../course/types.ts';
 import { useCompileOptions } from '../hooks/useCompileOptions.ts';
 import { useRunner } from '../hooks/useRunner.ts';
 import { actions, useModuleProgress, type Grade } from '../progress/store.ts';
-import { FindingsForm, OpenAnswerForm, PredictForm } from './AnswerForms.tsx';
+import { FINDING_LABELS } from '../course/labels.ts';
+import { ChoiceForm, FindingsForm, PredictForm } from './AnswerForms.tsx';
 import { CodeBlock } from './CodeBlock.tsx';
 import { LazyCodeEditor as CodeEditor } from './LazyCodeEditor.tsx';
 import { InlineMarkdown, Markdown } from './Markdown.tsx';
@@ -33,46 +36,101 @@ function useRetry(slug: string, part: 'predictions' | 'ub', id: string) {
   return { card, retry };
 }
 
-function TryAgain({ onClick }: { onClick: () => void }) {
+const VERDICTS: Record<Verdict, { label: string; tone: 'success' | 'warning' | 'danger'; Icon: typeof Check }> = {
+  correct: { label: 'Correct', tone: 'success', Icon: Check },
+  partly: { label: 'Partly right', tone: 'warning', Icon: CircleDot },
+  wrong: { label: 'Not quite', tone: 'danger', Icon: X },
+};
+
+/** Icon and words, so the result never depends on colour alone. */
+function VerdictLine({ verdict }: { verdict: Verdict }) {
+  const { label, Icon } = VERDICTS[verdict];
+  return (
+    <p className="verdict">
+      <Icon size={16} strokeWidth={2} aria-hidden="true" />
+      {label}
+    </p>
+  );
+}
+
+function CardStatus({ verdict, answered }: { verdict: Verdict | undefined; answered: boolean }) {
+  if (verdict) return <Badge size="sm" tone={VERDICTS[verdict].tone}>{VERDICTS[verdict].label}</Badge>;
+  return answered ? <Badge size="sm">Answered</Badge> : null;
+}
+
+/** After a right answer, answering again is optional; after anything else, it's the next step. */
+function AnswerAgain({ verdict, onClick }: { verdict: Verdict | undefined; onClick: () => void }) {
   return (
     <div className="answer-actions">
-      <Button size="sm" variant="ghost" onClick={onClick}>
-        Try again
+      <Button size="sm" variant={verdict === 'correct' ? 'ghost' : 'secondary'} onClick={onClick}>
+        {verdict === 'correct' ? 'Answer again' : 'Try again'}
       </Button>
     </div>
   );
 }
 
+/** The options of a multiple-choice prediction, marking the right ones and the learner's picks. */
+function ChoiceKey({ options, picked }: { options: Choice[]; picked: number[] }) {
+  return (
+    <ul className="choice-key">
+      {options.map((option, i) => {
+        const chose = picked.includes(i);
+        const state = option.correct ? 'right' : chose ? 'wrong-pick' : 'other';
+        return (
+          <li key={i} data-state={state}>
+            {option.correct ? <Check size={14} strokeWidth={2.25} aria-hidden="true" /> : chose ? <X size={14} strokeWidth={2.25} aria-hidden="true" /> : <span className="choice-key-blank" />}
+            <span>
+              <InlineMarkdown text={option.text} />
+              {option.correct && <span className="sr-only"> (correct)</span>}
+              {chose && <span className="choice-key-yours">your answer</span>}
+            </span>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
 export function PredictCard({ slug, item }: { slug: string; item: PredictItem }) {
   const attempt = useModuleProgress(slug).predictions[item.id];
-  const commit = (answer: string) => actions.commitPrediction(slug, item.id, answer);
+  const commit = (answer: string, prediction: PredictionAnswer) => actions.commitPrediction(slug, item.id, answer, prediction);
   const { card, retry } = useRetry(slug, 'predictions', item.id);
+  const verdict = attempt?.prediction ? gradePrediction(item.expect, attempt.prediction) : undefined;
+  const expect = item.expect;
   return (
     <article className="card" id={`predict-${item.id}`} ref={card}>
       <header className="card-header">
         <h3>{item.label}</h3>
-        {attempt && <Badge size="sm">Answered</Badge>}
+        <CardStatus verdict={verdict} answered={attempt !== undefined} />
       </header>
       {item.prompt && <Markdown text={item.prompt} />}
       {item.snippet && <CodeBlock snippet={item.snippet} locked={!attempt} label={`${item.label} code`} />}
       {item.after && <Markdown text={item.after} />}
       {attempt ? (
-        <div className="answer">
-          <p className="your-answer">
-            You said: <span>{attempt.answer}</span>
-          </p>
-          <p className="answer-output">
-            <strong>Answer:</strong> <InlineMarkdown text={item.answer.output} />
-          </p>
-          {item.answer.why && <Markdown text={item.answer.why} />}
-          <TryAgain onClick={retry} />
+        <div className="answer" data-verdict={verdict}>
+          {verdict && <VerdictLine verdict={verdict} />}
+          {expect.kind === 'choice' ? (
+            <>
+              <ChoiceKey options={expect.options} picked={attempt.prediction?.choices ?? []} />
+              <Markdown text={[item.answer.output, item.answer.why].filter(Boolean).join('\n\n')} />
+            </>
+          ) : (
+            <>
+              <p className="your-answer">
+                You said: <span>{attempt.answer}</span>
+              </p>
+              <p className="answer-output">
+                <strong>Answer:</strong> <InlineMarkdown text={item.answer.output} />
+              </p>
+              {item.answer.why && <Markdown text={item.answer.why} />}
+            </>
+          )}
+          <AnswerAgain verdict={verdict} onClick={retry} />
         </div>
+      ) : expect.kind === 'choice' ? (
+        <ChoiceForm options={expect.options} onCommit={commit} />
       ) : (
-        item.snippet ? (
-          <PredictForm onCommit={commit} />
-        ) : (
-          <OpenAnswerForm label="Your answer" onCommit={commit} />
-        )
+        <PredictForm onCommit={commit} />
       )}
     </article>
   );
@@ -81,25 +139,30 @@ export function PredictCard({ slug, item }: { slug: string; item: PredictItem })
 export function UbCard({ slug, item }: { slug: string; item: UbItem }) {
   const attempt = useModuleProgress(slug).ub[item.id];
   const { card, retry } = useRetry(slug, 'ub', item.id);
+  const verdict = attempt?.findings ? gradeFindings(item.findings, attempt.findings) : undefined;
   return (
     <article className="card" id={`ub-${item.id}`} ref={card}>
       <header className="card-header">
         <h3>{item.label}</h3>
-        {attempt && <Badge size="sm">Answered</Badge>}
+        <CardStatus verdict={verdict} answered={attempt !== undefined} />
       </header>
       {item.prompt && <Markdown text={item.prompt} />}
       {item.snippet && <CodeBlock snippet={item.snippet} locked={!attempt} label={`${item.label} code`} />}
       {item.after && <Markdown text={item.after} />}
       {attempt ? (
-        <div className="answer">
+        <div className="answer" data-verdict={verdict}>
+          {verdict && <VerdictLine verdict={verdict} />}
           <p className="your-answer">
             You said: <span>{attempt.answer}</span>
           </p>
+          <p className="answer-output">
+            <strong>Answer:</strong> {item.findings.map((finding) => FINDING_LABELS[finding]).join('; ')}
+          </p>
           <Markdown text={item.answer} />
-          <TryAgain onClick={retry} />
+          <AnswerAgain verdict={verdict} onClick={retry} />
         </div>
       ) : (
-        <FindingsForm onCommit={(answer) => actions.commitUb(slug, item.id, answer)} />
+        <FindingsForm onCommit={(answer, findings) => actions.commitUb(slug, item.id, answer, findings)} />
       )}
     </article>
   );

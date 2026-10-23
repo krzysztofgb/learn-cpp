@@ -1,13 +1,18 @@
 // Learner progress, kept in this browser only (localStorage), with JSON export/import.
 import { useSyncExternalStore } from 'react';
 import { DEFAULT_OPTIONS, type CompileOptions } from '../compiler/flags.ts';
+import type { PredictionAnswer } from '../course/grade.ts';
+import type { Finding } from '../course/types.ts';
 
 export type Grade = 'again' | 'good' | 'easy';
 
 export interface Attempt {
-  /** What the learner committed to before seeing the answer. */
+  /** What the learner committed to before seeing the answer, as shown back to them. */
   answer: string;
   at: number;
+  /** The same answer in gradable form (absent on answers saved before grading existed: those show no verdict). */
+  prediction?: PredictionAnswer;
+  findings?: Finding[];
 }
 
 export interface ExerciseState {
@@ -136,11 +141,11 @@ export const actions = {
   setOptions(options: CompileOptions) {
     update((current) => ({ ...current, options }));
   },
-  commitPrediction(slug: string, id: string, answer: string) {
-    updateModule(slug, (module) => ({ ...module, predictions: { ...module.predictions, [id]: { answer, at: Date.now() } } }));
+  commitPrediction(slug: string, id: string, answer: string, prediction: PredictionAnswer) {
+    updateModule(slug, (module) => ({ ...module, predictions: { ...module.predictions, [id]: { answer, prediction, at: Date.now() } } }));
   },
-  commitUb(slug: string, id: string, answer: string) {
-    updateModule(slug, (module) => ({ ...module, ub: { ...module.ub, [id]: { answer, at: Date.now() } } }));
+  commitUb(slug: string, id: string, answer: string, findings: Finding[]) {
+    updateModule(slug, (module) => ({ ...module, ub: { ...module.ub, [id]: { answer, findings, at: Date.now() } } }));
   },
   /** Forgets a committed answer, so the item can be answered again from scratch. */
   retry(slug: string, part: 'predictions' | 'ub', id: string) {

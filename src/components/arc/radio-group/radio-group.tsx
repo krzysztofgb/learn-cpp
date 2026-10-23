@@ -1,9 +1,9 @@
 "use client";
-import { useEffect, useId, useLayoutEffect, useRef } from "react";
+import { useEffect, useId, useLayoutEffect, useRef, type ReactNode } from "react";
 import { animate, motion, useReducedMotion } from "motion/react";
 import { motionTokens } from "../lib/motion-tokens";
 import styles from "./radio-group.module.css";
-export interface RadioGroupProps { label: string; options: { value: string; label: string; description?: string }[]; value: string; onValueChange: (value: string) => void; name?: string }
+export interface RadioGroupProps { label: string; options: { value: string; label: ReactNode; description?: string }[]; value: string; onValueChange: (value: string) => void; name?: string }
 
 /** Sizes the highlight to the chosen row. A new choice glides on the morph spring; the first paint and resizes place it at once. */
 function place(highlight: HTMLElement | null, row: HTMLElement | null | undefined, at: { current: string }, glide: boolean) {
