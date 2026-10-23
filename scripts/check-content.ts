@@ -2,11 +2,12 @@
 //   - every `run=local` snippet compiles (unless it's a P/U item whose answer is a compile error)
 //   - every runnable prediction prints what its answer key says, when the answer is a single
 //     `inline code` value; snippets carrying a `note` (a known browser difference) are reported, not failed.
-// Usage: npm run check:content [-- <module number or slug>...]   (none: all modules, 4 at a time)
+// Usage: npm run check:content [-- <module number or slug>...] [--release] [--c++26] [--werror]
+//   (no modules: all of them, 4 at a time; the flags pick the build options a learner can choose in the app)
 import { spawn } from 'node:child_process';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { DEFAULT_OPTIONS } from '../src/compiler/flags.ts';
+import { DEFAULT_OPTIONS, type CompileOptions } from '../src/compiler/flags.ts';
 import { wrapSnippet } from '../src/compiler/wrap.ts';
 import { isCppLang } from '../src/course/fence.ts';
 import type { ModuleContent } from '../src/course/types.ts';
@@ -14,6 +15,13 @@ import { compileCourse, fsReader, moduleSnippets } from './content/compile.ts';
 import { compile, run } from './lib/node-toolchain.ts';
 
 const CONTENT = join(dirname(fileURLToPath(import.meta.url)), '../content');
+/** Build options a learner can pick in the app: --release, --c++26, --werror (default: Debug, C++23, no -Werror). */
+const FLAGS = process.argv.slice(2).filter((arg) => arg.startsWith('--'));
+const OPTIONS: CompileOptions = {
+  profile: FLAGS.includes('--release') ? 'release' : DEFAULT_OPTIONS.profile,
+  std: FLAGS.includes('--c++26') ? 'c++2c' : DEFAULT_OPTIONS.std,
+  werror: FLAGS.includes('--werror'),
+};
 const COMPILE_ERROR_ANSWER = /(?:doesn't|does not|won't|fails to|not) compile|compile(?:-time)? error|ill-formed|is an error/i;
 
 interface Finding {
@@ -38,7 +46,7 @@ async function checkModule(module: ModuleContent): Promise<Finding[]> {
     const bug = bugs.get(snippet.code);
     const where = `${module.slug} ${prediction?.label ?? bug?.label ?? `"${snippet.code.split('\n')[0]!.slice(0, 50)}"`}`;
     const answer = prediction ? `${prediction.answer.output} ${prediction.answer.why}` : bug?.answer;
-    const compiled = await compile(wrapSnippet(snippet.code, snippet.kind), DEFAULT_OPTIONS);
+    const compiled = await compile(wrapSnippet(snippet.code, snippet.kind), OPTIONS);
     const expectsError = answer !== undefined && COMPILE_ERROR_ANSWER.test(answer);
     if (!compiled.ok) {
       if (!expectsError) findings.push({ level: 'fail', message: `${where}: does not compile\n${compiled.diagnostics.split('\n').slice(0, 4).join('\n')}` });
@@ -61,7 +69,7 @@ async function checkModule(module: ModuleContent): Promise<Finding[]> {
 
 async function main() {
   // Arguments pick modules by number or slug; none checks them all.
-  const picked = process.argv.slice(2);
+  const picked = process.argv.slice(2).filter((arg) => !arg.startsWith('--'));
   const { modules } = compileCourse(fsReader(CONTENT));
 
   if (picked.length === 0) {
@@ -71,7 +79,7 @@ async function main() {
     const worker = async () => {
       for (let next = queue.shift(); next; next = queue.shift()) {
         const code = await new Promise<number>((resolve) => {
-          const child = spawn(process.execPath, [fileURLToPath(import.meta.url), next], { stdio: ['ignore', 'pipe', 'inherit'] });
+          const child = spawn(process.execPath, [fileURLToPath(import.meta.url), next, ...FLAGS], { stdio: ['ignore', 'pipe', 'inherit'] });
           // The compiler logs its one-time resource loading from an internal driver run; drop those lines.
           let output = '';
           child.stdout.on('data', (chunk: Buffer) => (output += chunk.toString()));
