@@ -76,6 +76,18 @@ test('-Werror applies to your own code, not to course snippets that exist to war
 });
 
 test.describe('answer controls', () => {
+  test('the right outcome with a different output says so and marks what differs', async ({ page }) => {
+    await page.goto('./modules/lock-free-programming#predict');
+    const card = page.locator('#predict-P1');
+    await card.getByText('It prints…', { exact: true }).click();
+    await card.getByRole('textbox', { name: 'Exact output' }).fill('0 5 6');
+    await card.getByRole('button', { name: 'Commit and reveal' }).click();
+    await expect(card.locator('.verdict')).toHaveText('Right outcome, different output');
+    await expect(card.locator('.card-header')).toContainText('Different output');
+    await expect(card.locator('.output-compare mark')).toHaveText('6');
+    await expect(card.locator('.output-compare')).toContainText('Expected0 5 5');
+  });
+
   test('a committed answer can be tried again, and a module reset clears it', async ({ page }) => {
     await page.goto('./modules/classes#predict');
     const card = page.locator('#predict-P2');

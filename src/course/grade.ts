@@ -43,3 +43,13 @@ function gradeSet<T>(expected: Set<T>, chosen: Set<T>): Verdict {
   if (hits === expected.size && chosen.size === expected.size) return 'correct';
   return hits > 0 ? 'partly' : 'wrong';
 }
+
+/**
+ * The learner's output split into whitespace-separated tokens, each marked when it differs from the expected token at the
+ * same position (or has none): enough to point at what's off without pretending outputs can be "nearly" right.
+ */
+export function compareOutput(actual: string, expected: string): { token: string; differs: boolean }[] {
+  const want = normalizeOutput(expected).split(' ');
+  const got = normalizeOutput(actual);
+  return got === '' ? [] : got.split(' ').map((token, i) => ({ token, differs: token !== want[i] }));
+}

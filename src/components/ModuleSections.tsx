@@ -1,6 +1,6 @@
 import { Check, CircleDot, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-import { gradeFindings, gradePrediction, type PredictionAnswer, type Verdict } from '../course/grade.ts';
+import { compareOutput, gradeFindings, gradePrediction, type PredictionAnswer, type Verdict } from '../course/grade.ts';
 import type { Choice, Exercise, Level, PredictItem, Question, UbItem } from '../course/types.ts';
 import { useCompileOptions } from '../hooks/useCompileOptions.ts';
 import { useRunner } from '../hooks/useRunner.ts';
@@ -43,19 +43,42 @@ const VERDICTS: Record<Verdict, { label: string; tone: 'success' | 'warning' | '
 };
 
 /** Icon and words, so the result never depends on colour alone. */
-function VerdictLine({ verdict }: { verdict: Verdict }) {
-  const { label, Icon } = VERDICTS[verdict];
+function VerdictLine({ verdict, label }: { verdict: Verdict; label?: string }) {
+  const { label: standard, Icon } = VERDICTS[verdict];
   return (
     <p className="verdict">
       <Icon size={16} strokeWidth={2} aria-hidden="true" />
-      {label}
+      {label ?? standard}
     </p>
   );
 }
 
-function CardStatus({ verdict, answered }: { verdict: Verdict | undefined; answered: boolean }) {
-  if (verdict) return <Badge size="sm" tone={VERDICTS[verdict].tone}>{VERDICTS[verdict].label}</Badge>;
+function CardStatus({ verdict, answered, label }: { verdict: Verdict | undefined; answered: boolean; label?: string }) {
+  if (verdict) return <Badge size="sm" tone={VERDICTS[verdict].tone}>{label ?? VERDICTS[verdict].label}</Badge>;
   return answered ? <Badge size="sm">Answered</Badge> : null;
+}
+
+/** For "it prints" questions: the learner's output above the expected one, with differing tokens marked. */
+function OutputComparison({ actual, expected }: { actual: string; expected: string }) {
+  return (
+    <dl className="output-compare">
+      <dt>Your output</dt>
+      <dd>
+        <code>
+          {compareOutput(actual, expected).map(({ token, differs }, i) => (
+            <span key={i}>
+              {i > 0 && ' '}
+              {differs ? <mark>{token}</mark> : token}
+            </span>
+          ))}
+        </code>
+      </dd>
+      <dt>Expected</dt>
+      <dd>
+        <code>{expected}</code>
+      </dd>
+    </dl>
+  );
 }
 
 /** After a right answer, answering again is optional; after anything else, it's the next step. */
@@ -97,22 +120,29 @@ export function PredictCard({ slug, item }: { slug: string; item: PredictItem })
   const { card, retry } = useRetry(slug, 'predictions', item.id);
   const verdict = attempt?.prediction ? gradePrediction(item.expect, attempt.prediction) : undefined;
   const expect = item.expect;
+  // For an exact-output question, "partly right" can only mean the right outcome with a different output: say so.
+  const outputMiss = expect.kind === 'prints' && verdict === 'partly';
   return (
     <article className="card" id={`predict-${item.id}`} ref={card}>
       <header className="card-header">
         <h3>{item.label}</h3>
-        <CardStatus verdict={verdict} answered={attempt !== undefined} />
+        <CardStatus verdict={verdict} answered={attempt !== undefined} label={outputMiss ? 'Different output' : undefined} />
       </header>
       {item.prompt && <Markdown text={item.prompt} />}
       {item.snippet && <CodeBlock snippet={item.snippet} locked={!attempt} label={`${item.label} code`} />}
       {item.after && <Markdown text={item.after} />}
       {attempt ? (
         <div className="answer" data-verdict={verdict}>
-          {verdict && <VerdictLine verdict={verdict} />}
+          {verdict && <VerdictLine verdict={verdict} label={outputMiss ? 'Right outcome, different output' : undefined} />}
           {expect.kind === 'choice' ? (
             <>
               <ChoiceKey options={expect.options} picked={attempt.prediction?.choices ?? []} />
               <Markdown text={[item.answer.output, item.answer.why].filter(Boolean).join('\n\n')} />
+            </>
+          ) : expect.kind === 'prints' && attempt.prediction?.outcome === 'prints' ? (
+            <>
+              <OutputComparison actual={attempt.prediction.output ?? ''} expected={expect.output} />
+              {item.answer.why && <Markdown text={item.answer.why} />}
             </>
           ) : (
             <>

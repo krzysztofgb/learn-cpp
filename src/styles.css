@@ -1118,6 +1118,37 @@ textarea.mono-input {
   color: var(--danger-ink);
 }
 
+/* "Your output" above "Expected", values aligned; differing tokens marked (with a tint and an underline, not colour alone). */
+.output-compare {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 4px 12px;
+  margin: 0 0 12px;
+  font-size: 13px;
+}
+
+.output-compare dt {
+  color: var(--text-secondary);
+}
+
+.output-compare dd {
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.output-compare code {
+  white-space: pre-wrap;
+}
+
+.output-compare mark {
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--warning) 25%, transparent);
+  color: inherit;
+  text-decoration: underline wavy var(--warning);
+  text-underline-offset: 3px;
+}
+
 .choice-key {
   display: grid;
   gap: 6px;

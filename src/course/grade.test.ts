@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { gradeFindings, gradePrediction, normalizeOutput } from './grade.ts';
+import { compareOutput, gradeFindings, gradePrediction, normalizeOutput } from './grade.ts';
 import type { Expectation } from './types.ts';
 
 describe('gradePrediction', () => {
@@ -33,6 +33,18 @@ describe('gradeFindings', () => {
     expect(gradeFindings(['ub'], ['ub', 'defined-bug'])).toBe('partly');
     expect(gradeFindings(['ub', 'unspecified'], ['ub'])).toBe('partly');
     expect(gradeFindings(['ub'], ['defined-bug'])).toBe('wrong');
+  });
+});
+
+describe('compareOutput', () => {
+  it('marks the tokens that differ from the expected output at the same position', () => {
+    expect(compareOutput('0 5 6', '0 5 5')).toEqual([
+      { token: '0', differs: false },
+      { token: '5', differs: false },
+      { token: '6', differs: true },
+    ]);
+    expect(compareOutput('0  5\n5 7', '0 5 5').map((t) => t.differs)).toEqual([false, false, false, true]);
+    expect(compareOutput('', '1')).toEqual([]);
   });
 });
 
