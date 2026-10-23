@@ -121,4 +121,14 @@ A useful property: core-language UB (signed overflow, invalid shifts, out-of-bou
 
 Evaluation order: since C++17, `a << b`, `a >> b`, `a[b]`, `a.b` and `a->b` evaluate `a` before `b` (which is what makes a chain of `std::cout << f() << g()` run `f` before `g`), and in `a = b` (and `a += b`) the right side, including all its side effects, is sequenced before the left side and the assignment (\[expr.assign\]). The operands of most other operators, such as `+`, `*` and `==`, are still unsequenced, evaluated in an unspecified order. Function arguments are *indeterminately sequenced*: each one is evaluated fully before the next starts, in an unspecified order, so two calls never interleave. Two unsequenced modifications of the same scalar, or a modification and a read, as in `i++ + i++`, are still UB (\[intro.execution\]).
 
+The order of function arguments really does differ between compilers. Clang evaluates these left to right and prints `ab`; GCC on x86-64 goes right to left and prints `ba`. Compiler Explorer runs both:
+
+```cpp compare=gcc
+#include <iostream>
+int a() { std::cout << 'a'; return 1; }
+int b() { std::cout << 'b'; return 2; }
+void f(int, int) {}
+int main() { f(a(), b()); }
+```
+
 *Further reading:* [Increment/decrement operators, and side effects](https://www.learncpp.com/cpp-tutorial/increment-decrement-operators-and-side-effects/), [Operator precedence and associativity](https://www.learncpp.com/cpp-tutorial/operator-precedence-and-associativity/)
