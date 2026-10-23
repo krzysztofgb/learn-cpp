@@ -15,10 +15,10 @@ const STANDARDS = [
 ];
 
 /**
- * The build settings every Run button uses: profile, standard and -Werror.
+ * The build settings every Run button uses: profile, standard and -Werror (which course snippets ignore: see CodeBlock).
  * On a phone they fold behind one line that names the current choice (styles.css shows the toggle there only).
  */
-export function RunOptions({ options, onChange }: { options: CompileOptions; onChange: (options: CompileOptions) => void }) {
+export function RunOptions({ options, onChange, werrorLabel = '-Werror' }: { options: CompileOptions; onChange: (options: CompileOptions) => void; werrorLabel?: string }) {
   const [open, setOpen] = useState(false);
   const controlsId = useId();
   const summary = [PROFILES.find((p) => p.value === options.profile)?.label, STANDARDS.find((s) => s.value === options.std)?.label, options.werror && '-Werror']
@@ -33,7 +33,7 @@ export function RunOptions({ options, onChange }: { options: CompileOptions; onC
       <div className="run-options-controls" id={controlsId} data-open={open || undefined}>
         <SegmentedControl label="Build" options={PROFILES} value={options.profile} onValueChange={(value) => onChange({ ...options, profile: value as Profile })} />
         <SegmentedControl label="C++ standard" options={STANDARDS} value={options.std} onValueChange={(value) => onChange({ ...options, std: value as CppStd })} />
-        <Switch label="-Werror" checked={options.werror} onCheckedChange={(werror) => onChange({ ...options, werror })} />
+        <Switch label={werrorLabel} checked={options.werror} onCheckedChange={(werror) => onChange({ ...options, werror })} />
       </div>
     </div>
   );

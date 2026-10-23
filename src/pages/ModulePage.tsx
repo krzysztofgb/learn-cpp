@@ -237,7 +237,7 @@ function ModuleView({ module, phase }: { module: ModuleInfo; phase: Phase }) {
               </TabsPrimitive.Trigger>
             ))}
           </TabsPrimitive.List>
-          <RunOptions options={options} onChange={setOptions} />
+          <RunOptions options={options} onChange={setOptions} werrorLabel="-Werror on exercises" />
         </div>
         {tabs.map((tab) => (
           <TabsPrimitive.Content key={tab.id} value={tab.id} forceMount={tab.keepMounted || undefined} className="tab-panel">

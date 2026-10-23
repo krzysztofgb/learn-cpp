@@ -32,7 +32,9 @@ export function CodeBlock({ snippet, locked = false, sanitizers, settings, label
   const runner = useRunner();
   const cpp = isCppLang(snippet.lang);
   const canRun = snippet.run === 'local' && !locked;
-  const run = () => void runner.run(wrapSnippet(code, snippet.kind), options, settings);
+  // Course snippets often exist to show code that warns; -Werror is for the learner's own code (exercises, playground),
+  // so here the warnings are shown and the program still runs.
+  const run = () => void runner.run(wrapSnippet(code, snippet.kind), { ...options, werror: false }, settings);
   const sanitizerSet = sanitizers ?? (THREADS.test(code) ? 'threads' : 'memory');
 
   const copy = async () => {

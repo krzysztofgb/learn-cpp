@@ -61,6 +61,20 @@ test('an old numbered module URL redirects and keeps its tab', async ({ page }) 
   await expect(page.getByRole('tab', { name: /Predict/ })).toHaveAttribute('aria-selected', 'true');
 });
 
+test('-Werror applies to your own code, not to course snippets that exist to warn', async ({ page }) => {
+  await page.goto('./modules/types-and-initialization#predict');
+  await page.getByRole('switch', { name: '-Werror on exercises' }).click();
+  const card = page.locator('#predict-P1');
+  await card.getByText('It prints…', { exact: true }).click();
+  await card.getByRole('textbox', { name: 'Exact output' }).fill('0');
+  await card.getByRole('button', { name: 'Commit and reveal' }).click();
+  await card.getByRole('button', { name: 'Run' }).click();
+  const panel = await finishedRunPanel(page, card);
+  await expect(panel.getByTestId('program-output')).toHaveText('0');
+  await expect(panel.locator('.diagnostics')).toContainText('comparison of integers of different signs');
+  await expect(panel).not.toContainText('Compile error');
+});
+
 test.describe('answer controls', () => {
   test('a committed answer can be tried again, and a module reset clears it', async ({ page }) => {
     await page.goto('./modules/classes#predict');
