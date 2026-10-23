@@ -62,6 +62,28 @@ test('an old numbered module URL redirects and keeps its tab', async ({ page }) 
 });
 
 test.describe('answer controls', () => {
+  test('a committed answer can be tried again, and a module reset clears it', async ({ page }) => {
+    await page.goto('./modules/classes#predict');
+    const card = page.locator('#predict-P2');
+    await card.getByText("It doesn't compile", { exact: true }).click();
+    await card.getByRole('button', { name: 'Commit and reveal' }).click();
+    await expect(card.locator('.your-answer')).toContainText("It doesn't compile");
+
+    await card.getByRole('button', { name: 'Try again' }).click();
+    await expect(card.locator('.answer')).toHaveCount(0);
+    await expect(card.getByText('Answer first to run it.')).toBeVisible();
+    await expect(card.getByRole('radio').first()).toBeFocused();
+
+    await card.getByText("It doesn't compile", { exact: true }).click();
+    await card.getByRole('button', { name: 'Commit and reveal' }).click();
+    await expect(page.getByRole('tab', { name: /^Predict/ })).toContainText('1/');
+    await page.getByRole('button', { name: 'Reset module…' }).click();
+    await page.getByRole('dialog').getByRole('button', { name: 'Reset module' }).click();
+    await expect(page.getByRole('tab', { name: /^Predict/ })).toContainText('0/');
+    await expect(card.getByRole('button', { name: 'Commit and reveal' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Reset module…' })).toHaveCount(0);
+  });
+
   test('an unsent prediction survives a look at the notes', async ({ page }) => {
     await page.goto('./modules/classes#predict');
     const card = page.locator('#predict-P2');

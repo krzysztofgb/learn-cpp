@@ -15,6 +15,7 @@ import { actions, isModuleDone, useModuleProgress, type ModuleProgress } from '.
 import { NotFound } from './NotFound.tsx';
 import { PageTitle } from '../components/PageTitle.tsx';
 import { PageSkeleton } from '../components/PageSkeleton.tsx';
+import { ModuleReset } from '../components/ModuleReset.tsx';
 
 const PHASE_NOTES: Record<number, string> = {
   5: "Threads don't run in the browser yet: threaded examples open in Compiler Explorer with ThreadSanitizer. Single-threaded atomics run here.",
@@ -206,14 +207,17 @@ function ModuleView({ module, phase }: { module: ModuleInfo; phase: Phase }) {
   return (
     <article className="page module-page">
       <PageTitle>{`${module.number}. ${module.title}`}</PageTitle>
-      <header className="title-row">
-        <h1>
-          {module.title}
-          {done && <Badge tone="success">Done</Badge>}
-        </h1>
-        <p className="subtitle">
-          Module {module.number} · <InlineMarkdown text={module.topics} />
-        </p>
+      <header className="title-row with-actions">
+        <div>
+          <h1>
+            {module.title}
+            {done && <Badge tone="success">Done</Badge>}
+          </h1>
+          <p className="subtitle">
+            Module {module.number} · <InlineMarkdown text={module.topics} />
+          </p>
+        </div>
+        <ModuleReset slug={module.slug} number={module.number} />
       </header>
       {content.intro && <Markdown text={content.intro} />}
       {PHASE_NOTES[phase.number] && <p className="notice">{PHASE_NOTES[phase.number]}</p>}

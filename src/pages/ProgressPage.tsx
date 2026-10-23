@@ -77,8 +77,8 @@ function BackupControls() {
         Import…
       </Button>
       <input ref={fileInput} type="file" accept="application/json,.json" hidden onChange={(event) => void chooseImport(event)} />
-      <Button variant="ghost" onClick={() => setConfirmReset(true)}>
-        Reset all
+      <Button variant="secondary" onClick={() => setConfirmReset(true)}>
+        Reset all progress…
       </Button>
 
       <Dialog open={pending !== null} onOpenChange={(open) => !open && setPending(null)}>
