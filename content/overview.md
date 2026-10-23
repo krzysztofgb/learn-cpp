@@ -15,13 +15,23 @@ Undefined behavior (UB) and trick questions run through every module, so by :mod
 
 ## Setup
 
-You need two compilers and one set of flags. Apple Clang lags behind upstream on C++23/26 features, so install upstream LLVM and GCC from Homebrew.
+Everything in the course runs in this page, but you'll also want two compilers on your own machine: a recent Clang and a recent GCC, with one set of flags. C++23 support needs Clang 18 or GCC 14 or newer.
+
+**macOS:** Apple Clang lags behind upstream on C++23/26 features, so install upstream LLVM and GCC from Homebrew.
 
 ```bash
 brew install llvm gcc
 # Upstream clang (adjust the path if Homebrew is elsewhere)
 export PATH="$(brew --prefix llvm)/bin:$PATH"
 ```
+
+**Linux (Debian, Ubuntu):** install both from the package manager. If its Clang is older than 18, the [LLVM apt repository](https://apt.llvm.org) has current releases.
+
+```bash
+sudo apt install clang g++
+```
+
+**Windows:** use [WSL 2](https://learn.microsoft.com/windows/wsl/install) with Ubuntu and follow the Linux steps. The flags below are Clang and GCC flags; MSVC has AddressSanitizer but no undefined-behavior or thread sanitizer.
 
 Compile every exercise twice: once with Clang and once with GCC. When the two disagree on a "predict the output" snippet, that disagreement is usually the lesson.
 
@@ -36,9 +46,9 @@ clang++ -std=c++23 -O1 -g -fsanitize=thread ex.cpp -o ex
 clang++ -std=c++23 -O2 ex.cpp -o ex
 ```
 
-Use `-std=c++2c` (C++26) only in the modules that need it; compiler support for C++26 is still partial. Valgrind doesn't run on Apple Silicon, so the sanitizers are your memory checkers.
+Use `-std=c++2c` (C++26) only in the modules that need it; compiler support for C++26 is still partial. Treat the sanitizers as your memory checkers everywhere: Valgrind works on Linux but not on Apple Silicon Macs.
 
-Keep [Compiler Explorer](https://godbolt.org) open in a tab. Interviews show x86-64 assembly, while your Mac runs ARM64. Compiler Explorer lets you read both, and it's the fastest way to check what `-O2` did to your code.
+Keep [Compiler Explorer](https://godbolt.org) open in a tab. Interviews usually show x86-64 assembly, whatever your own machine runs (Apple Silicon Macs and many cloud servers are ARM64). Compiler Explorer lets you read both, and it's the fastest way to check what `-O2` did to your code.
 
 The primary references are [cppreference.com](https://en.cppreference.com) for the library and the [C++ draft standard](https://eel.is/c++draft/) for language rules. When an answer key cites a rule, it uses the standard's section name, such as \[basic.life\].
 
