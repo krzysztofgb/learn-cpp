@@ -1,4 +1,4 @@
-Assume `#include`s, `using std::cout;`, C++20, 64-bit Linux or macOS.
+Assume `#include`s, `using std::cout;`, C++20, and a 64-bit Linux, macOS or Windows machine.
 
 :::predict{#Q1}
 ```cpp
@@ -9,6 +9,8 @@ cout << (a + b > 255);
 `1`
 
 Both operands promote to `int`; 300 > 255.
+
+*Review:* :sec[types-and-initialization/integer-promotion].
 :::
 
 :::predict{#Q2}
@@ -19,6 +21,8 @@ cout << (sizeof(int) > -1);
 `0`
 
 `-1` converts to `size_t`, becoming the largest value.
+
+*Review:* :sec[types-and-initialization/the-usual-arithmetic-conversions].
 :::
 
 :::predict{#Q3}
@@ -31,6 +35,8 @@ struct D : B { void f() override { cout << "D"; } };
 `B`
 
 During `~B`, the object is a `B`; `D` is already destroyed.
+
+*Review:* :sec[polymorphism/rules-that-bite].
 :::
 
 :::predict{#Q4}
@@ -43,6 +49,8 @@ cout << s;
 `abce`
 
 `'d' + 1` is the `int` 101, converted to `char` `'e'` by `operator+=(char)`.
+
+*Review:* :sec[types-and-initialization/integer-promotion], and argument conversion in the Guide.
 :::
 
 :::predict{#Q5}
@@ -55,6 +63,8 @@ g("hi");
 `bool`
 
 Pointer-to-bool is a standard conversion, which beats the user-defined conversion to `std::string`.
+
+*Review:* :sec[compilation-model/overload-resolution], and the boolean conversion in the Guide.
 :::
 
 :::predict{#Q6}
@@ -67,6 +77,8 @@ cout << v[0];
 `1`
 
 `auto x` copies each element.
+
+*Review:* :sec[types-and-initialization/auto-and-decltype].
 :::
 
 :::predict{#Q7}
@@ -79,6 +91,8 @@ cout << sizeof(b);
 `8`
 
 `auto` decays the array to `int*`.
+
+*Review:* :sec[pointers-references-arrays/arrays-and-decay].
 :::
 
 :::predict{#Q8}
@@ -89,6 +103,8 @@ cout << (0.1f == 0.1);
 `0`
 
 `0.1f` widened to `double` isn't the double closest to 0.1.
+
+*Review:* :sec[types-and-initialization/floating-point-in-one-paragraph], and floating-point widening in the Guide.
 :::
 
 :::predict{#Q9}
@@ -101,6 +117,8 @@ cout << ok << it->second;
 `01`
 
 Insert fails when the key exists and returns the existing element.
+
+*Review:* :sec[containers/associative-containers], and `insert` in the Guide.
 :::
 
 :::predict{#Q10}
@@ -113,6 +131,8 @@ cout << counter<int>() << counter<double>();
 `31`
 
 Each instantiation has its own static.
+
+*Review:* :sec[templates/instantiation-and-lookup], and statics in templates in the Guide.
 :::
 
 :::predict{#Q11}
@@ -128,6 +148,8 @@ pass(A());
 `Ac`
 
 The prvalue argument initializes the parameter directly. The return can't elide a parameter, and the user-declared copy constructor suppresses the implicit move, so it copies.
+
+*Review:* :sec[value-categories-and-moves/copy-elision], :sec[classes/the-special-members], and returning a parameter in the Guide.
 :::
 
 :::predict{#Q12}
@@ -141,6 +163,8 @@ cout << x << f();
 `03`
 
 The lambda modifies its own copy.
+
+*Review:* :sec[utilities/callables-lambdas-and-std-function].
 :::
 
 :::predict{#Q13}
@@ -151,6 +175,8 @@ cout << -5 / 2 << ' ' << -5 % 2 << ' ' << (-5 >> 1);
 `-2 -1 -3`
 
 Division truncates toward zero; `%` follows; `>>` on negatives is arithmetic (defined since C++20).
+
+*Review:* :sec[types-and-initialization/overflow-division-and-shifts], and division in the Guide.
 :::
 
 :::predict{#Q14}
@@ -163,6 +189,8 @@ cout << b;
 `3`
 
 The built-in comma operator sequences left to right.
+
+*Review:* :sec[types-and-initialization/vocabulary-and-evaluation-order], and the comma operator in the Guide.
 :::
 
 :::predict{#Q15}
@@ -173,6 +201,8 @@ cout << std::boolalpha << (std::string("10") < std::string("9"));
 `true`
 
 Strings compare lexicographically: `'1' < '9'`.
+
+*Review:* :sec[containers/strings], and string comparison in the Guide.
 :::
 
 :::predict{#Q16}
@@ -184,6 +214,8 @@ cout << a.size() << sizeof(a);
 `312`
 
 Three elements, 12 bytes, no overhead.
+
+*Review:* :sec[containers/complexity-and-layout-at-a-glance].
 :::
 
 :::predict{#Q17}
@@ -194,7 +226,9 @@ cout << sizeof(big);
 ::answer
 `8`
 
-The literal doesn't fit in `int`, so its type is `long` (LP64).
+The literal doesn't fit in `int`, so its type is the next of `long` and `long long` that holds it: `long` on LP64 (Linux, macOS), `long long` on Windows, where `long` is 32 bits. Both are 8 bytes.
+
+*Review:* :sec[types-and-initialization/fundamental-types-what-s-guaranteed], and literal types in the Guide.
 :::
 
 :::predict{#Q18}
@@ -205,6 +239,8 @@ cout << (true ? 1 : 2.0) << ' ' << sizeof(true ? 1 : 2.0);
 `1 8`
 
 The conditional's type is `double`; `1.0` prints as `1`.
+
+*Review:* :sec[value-categories-and-moves/value-categories], and the conditional operator in the Guide.
 :::
 
 :::predict{#Q19}
@@ -216,6 +252,8 @@ cout << u - 1;
 `4294967295`
 
 Unsigned arithmetic wraps.
+
+*Review:* :sec[types-and-initialization/overflow-division-and-shifts].
 :::
 
 :::predict{#Q20}
@@ -228,6 +266,8 @@ cout << (1 << 31);
 `-2147483648`; implementation-defined in C++14/17; UB in C++11
 
 C++20 \[expr.shift\]: the result is the value congruent to 1 × 2³¹ modulo 2³². C++14/17: 2³¹ fits in `unsigned int`, so it's converted to `int`, an implementation-defined conversion. C++11 required the result to fit in `int` itself, so it was UB.
+
+*Review:* :sec[types-and-initialization/overflow-division-and-shifts], and shifts before C++20 in the Guide.
 :::
 
 :::predict{#Q21}
@@ -239,6 +279,8 @@ auto& r = vb[0];
 Doesn't compile
 
 `vb[0]` returns a proxy prvalue, which can't bind to a non-`const` lvalue reference.
+
+*Review:* :sec[containers/vector].
 :::
 
 :::predict{#Q22}
@@ -249,4 +291,6 @@ auto m = std::max('a', 98);
 Doesn't compile
 
 `T` can't be both `char` and `int`.
+
+*Review:* :sec[templates/argument-deduction].
 :::

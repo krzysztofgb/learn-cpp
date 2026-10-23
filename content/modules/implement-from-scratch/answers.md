@@ -25,7 +25,7 @@ Compiled and run clean under ThreadSanitizer, AddressSanitizer and UBSan (GCC 13
 template <class T, std::size_t N>
 class SpscQueue {
     static_assert(N >= 2 && (N & (N - 1)) == 0, "N must be a power of two");
-    static constexpr std::size_t kLine = 128;  // safe on x86 and Apple M-series
+    static constexpr std::size_t kLine = 128;  // covers x86 adjacent-line prefetch and 128-byte-line ARM cores (Apple Silicon)
     alignas(kLine) std::atomic<std::size_t> head_{0};  // written by consumer
     alignas(kLine) std::size_t tail_cache_ = 0;        // consumer's copy of tail
     alignas(kLine) std::atomic<std::size_t> tail_{0};  // written by producer

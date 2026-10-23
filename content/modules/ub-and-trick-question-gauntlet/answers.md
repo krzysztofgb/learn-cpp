@@ -1,22 +1,22 @@
 ## Round 3
 
-1. False: it's a cast; moving happens in the constructor or assignment it enables.
-2. True.
-3. False: no atomicity, no ordering; still a data race.
-4. False: only when it reallocates (otherwise only the end iterator).
-5. True, since C++11.
-6. False: two's complement representation is mandated, but overflow is still UB.
-7. False: only the reference count is thread-safe.
-8. False: average O(1); worst case O(n).
-9. False: it's at least 1.
-10. False: it gets no implicit move; moves become copies.
-11. False: RMWs are atomic regardless of memory order.
-12. False: it's TSO; a load can pass an earlier store to a different address.
-13. False: it becomes erroneous behavior (defined, but wrong and diagnosable).
-14. False: use `std::stable_sort`.
-15. False: it calls the version for the class under construction.
-16. False: `std::move` on a `const` object selects the copy constructor.
-17. False.
-18. True.
-19. False: it's an ODR violation with no diagnostic required; the linker silently keeps one.
-20. False: the discarded future's destructor blocks until `f` finishes.
+1. False: it's a cast; moving happens in the constructor or assignment it enables. (:sec[value-categories-and-moves/moves])
+2. True. (:sec[error-handling/noexcept])
+3. False: no atomicity, no ordering; still a data race. (:sec[memory-model/volatile-lock-freedom-and-cas])
+4. False: only when it reallocates (otherwise only the end iterator). (:sec[containers/vector])
+5. True, since C++11. (:sec[object-lifetime/static-initialization-order])
+6. False: two's complement representation is mandated, but overflow is still UB. (:sec[types-and-initialization/fundamental-types-what-s-guaranteed])
+7. False: only the reference count is thread-safe. (:sec[smart-pointers/thread-safety])
+8. False: average O(1); worst case O(n). (:sec[containers/complexity-and-layout-at-a-glance])
+9. False: it's at least 1. (:sec[classes/odds-and-ends])
+10. False: it gets no implicit move; moves become copies. (:sec[classes/the-special-members])
+11. False: RMWs are atomic regardless of memory order. (:sec[memory-model/memory-orders])
+12. False: it's TSO; a load can pass an earlier store to a different address. (:sec[memory-model/hardware-mapping])
+13. False for a local variable: it becomes erroneous behavior (defined, but wrong and diagnosable). It is still UB for a variable marked `[[indeterminate]]` and for uninitialized dynamic storage such as `*new int`. (:sec[types-and-initialization/initialization])
+14. False: use `std::stable_sort`. (:sec[algorithms-and-ranges/algorithms-worth-knowing-cold])
+15. False: it calls the version for the class under construction. (:sec[polymorphism/rules-that-bite])
+16. False: `std::move` on a `const` object selects the copy constructor. (:sec[value-categories-and-moves/moves])
+17. False. (:sec[containers/strings])
+18. True. (:sec[polymorphism/rules-that-bite])
+19. False: it's an ODR violation with no diagnostic required; the linker silently keeps one. (:sec[compilation-model/declarations-definitions-and-the-odr])
+20. False: the discarded future's destructor blocks until `f` finishes. (:sec[synchronization/futures-and-std-async])
