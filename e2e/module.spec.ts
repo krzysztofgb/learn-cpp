@@ -21,6 +21,11 @@ test.describe('module page', () => {
 
     const godbolt = card.getByRole('link', { name: /Compiler Explorer/ });
     await expect(godbolt).toHaveAttribute('href', /^https:\/\/godbolt\.org\/clientstate\//);
+    // One Clang pane with the learner's settings (Debug, C++23); this snippet uses atomics, so it runs under ThreadSanitizer.
+    const state = JSON.parse(Buffer.from(decodeURIComponent((await godbolt.getAttribute('href'))!.split('/clientstate/')[1]!), 'base64').toString());
+    expect(state.sessions[0].compilers).toEqual([
+      expect.objectContaining({ id: 'clang_trunk', options: '-std=c++23 -O1 -g -Wall -Wextra -fsanitize=thread -pthread' }),
+    ]);
   });
 
   test('an exercise solution runs with UBSan and is kept after a reload', async ({ page }) => {

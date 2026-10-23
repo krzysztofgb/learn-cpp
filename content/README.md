@@ -124,6 +124,8 @@ The info string after the language carries run metadata:
 | `kind` | `program` (has `main`) or `fragment` (wrapped in a `main` with common headers) | detected |
 | `note` | why it can't run here, or what differs in the browser; shown beside it | none |
 
+Compiler Explorer opens every C++ block with the learner's Debug/Release and C++ standard: Clang's assembly and the program's output, under AddressSanitizer and UBSan in Debug (ThreadSanitizer when the code uses threads or atomics).
+
 A note that contains backticks needs a tilde fence (`~~~cpp note="…"`), because Markdown doesn't allow backticks in a backtick fence's info string.
 
 ## References
