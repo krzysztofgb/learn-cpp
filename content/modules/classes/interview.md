@@ -7,7 +7,7 @@ Zero: let members manage resources, declare no special members. Three (pre-C++11
 :::question{#Q2}
 When does the compiler generate a move constructor? What happens if you add an empty destructor?
 ::answer
-Only if the class has no user-declared copy operations, copy assignment, move assignment or destructor. An empty destructor suppresses it, so moves become copies, which is a silent performance bug.
+Only if the class has no user-declared copy constructor, copy assignment, move assignment or destructor. An empty destructor suppresses it, so moves become copies, which is a silent performance bug.
 :::
 
 :::question{#Q3}

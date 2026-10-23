@@ -46,7 +46,7 @@ Binding to `const M&` extends the temporary to the end of the block.
 ::answer
 `+a-a+b|-b`
 
-`M("a");` creates an unnamed temporary destroyed at the semicolon. The same mistake with `std::lock_guard<std::mutex>(m);` locks nothing useful.
+`M("a");` creates an unnamed temporary destroyed at the semicolon. The same mistake with `std::lock_guard<std::mutex>{m};` locks and immediately unlocks. (With parentheses and a plain name, `std::lock_guard<std::mutex>(m);` is instead a declaration of a new variable `m`, which doesn't compile because `lock_guard` has no default constructor.)
 :::
 
 :::predict{#P4}

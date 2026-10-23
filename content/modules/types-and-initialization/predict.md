@@ -1,4 +1,4 @@
-Assume each snippet sits inside `main` with the needed headers, compiled as C++23 on your Mac unless the snippet says otherwise. Write your answer down for all 12 before checking the key. "UB", "implementation-defined" and "doesn't compile" are valid answers.
+Assume each snippet sits inside `main` with the needed headers, compiled as C++23 for a 64-bit macOS or Linux machine (LP64) unless the snippet says otherwise. Write your answer down for all 12 before checking the key. "UB", "implementation-defined" and "doesn't compile" are valid answers.
 
 :::predict{#P1}
 ```cpp
@@ -47,26 +47,26 @@ Parentheses call the (count, value) constructor. Braces pick the `initializer_li
 :::
 
 :::predict{#P5}
-(What does it print on your Mac, and on an ARM64 Linux server?)
+(What does it print on x86-64 or Apple Silicon (macOS), and on an ARM64 Linux server?)
 
 ```cpp
 char c = static_cast<char>(0xFF);
 std::cout << static_cast<int>(c) << '\n';
 ```
 ::answer
-Mac: `-1`, Linux ARM64: `255`
+x86-64 and macOS ARM64: `-1`, Linux ARM64: `255`
 
-Plain `char` is signed on Apple ARM64 and unsigned on Linux ARM64. The wrap to -1 is defined since C++20.
+Plain `char` is signed on x86-64 and Apple ARM64, and unsigned on Linux ARM64. The wrap to -1 is defined since C++20.
 :::
 
 :::predict{#P6}
-(On your Mac, and on 64-bit Windows?)
+(On 64-bit macOS or Linux, and on 64-bit Windows?)
 
-~~~cpp note="In the browser this is wasm32, where `long` and pointers are 32-bit (like Windows), so this prints 0. On your Mac (LP64) it prints 1."
+~~~cpp note="In the browser this is wasm32, where `long` and pointers are 32-bit (like Windows), so this prints 0. On 64-bit macOS or Linux (LP64) it prints 1."
 std::cout << (-1L < 1u) << '\n';
 ~~~
 ::answer
-Mac: `1`, Windows: `0`
+macOS and Linux: `1`, Windows: `0`
 
 On LP64, `long` holds every `unsigned int`, so `1u` converts to `long`. On Windows both go to `unsigned long`, and `-1L` becomes huge.
 :::

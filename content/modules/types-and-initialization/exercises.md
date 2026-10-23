@@ -1,11 +1,11 @@
 Compile everything with the debug flags from the Setup section, on both Clang and GCC. An exercise is done when it passes your tests under ASan and UBSan with zero warnings.
 
 :::exercise{#E1 level=warm-up title="Type survey"}
-Write a program that prints, for every fundamental integer and floating-point type: `sizeof`, `alignof`, `std::numeric_limits<T>::is_signed`, `min()` and `max()`. Run it on your Mac, then paste it into Compiler Explorer with an x86-64 Linux GCC and with `x64 msvc`. Note every row that changes.
+Write a program that prints, for every fundamental integer and floating-point type: `sizeof`, `alignof`, `std::numeric_limits<T>::is_signed`, `min()` and `max()`. Run it on your machine, then paste it into Compiler Explorer with an x86-64 Linux GCC, an ARM64 GCC and `x64 msvc`. Note every row that changes.
 :::
 
 :::exercise{#E2 level=warm-up title="Initialization zoo"}
-For `int`, `double`, `std::string` and an aggregate `struct Order { int qty; double px; };`, write each initialization form from table 1.6. Before compiling with `-Werror -Wconversion -Wuninitialized`, predict which lines fail and why. Then add a narrowing case to each brace form and confirm the error.
+For `int`, `double`, `std::string` and an aggregate `struct Order { int qty; double px; };`, write each initialization form from the table in :sec[types-and-initialization/initialization]. Before compiling with `-Werror -Wconversion -Wuninitialized`, predict which lines fail and why. Then add a narrowing case to each brace form and confirm the error.
 :::
 
 :::exercise{#E3 level=standard title="Overflow-safe addition"}

@@ -5,9 +5,11 @@ Automatic, static, thread and dynamic; see table 5.1.
 :::
 
 :::question{#Q2}
-What is RAII? Compare it to Go's `defer` or Java's `finally`.
+What is RAII? Compare it to explicit cleanup constructs such as Java's `finally` or a `defer` statement (a call scheduled to run when the enclosing function returns).
 ::answer
-Resource ownership tied to object lifetime: acquire in the constructor, release in the destructor, which runs on every exit including exceptions. Unlike `defer`, the cleanup travels with the object when it's moved or stored, and it's scoped to blocks rather than functions.
+Resource ownership tied to object lifetime: acquire in the constructor, release in the destructor, which runs on every exit including exceptions. Unlike `finally` or `defer`, the cleanup can't be forgotten at a call site, travels with the object when it's moved or stored, and is scoped to blocks rather than functions.
+
+> **Coming from Go?** `defer f.Close()` has to be written after every open and runs at function return; a C++ file type closes itself in its destructor wherever it goes out of scope.
 :::
 
 :::question{#Q3}

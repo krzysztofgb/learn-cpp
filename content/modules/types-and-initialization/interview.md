@@ -45,7 +45,7 @@ Explain `const`, `constexpr`, `consteval` and `constinit`.
 :::question{#Q8}
 Is `char` signed?
 ::answer
-It's implementation-defined, and `char` is a distinct type from both `signed char` and `unsigned char`. It's signed on x86-64 and Apple ARM64, unsigned on ARM64 Linux. For byte manipulation, use `unsigned char` or `std::byte` explicitly.
+It's implementation-defined, and `char` is a distinct type from both `signed char` and `unsigned char`. It's signed on x86-64 and Apple ARM64 (macOS), unsigned on ARM64 Linux. For byte manipulation, use `unsigned char` or `std::byte` explicitly.
 :::
 
 :::question{#Q9}

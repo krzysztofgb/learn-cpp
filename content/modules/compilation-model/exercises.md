@@ -1,9 +1,9 @@
 :::exercise{#E1 level=warm-up title="Read the linker"}
-Build a three-file project. Deliberately trigger "duplicate symbol" (a non-inline function defined in a header) and "undefined symbol" (declared, never defined). Then inspect symbols with `nm -C` and mark which are external (`T`), internal (`t`) and undefined (`U`).
+Build a three-file project. Deliberately trigger "duplicate symbol" (a non-inline function defined in a header) and "undefined symbol" (declared, never defined). Then inspect symbols with `nm -C` (macOS and Linux; on Windows, `dumpbin /SYMBOLS`) and mark which are external (`T`), internal (`t`) and undefined (`U`).
 :::
 
 :::exercise{#E2 level=warm-up title='`extern "C"`'}
-Write a C file and a C++ file that call each other. Compare the symbol names with and without `extern "C"`, and demangle them with `c++filt`.
+Write a C file and a C++ file that call each other. Compare the symbol names with and without `extern "C"`, and demangle them with `c++filt` (or `undname` for MSVC).
 :::
 
 :::exercise{#E3 level=standard title="A live ODR violation"}

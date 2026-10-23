@@ -1,4 +1,4 @@
-Assume headers, `main`, and `using std::cout;`. 64-bit macOS.
+Assume headers, `main`, and `using std::cout;`. 64-bit macOS or Linux (LP64: 8-byte pointers, 4-byte `int`).
 
 :::predict{#P1}
 ```cpp
