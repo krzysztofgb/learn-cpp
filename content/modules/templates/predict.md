@@ -76,7 +76,7 @@ cout << v2.size();
 Braces with CTAD prefer the `initializer_list` constructor, deducing `vector<vector<int>::iterator>`.
 :::
 
-:::predict{#P6}
+:::predict{#P6 expect=compile-error}
 ```cpp
 template <class T> struct Base { void hello() { cout << "hi"; } };
 template <class T> struct Der : Base<T> {

@@ -72,7 +72,7 @@ wrap(x); wrap(1);
 `t` is always an lvalue; `forward` restores the original category.
 :::
 
-:::predict{#P6}
+:::predict{#P6 expect=unspecified}
 ```cpp
 std::string a = "a string too long for the small-string buffer";
 std::string b = std::move(a);

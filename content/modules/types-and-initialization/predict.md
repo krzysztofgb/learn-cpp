@@ -53,6 +53,11 @@ Parentheses call the (count, value) constructor. Braces pick the `initializer_li
 char c = static_cast<char>(0xFF);
 std::cout << static_cast<int>(c) << '\n';
 ```
+::choices
+- [ ] `-1` on all three
+- [ ] x86-64: `-1`, macOS ARM64 and Linux ARM64: `255`
+- [x] x86-64 and macOS ARM64: `-1`, Linux ARM64: `255`
+- [ ] `255` on all three
 ::answer
 x86-64 and macOS ARM64: `-1`, Linux ARM64: `255`
 
@@ -65,6 +70,11 @@ Plain `char` is signed on x86-64 and Apple ARM64, and unsigned on Linux ARM64. T
 ~~~cpp note="In the browser this is wasm32, where `long` and pointers are 32-bit (like Windows), so this prints 0. On 64-bit macOS or Linux (LP64) it prints 1."
 std::cout << (-1L < 1u) << '\n';
 ~~~
+::choices
+- [ ] `1` everywhere
+- [x] macOS and Linux: `1`, Windows: `0`
+- [ ] macOS and Linux: `0`, Windows: `1`
+- [ ] `0` everywhere
 ::answer
 macOS and Linux: `1`, Windows: `0`
 

@@ -36,6 +36,11 @@ int f(int* i, float* fl) {
     return *i;
 }
 ```
+::choices
+- [ ] Both stores, then a reload of `*i` from memory
+- [ ] Only the store to `*fl`; the store to `*i` is dead
+- [x] Both stores, then `return 1` as a constant
+- [ ] A trap instruction, because the function is UB
 ::answer
 `return 1` after the stores
 

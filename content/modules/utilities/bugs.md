@@ -1,4 +1,4 @@
-:::bug{#U1}
+:::bug{#U1 findings=ub}
 ```cpp run=none
 class Strategy {
     Timer& timer_;
@@ -9,10 +9,10 @@ public:
 // a Strategy is destroyed while its timer keeps running
 ```
 ::answer
-The timer calls the lambda after the `Strategy` is destroyed: `this` dangles, UB. Cancel the timer in the destructor, or capture a `weak_ptr` and lock it.
+UB: the timer calls the lambda after the `Strategy` is destroyed, so `this` dangles. Cancel the timer in the destructor, or capture a `weak_ptr` and lock it.
 :::
 
-:::bug{#U2}
+:::bug{#U2 findings=ub}
 ```cpp
 auto make_adder(int n) {
     return [&n](int x) { return x + n; };
@@ -22,7 +22,7 @@ auto make_adder(int n) {
 UB on call: `n` is a parameter that dies when `make_adder` returns. Capture by value: `[n]`.
 :::
 
-:::bug{#U3}
+:::bug{#U3 findings=ub}
 ```cpp run=none
 std::string_view label = std::format("{}-{}", venue, symbol);
 ```
@@ -30,17 +30,17 @@ std::string_view label = std::format("{}-{}", venue, symbol);
 UB on use: `std::format` returns a temporary `std::string`, which dies at the semicolon. Store a `std::string`.
 :::
 
-:::bug{#U4}
+:::bug{#U4 findings=defined-bug}
 ```cpp run=none
 auto t0 = std::chrono::system_clock::now();
 process(order);
 auto latency = std::chrono::system_clock::now() - t0;
 ```
 ::answer
-Not UB, but `system_clock` can jump backward or forward, giving negative or huge latencies. Use `steady_clock`.
+A defined bug, not UB: `system_clock` can jump backward or forward, giving negative or huge latencies. Use `steady_clock`.
 :::
 
-:::bug{#U5}
+:::bug{#U5 findings=ub}
 ```cpp
 std::mt19937 rng(42);
 std::uniform_int_distribution<std::uint8_t> byte(0, 255);

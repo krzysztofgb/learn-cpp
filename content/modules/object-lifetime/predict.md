@@ -89,6 +89,11 @@ struct Holder {
 Holder make_holder() { return {}; }
 for (int x : make_holder().get()) cout << x;
 ```
+::choices
+- [ ] C++20: `123`, C++23: `123`
+- [ ] C++20: doesn't compile, C++23: `123`
+- [x] C++20: UB, C++23: `123`
+- [ ] C++20: UB, C++23: UB
 ::answer
 C++20: UB. C++23: `123`
 

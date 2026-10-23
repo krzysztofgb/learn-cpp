@@ -33,7 +33,7 @@ cout << 2[a];
 `2[a]` is `*(2 + a)`, the same as `a[2]`.
 :::
 
-:::predict{#P4}
+:::predict{#P4 expect=unspecified}
 ```cpp
 const char* s1 = "hi";
 const char* s2 = "hi";
@@ -51,8 +51,13 @@ void g(int)   { cout << "int "; }
 void g(char*) { cout << "ptr "; }
 g(0); g(nullptr); g(NULL);
 ```
+::choices
+- [ ] `int ptr int`
+- [ ] `int ptr ptr`
+- [x] It doesn't compile
+- [ ] `int int int`
 ::answer
-` int ptr  ` then a compile error
+It doesn't compile with GCC or Clang on macOS and Linux: `g(NULL)` is ambiguous, so nothing prints. Without that call it would print `int ptr `.
 
 `g(NULL)` is ambiguous on both GCC and Clang (verified): their `NULL` is the builtin `__null`, which converts to `int` and to `char*` equally well. On an implementation defining `NULL` as plain `0`, it would pick `int`. Either way, `nullptr` avoids the question.
 :::

@@ -3,8 +3,13 @@
 void start() { std::thread t([] {}); }
 int main() { start(); cout << "ok"; }
 ```
+::choices
+- [ ] Prints `ok`
+- [ ] Prints `ok`, then terminates at exit
+- [x] Calls `std::terminate` before printing anything
+- [ ] Undefined behavior: the lambda may never run
 ::answer
-Terminates
+Calls `std::terminate` before printing anything.
 
 `t` is destroyed while joinable, so `std::terminate` runs before "ok".
 :::
@@ -18,6 +23,11 @@ t.join();
 cout << n;
 // What if std::ref is removed?
 ```
+::choices
+- [ ] `1`; without `std::ref`: prints `0` (the thread increments a copy)
+- [x] `1`; without `std::ref`: doesn't compile
+- [ ] `1`; without `std::ref`: still prints `1`
+- [ ] `0`; without `std::ref`: doesn't compile
 ::answer
 `1`; without `std::ref`: doesn't compile
 
@@ -56,6 +66,11 @@ Each thread has its own `counter`; main's is untouched.
 
 :::predict{#P5}
 Thread A runs `std::scoped_lock lk(m1, m2);` while thread B runs `std::scoped_lock lk(m2, m1);`, repeatedly. Can they deadlock? What if each uses two `lock_guard`s in its listed order?
+::choices
+- [ ] Yes in both cases
+- [ ] No in both cases
+- [x] `scoped_lock`: no; two `lock_guard`s: yes
+- [ ] `scoped_lock`: yes; two `lock_guard`s: no
 ::answer
 No; with `lock_guard`s: yes
 

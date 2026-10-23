@@ -87,8 +87,13 @@ int a[] = {1, 2, 3};
 auto b = a;
 cout << sizeof(b);
 ~~~
+::choices
+- [ ] `12`: `b` is a copy of the whole array
+- [ ] `4`: the size of the first element
+- [x] The size of an `int*`: `8` on 64-bit platforms
+- [ ] Doesn't compile: arrays can't be copied
 ::answer
-`8`
+`8` on a 64-bit platform (`4` on 32-bit targets such as the browser's wasm32).
 
 `auto` decays the array to `int*`.
 
@@ -262,15 +267,21 @@ Unsigned arithmetic wraps.
 ```cpp
 cout << (1 << 31);
 ```
+::choices
+- [ ] C++20: prints `-2147483648`; C++17: UB
+- [ ] C++20: prints `2147483648`; C++17: implementation-defined
+- [x] C++20: prints `-2147483648`; C++17: implementation-defined
+- [ ] C++20: UB; C++17: UB
+- [ ] C++20: prints `-2147483648`; C++17: the same, fully defined
 ::answer
-`-2147483648`; implementation-defined in C++14/17; UB in C++11
+C++20 prints `-2147483648`; C++14/17 make it implementation-defined; C++11 made it UB.
 
 C++20 \[expr.shift\]: the result is the value congruent to 1 × 2³¹ modulo 2³². C++14/17: 2³¹ fits in `unsigned int`, so it's converted to `int`, an implementation-defined conversion. C++11 required the result to fit in `int` itself, so it was UB.
 
 *Review:* :sec[types-and-initialization/overflow-division-and-shifts], and shifts before C++20 in the Guide.
 :::
 
-:::predict{#Q21}
+:::predict{#Q21 expect=compile-error}
 ```cpp
 std::vector<bool> vb(3);
 auto& r = vb[0];
@@ -283,7 +294,7 @@ Doesn't compile
 *Review:* :sec[containers/vector].
 :::
 
-:::predict{#Q22}
+:::predict{#Q22 expect=compile-error}
 ```cpp
 auto m = std::max('a', 98);
 ```

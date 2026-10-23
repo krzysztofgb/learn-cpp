@@ -62,6 +62,11 @@ P p{.x = 1, .z = 3};
 cout << p.y;
 // P q{.y = 1, .x = 2};   // what happens if uncommented?
 ```
+::choices
+- [ ] Prints an indeterminate value; uncommented: compile error
+- [ ] Prints `0`; uncommented: compiles, with `q.x == 2` and `q.y == 1`
+- [x] Prints `0`; uncommented: compile error
+- [ ] Prints `0`; uncommented: compiles with only a warning
 ::answer
 `0`; uncommented: compile error
 

@@ -67,6 +67,11 @@ Bot b;
 ```
 
 (And with `struct L : virtual Top` and `struct R : virtual Top`?)
+::choices
+- [ ] `TT` both ways
+- [ ] `T`; with virtual: `TT`
+- [x] `TT`; with virtual: `T`
+- [ ] Doesn't compile (ambiguous `Top`); with virtual: `T`
 ::answer
 `TT`; with virtual: `T`
 

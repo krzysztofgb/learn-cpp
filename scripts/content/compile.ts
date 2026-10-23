@@ -14,7 +14,7 @@ import { directive } from 'micromark-extension-directive';
 import { gfm } from 'micromark-extension-gfm';
 import { parse as parseYaml } from 'yaml';
 import { snippetFromFence } from '../../src/course/fence.ts';
-import type { Course, Exercise, Level, ModuleContent, ModuleInfo, PredictItem, Question, Section, Snippet, UbItem } from '../../src/course/types.ts';
+import type { Course, Exercise, Expectation, Finding, Level, ModuleContent, ModuleInfo, PredictItem, Question, Section, Snippet, UbItem } from '../../src/course/types.ts';
 
 /** Reads a file relative to the content root; undefined when it doesn't exist. */
 export type Reader = (path: string) => string | undefined;
@@ -50,6 +50,8 @@ export interface CompiledCourse {
 }
 
 const LEVELS: Level[] = ['warm-up', 'standard', 'interview-hard'];
+const EXPECTATIONS = ['prints', 'ub', 'compile-error', 'unspecified'] as const;
+const FINDINGS: Finding[] = ['ub', 'unspecified', 'compile-error', 'defined-bug', 'none'];
 const ID = /^[A-Za-z0-9][\w-]*$/;
 
 /** Heading slug: lowercase words joined by hyphens; code and emphasis marks dropped ("`shared_ptr` internals" → shared-ptr-internals). */
@@ -316,16 +318,18 @@ class ModuleCompiler {
   }
 
   private predict(source: Source): Section<PredictItem> {
-    const { intro, blocks } = readBlocks(source, 'predict', ['answer'], this.ids.predict);
+    const { intro, blocks } = readBlocks(source, 'predict', ['choices', 'answer'], this.ids.predict);
     return {
       intro,
       items: blocks.map((block, i) => {
         const answer = required(source, block, 'answer');
+        const question = splitAtCode(source, required(source, block, ''));
         return {
           id: block.id,
           label: `P${i + 1}`,
-          ...splitAtCode(source, required(source, block, '')),
+          ...question,
           answer: { output: source.slice(answer.slice(0, 1)), why: source.slice(answer.slice(1)) },
+          expect: this.expectation(source, block, answer[0], question.snippet !== undefined),
         };
       }),
     };
@@ -340,8 +344,65 @@ class ModuleCompiler {
         label: `U${i + 1}`,
         ...splitAtCode(source, required(source, block, '')),
         answer: source.slice(required(source, block, 'answer')),
+        findings: this.findings(source, block),
       })),
     };
+  }
+
+  /**
+   * How a prediction is answered and graded. A `::choices` task list makes it multiple choice (ticked items are correct);
+   * otherwise `expect=` names the outcome, or it's inferred: an answer whose first paragraph is a single `code span`
+   * is the exact output. Anything else can't be graded, which is a problem.
+   */
+  private expectation(source: Source, block: Block, first: RootContent | undefined, hasCode: boolean): Expectation {
+    const choices = block.parts.get('choices');
+    if (choices) return this.choices(source, block, choices);
+    const output = first?.type === 'paragraph' && first.children.length === 1 && first.children[0]!.type === 'inlineCode' ? first.children[0].value : undefined;
+    const declared = block.attributes.expect;
+    if (declared) {
+      if (!(EXPECTATIONS as readonly string[]).includes(declared)) {
+        source.problem(block.node, `#${block.id} has expect=${declared} (expected ${EXPECTATIONS.join('|')}, or a ::choices list)`);
+        return { kind: 'ub' };
+      }
+      if (declared !== 'prints') return { kind: declared as 'ub' | 'compile-error' | 'unspecified' };
+      if (output === undefined) source.problem(block.node, `#${block.id} has expect=prints, so its answer must start with the output as one \`code\` paragraph`);
+      return { kind: 'prints', output: output ?? '' };
+    }
+    if (hasCode && output !== undefined) return { kind: 'prints', output };
+    // A block without an answer is already reported; don't report it twice.
+    if (first !== undefined) source.problem(block.node, `#${block.id} can't be graded: give it a ::choices list${hasCode ? ` or expect=${EXPECTATIONS.join('|')}` : ''}`);
+    return { kind: 'ub' };
+  }
+
+  /** A `::choices` part: one GitHub task list, `- [x]` for each correct option and `- [ ]` for each distractor. */
+  private choices(source: Source, block: Block, nodes: RootContent[]): Expectation {
+    const list = nodes.length === 1 && nodes[0]!.type === 'list' ? nodes[0] : undefined;
+    // When an option starts with a code span, the parsed paragraph still covers the "[ ] " marker: drop it.
+    const options = (list?.children ?? []).map((item) => ({
+      text: source.slice(item.children).replace(/^\[[ xX]\]\s+/, ''),
+      correct: item.checked === true,
+      task: typeof item.checked === 'boolean',
+    }));
+    if (!list || options.some((option) => !option.task)) {
+      source.problem(block.node, `#${block.id}: ::choices must be one task list ("- [x] right", "- [ ] wrong")`);
+    } else if (options.length < 2 || !options.some((option) => option.correct)) {
+      source.problem(block.node, `#${block.id}: ::choices needs at least two options and at least one ticked`);
+    }
+    return { kind: 'choice', options: options.map(({ text, correct }) => ({ text, correct })) };
+  }
+
+  /** `findings=ub,unspecified` on a bug block: the boxes a correct answer ticks. */
+  private findings(source: Source, block: Block): Finding[] {
+    const declared = block.attributes.findings;
+    if (!declared) {
+      source.problem(block.node, `#${block.id} needs findings=${FINDINGS.join(',')} (one or more)`);
+      return [];
+    }
+    const findings = declared.split(',').map((f) => f.trim()) as Finding[];
+    const unknown = findings.filter((f) => !FINDINGS.includes(f));
+    if (unknown.length > 0) source.problem(block.node, `#${block.id} has unknown findings ${unknown.join(',')} (expected ${FINDINGS.join(',')})`);
+    if (findings.includes('none') && findings.length > 1) source.problem(block.node, `#${block.id}: findings=none can't be combined with others`);
+    return findings.filter((f) => FINDINGS.includes(f));
   }
 
   private exercises(source: Source): Section<Exercise> {

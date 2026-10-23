@@ -10,6 +10,7 @@ import { fileURLToPath } from 'node:url';
 import { DEFAULT_OPTIONS, type CompileOptions } from '../src/compiler/flags.ts';
 import { wrapSnippet } from '../src/compiler/wrap.ts';
 import { isCppLang } from '../src/course/fence.ts';
+import { normalizeOutput } from '../src/course/grade.ts';
 import type { ModuleContent } from '../src/course/types.ts';
 import { compileCourse, fsReader, moduleSnippets } from './content/compile.ts';
 import { compile, run } from './lib/node-toolchain.ts';
@@ -29,12 +30,6 @@ interface Finding {
   message: string;
 }
 
-/** The single exact output an answer names, e.g. "`0 5 5`"; undefined when it isn't checkable. */
-function expectedOutput(answer: string): string | undefined {
-  const codes = [...answer.matchAll(/`([^`]*)`/g)].map((match) => match[1]!);
-  return codes.length === 1 && answer.replace(/`[^`]*`/, '').trim() === '' ? codes[0] : undefined;
-}
-
 async function checkModule(module: ModuleContent): Promise<Finding[]> {
   const findings: Finding[] = [];
   const predictions = new Map(module.predict.items.filter((item) => item.snippet).map((item) => [item.snippet!.code, item]));
@@ -45,19 +40,26 @@ async function checkModule(module: ModuleContent): Promise<Finding[]> {
     const prediction = predictions.get(snippet.code);
     const bug = bugs.get(snippet.code);
     const where = `${module.slug} ${prediction?.label ?? bug?.label ?? `"${snippet.code.split('\n')[0]!.slice(0, 50)}"`}`;
-    const answer = prediction ? `${prediction.answer.output} ${prediction.answer.why}` : bug?.answer;
+    const expect = prediction?.expect;
+    // A snippet may fail to compile only when its item says so: the outcome, a finding, or a correct choice that names it.
+    const expectsError =
+      expect?.kind === 'compile-error' ||
+      bug?.findings.includes('compile-error') === true ||
+      (expect?.kind === 'choice' && expect.options.some((option) => option.correct && COMPILE_ERROR_ANSWER.test(option.text)));
     const compiled = await compile(wrapSnippet(snippet.code, snippet.kind), OPTIONS);
-    const expectsError = answer !== undefined && COMPILE_ERROR_ANSWER.test(answer);
     if (!compiled.ok) {
       if (!expectsError) findings.push({ level: 'fail', message: `${where}: does not compile\n${compiled.diagnostics.split('\n').slice(0, 4).join('\n')}` });
       continue;
     }
-    if (!prediction) continue;
-    const expected = expectedOutput(prediction.answer.output);
-    if (expected === undefined) continue;
+    if (expect?.kind === 'compile-error' || bug?.findings.join() === 'compile-error') {
+      findings.push({ level: 'fail', message: `${where}: compiles, but its answer says it doesn't` });
+      continue;
+    }
+    if (expect?.kind !== 'prints') continue;
+    const expected = normalizeOutput(expect.output);
     const outcome = await run(compiled.wasm);
-    const actual = outcome.stdout.trim();
-    if (actual !== expected.trim()) {
+    const actual = normalizeOutput(outcome.stdout);
+    if (actual !== expected) {
       findings.push({
         level: snippet.note ? 'info' : 'fail',
         message: `${where}: printed ${JSON.stringify(actual)}, answer key says ${JSON.stringify(expected)}${snippet.note ? ' (noted)' : ''}`,

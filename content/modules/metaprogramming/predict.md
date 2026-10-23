@@ -76,8 +76,13 @@ int n = 3;
 cout << sq(4);
 // cout << sq(n);   // what happens if uncommented?
 ```
+::choices
+- [ ] `16`; uncommented: prints `9` at run time
+- [ ] `16`; uncommented: UB
+- [x] `16`; uncommented: compile error
+- [ ] Compile error even as shown
 ::answer
-`16`; uncommented: compile error
+`16`; uncommented: compile error.
 
 `sq(n)` isn't a constant expression.
 :::

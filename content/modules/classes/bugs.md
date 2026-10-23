@@ -1,4 +1,4 @@
-:::bug{#U1}
+:::bug{#U1 findings=ub,defined-bug}
 ```cpp
 class Buf {
     char* data_; std::size_t n_;
@@ -13,10 +13,10 @@ public:
 };
 ```
 ::answer
-On self-assignment, o.data\_ is data\_, so after the delete and the new allocation, memcpy copies the fresh uninitialized buffer onto itself: the original contents are silently lost. That memcpy is also formally UB, because its source and destination overlap (they're identical). It's also not exception-safe: if `new` throws, `data_` dangles. Use copy-and-swap, or allocate and copy before deleting.
+UB on self-assignment, plus a defined exception-safety bug. When `o` is `*this`, o.data\_ is data\_, so after the delete and the new allocation, memcpy copies the fresh uninitialized buffer onto itself: the original contents are silently lost. That memcpy is formally UB, because its source and destination overlap (they're identical). Separately, it's not exception-safe: if `new` throws, `data_` dangles. Use copy-and-swap, or allocate and copy before deleting.
 :::
 
-:::bug{#U2}
+:::bug{#U2 findings=ub}
 ```cpp
 class Conn {
     int* fds_ = new int[64];
@@ -27,10 +27,10 @@ Conn a;
 Conn b = a;
 ```
 ::answer
-Rule-of-three violation. The implicit copy duplicates the pointer, so both destructors `delete[]` it: double free, UB. Delete the copy operations, implement them, or use `std::vector<int>`.
+UB: a rule-of-three violation. The implicit copy duplicates the pointer, so both destructors `delete[]` it: double free, UB. Delete the copy operations, implement them, or use `std::vector<int>`.
 :::
 
-:::bug{#U3}
+:::bug{#U3 findings=ub}
 ```cpp run=none
 struct Person {
     std::string name_;
@@ -41,10 +41,10 @@ auto& n = make().name();
 std::cout << n;
 ```
 ::answer
-`make()` returns a temporary that dies at the end of the full expression, so `n` dangles. Using it is UB. Return by value, or ref-qualify: `const std::string& name() const&` and `std::string name() &&`.
+UB: `make()` returns a temporary that dies at the end of the full expression, so `n` dangles, and using it is undefined. Return by value, or ref-qualify: `const std::string& name() const&` and `std::string name() &&`.
 :::
 
-:::bug{#U4}
+:::bug{#U4 findings=defined-bug}
 ```cpp run=none
 class Socket {
     int fd_;
@@ -57,5 +57,5 @@ void send_heartbeat(const Socket&);
 send_heartbeat(3);
 ```
 ::answer
-No UB, but a serious bug: `3` converts to a temporary `Socket`, whose destructor closes file descriptor 3. Make the constructor `explicit` (and make `Socket` move-only).
+A defined bug, not UB, but a serious one: `3` converts to a temporary `Socket`, whose destructor closes file descriptor 3. Make the constructor `explicit` (and make `Socket` move-only).
 :::

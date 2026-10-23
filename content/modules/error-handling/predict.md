@@ -24,6 +24,11 @@ try {
 ```
 
 (What if `throw e;` becomes `throw;`?)
+::choices
+- [ ] `der`; with `throw;`: `der`
+- [ ] `base`; with `throw;`: `base`
+- [x] `base`; with `throw;`: `der`
+- [ ] `der`; with `throw;`: `base`
 ::answer
 `base`; with `throw;`: `der`
 
@@ -56,6 +61,11 @@ v.emplace_back();
 ```
 
 (What if the move constructor is `noexcept`?)
+::choices
+- [ ] `M` both ways
+- [x] `C`; with `noexcept`: `M`
+- [ ] `C` both ways
+- [ ] `CC`; with `noexcept`: `MM`
 ::answer
 `C`; with `noexcept`: `M`
 
@@ -68,6 +78,11 @@ void f() noexcept { throw 1; }
 try { f(); } catch (...) { cout << "caught"; }
 cout << "after";
 ```
+::choices
+- [ ] `caughtafter`
+- [ ] `after`
+- [x] Nothing: the program terminates
+- [ ] It doesn't compile
 ::answer
 Terminates; nothing printed
 

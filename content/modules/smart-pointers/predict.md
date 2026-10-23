@@ -57,6 +57,12 @@ struct D : B { ~D() { cout << "~D"; } };
 cout << '|';
 { std::unique_ptr<B> q = std::make_unique<D>(); }
 ```
+::choices
+- [ ] `~D~B|~D~B`
+- [ ] `~B|~B`
+- [x] `~D~B|`, then UB
+- [ ] `~D~B|~B`, fully defined
+- [ ] `~B|`, then UB
 ::answer
 `~D~B|` then UB
 

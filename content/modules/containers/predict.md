@@ -60,8 +60,13 @@ cout << v.size() << ' ';
 auto n = std::erase(v, 2);
 cout << v.size() << ' ' << n;
 ```
+::choices
+- [ ] `5`, then always `3 2`
+- [ ] `3`, then always `3 0`
+- [x] `5`, then unspecified (`4 1` in practice)
+- [ ] `5`, then always `5 0`
 ::answer
-`5` then unspecified (`4 1` in practice)
+`5`, then unspecified (`4 1` in practice).
 
 `remove` shifts kept elements forward (`1 3 5`) but doesn't change size; the tail is unspecified. libc++ and libstdc++ leave the original `2 5` there, so `std::erase` then finds and removes one 2.
 :::
@@ -70,8 +75,13 @@ cout << v.size() << ' ' << n;
 ~~~cpp note="In the browser this is wasm32, where `long` and pointers are 32-bit, so std::string is 12 bytes here."
 cout << sizeof(std::string);   // on libc++ and on libstdc++
 ~~~
+::choices
+- [ ] `24` on both
+- [x] `24` on libc++, `32` on libstdc++
+- [ ] `32` on libc++, `24` on libstdc++
+- [ ] `32` on both
 ::answer
-`24` on libc++, `32` on libstdc++
+`24` on libc++, `32` on libstdc++.
 
 Different SSO layouts.
 :::

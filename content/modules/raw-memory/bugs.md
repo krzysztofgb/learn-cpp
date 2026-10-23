@@ -1,13 +1,13 @@
-:::bug{#U1}
+:::bug{#U1 findings=ub}
 ```cpp
 float f = 1.0f;
 std::uint32_t bits = *reinterpret_cast<std::uint32_t*>(&f);
 ```
 ::answer
-Strict aliasing violation. Use `std::bit_cast<std::uint32_t>(f)`.
+UB: a strict aliasing violation. Use `std::bit_cast<std::uint32_t>(f)`.
 :::
 
-:::bug{#U2}
+:::bug{#U2 findings=ub}
 ```cpp
 union U { float f; std::uint32_t u; };
 U x;
@@ -18,7 +18,7 @@ return x.u;
 UB in C++: reading an inactive union member. GCC and Clang define it as an extension; portable code uses `bit_cast`.
 :::
 
-:::bug{#U3}
+:::bug{#U3 findings=ub}
 ```cpp
 struct Header { std::uint32_t seq; std::uint16_t len; };
 std::uint32_t read_seq(const char* packet) {
@@ -27,29 +27,29 @@ std::uint32_t read_seq(const char* packet) {
 }
 ```
 ::answer
-Misaligned access (offset 3) and accessing bytes as a `Header` object that doesn't exist (and `Header` has 2 bytes of tail padding the wire format may not). Use `memcpy` of each field, then byte-swap if the wire is big-endian.
+UB: misaligned access (offset 3) and accessing bytes as a `Header` object that doesn't exist (and `Header` has 2 bytes of tail padding the wire format may not). Use `memcpy` of each field, then byte-swap if the wire is big-endian.
 :::
 
-:::bug{#U4}
+:::bug{#U4 findings=ub}
 ```cpp
 struct Instrument { std::string symbol; double tick; };
 auto* in = static_cast<Instrument*>(std::malloc(sizeof(Instrument)));
 in->symbol = "ESZ6";
 ```
 ::answer
-No constructor ever ran for the `std::string` member, so `symbol =` calls assignment on an object that was never initialized: UB. Implicit object creation can't help, because `std::string` needs its constructor to establish its invariants. Use placement new or just `new`.
+UB: no constructor ever ran for the `std::string` member, so `symbol =` calls assignment on an object that was never initialized. Implicit object creation can't help, because `std::string` needs its constructor to establish its invariants. Use placement new or just `new`.
 :::
 
-:::bug{#U5}
+:::bug{#U5 findings=ub}
 ```cpp
 int* p = new int;
 std::free(p);
 ```
 ::answer
-Mismatched allocation and deallocation functions.
+UB: mismatched allocation and deallocation functions.
 :::
 
-:::bug{#U6}
+:::bug{#U6 findings=ub}
 ```cpp
 void reset(std::string& s) {
     s.~basic_string();
@@ -57,5 +57,5 @@ void reset(std::string& s) {
 // called on a local std::string, which is later destroyed at scope end
 ```
 ::answer
-The string is destroyed twice: once explicitly and again at scope end. Use `s.clear()` or `s = {}`.
+UB: the string is destroyed twice: once explicitly and again at scope end. Use `s.clear()` or `s = {}`.
 :::

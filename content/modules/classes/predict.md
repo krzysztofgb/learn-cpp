@@ -1,4 +1,4 @@
-:::predict{#P1}
+:::predict{#P1 expect=ub}
 ```cpp
 struct S {
     int a, b;

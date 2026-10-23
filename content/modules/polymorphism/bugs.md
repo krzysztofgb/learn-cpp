@@ -1,4 +1,4 @@
-:::bug{#U1}
+:::bug{#U1 findings=ub}
 ```cpp
 struct Order { ~Order() {} };
 struct LimitOrder : Order { std::string tag; };
@@ -9,7 +9,7 @@ delete o;
 UB: deleting a `LimitOrder` through `Order*` without a virtual destructor. In practice `tag` leaks. Add `virtual ~Order() = default;`.
 :::
 
-:::bug{#U2}
+:::bug{#U2 findings=ub}
 ```cpp
 struct Msg { virtual ~Msg() = default; };
 struct Trade : Msg { int px; };
@@ -21,7 +21,7 @@ int p = static_cast<Trade*>(m)->px;
 UB: a `static_cast` downcast to the wrong dynamic type. Use `dynamic_cast` and check, or a type tag.
 :::
 
-:::bug{#U3}
+:::bug{#U3 findings=ub}
 ```cpp
 struct Handler {
     Handler() { init(); }
@@ -33,7 +33,7 @@ struct Handler {
 UB: `init()` indirectly calls the pure virtual `setup()` during construction. Typically aborts with "pure virtual method called". Use a factory that calls `setup()` after construction.
 :::
 
-:::bug{#U4}
+:::bug{#U4 findings=ub}
 ```cpp
 struct Widget {
     virtual void draw();
@@ -45,7 +45,7 @@ struct Widget {
 UB: the class isn't trivially copyable, and `memset` overwrites the vptr. Use default member initializers.
 :::
 
-:::bug{#U5}
+:::bug{#U5 findings=ub}
 ```cpp run=none
 struct Base { virtual void f(); virtual ~Base() = default; int a; };
 struct Derived : Base { int b; };

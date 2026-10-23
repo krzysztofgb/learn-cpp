@@ -50,6 +50,24 @@ interface Item {
   label: string;
 }
 
+/** One option of a multiple-choice prediction; `text` is inline Markdown. */
+export interface Choice {
+  text: string;
+  correct: boolean;
+}
+
+/**
+ * What a prediction's answer is, for grading: an exact output, one of the non-printing outcomes, or a multiple choice
+ * (radio buttons when one option is correct, checkboxes when several are).
+ */
+export type Expectation =
+  | { kind: 'prints'; output: string }
+  | { kind: 'ub' | 'compile-error' | 'unspecified' }
+  | { kind: 'choice'; options: Choice[] };
+
+/** The findings a spot-the-bug answer can name; the form's checkboxes are these. */
+export type Finding = 'ub' | 'unspecified' | 'compile-error' | 'defined-bug' | 'none';
+
 export interface PredictItem extends Item {
   /** Markdown before the code (the whole question, when there's no code). */
   prompt: string;
@@ -58,6 +76,7 @@ export interface PredictItem extends Item {
   after: string;
   /** `output`: the answer's first block (what prints); `why`: the rest. */
   answer: { output: string; why: string };
+  expect: Expectation;
 }
 
 export interface UbItem extends Item {
@@ -65,6 +84,8 @@ export interface UbItem extends Item {
   snippet?: Snippet;
   after: string;
   answer: string;
+  /** The boxes a fully correct answer ticks. */
+  findings: Finding[];
 }
 
 export type Level = 'warm-up' | 'standard' | 'interview-hard';

@@ -1,4 +1,4 @@
-:::predict{#P1}
+:::predict{#P1 expect=compile-error}
 ```cpp
 void f(long)   { cout << "long"; }
 void f(double) { cout << "double"; }

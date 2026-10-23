@@ -60,7 +60,7 @@ cout << a.compare_exchange_strong(expected, 10) << ' ' << expected;
 ::answer
 `0 5`
 
-The first paragraph of the answer is the output; the rest explains it.
+The first paragraph of the answer is the output; the rest explains it (see Grading below).
 :::
 
 :::bug{#relaxed-tail}
@@ -88,6 +88,31 @@ The model answer.
 - **Ids** are what saved progress is keyed by. Pick a short name when adding an item and never change it: a new id means learners lose their answer to that item. Ids must be unique within a file. (Items migrated from the old format kept their old ids, such as `P3` or `B1`; their labels are still derived from position.)
 - **Exercise levels:** `warm-up`, `standard` or `interview-hard`. Quote a title with `'…'` if it contains `"`.
 - In predict and bug blocks, the first code block is the snippet: it is locked until the learner commits an answer.
+
+## Grading
+
+Every Predict and Spot-the-bug item is graded (correct, partly right, not quite), so each must say what a right answer is. Learners never type free text except an exact program output. The build rejects an item it can't grade.
+
+- **Prints an exact output:** nothing to add. If the answer's first paragraph is a single code span (`` `0 5 5` ``), the item is graded on "It prints…" plus that output (whitespace runs don't matter); the right outcome with a different output is partly right.
+- **A single non-printing outcome:** `:::predict{#P4 expect=compile-error}` (or `ub`, `unspecified` for unspecified or implementation-defined).
+- **Anything else is multiple choice:** prose questions, yes/no, multi-part or platform-dependent answers, estimates. Add a `::choices` task list before `::answer`; ticked options are correct. One ticked option renders as radio buttons, several as "select all that apply" checkboxes.
+
+  ```md
+  :::predict{#P3}
+  A ring buffer of 8 slots with masked indices: how many items can it hold?
+  ::choices
+  - [ ] 8
+  - [x] 7
+  - [ ] 4
+  ::answer
+  7, because a full buffer would look empty …
+  :::
+  ```
+
+  Write 3 to 5 short, plausible options drawn from real misconceptions; don't let the right one stand out, and vary its position.
+- **Bugs:** `:::bug{#U2 findings=ub}` lists the boxes a fully correct answer ticks: `ub` (including data races, dangling, out of bounds, ODR violations), `unspecified` (or implementation-defined), `compile-error`, `defined-bug` (wrong but well-defined: wrong result, leak, deadlock, performance trap) or `none` (alone). Several when the answer names several distinct problems, e.g. `findings=ub,unspecified`. Start the answer by naming the category.
+
+`npm run check:content` also checks these: an `expect=compile-error` (or `findings=compile-error`) snippet must fail to compile, and a printing snippet must print its answer.
 
 ## Code blocks
 

@@ -38,11 +38,14 @@ Plain int arithmetic.
 
 :::predict{#faults}
 How many page faults?
+::choices
+- [x] One per page touched
+- [ ] One per byte
 ::answer
 One per page touched.
 :::
 `,
-  'modules/alpha/bugs.md': `:::bug{#B1}
+  'modules/alpha/bugs.md': `:::bug{#B1 findings=compile-error}
 ~~~cpp run=none note="An \`excerpt\`"
 void f() { g(); }
 ~~~
@@ -130,8 +133,8 @@ describe('compileCourse', () => {
       snippet: { code: 'cout << 1 + 1;', kind: 'fragment', run: 'local' },
       answer: { output: '`2`', why: 'Plain int arithmetic.' },
     });
-    expect(alpha.predict.items[1]).toMatchObject({ prompt: 'How many page faults?', answer: { output: 'One per page touched.', why: '' } });
-    expect(alpha.ub.items[0]).toMatchObject({ id: 'B1', label: 'U1', snippet: { run: 'none', note: 'An `excerpt`' }, answer: 'Calls an undeclared function.' });
+    expect(alpha.predict.items[1]).toMatchObject({ prompt: 'How many page faults?', expect: { kind: 'choice', options: [{ text: 'One per page touched', correct: true }, { text: 'One per byte', correct: false }] } });
+    expect(alpha.ub.items[0]).toMatchObject({ id: 'B1', label: 'U1', snippet: { run: 'none', note: 'An `excerpt`' }, answer: 'Calls an undeclared function.', findings: ['compile-error'] });
     expect(alpha.exercises.items[0]).toMatchObject({ label: 'E1', level: 'warm-up', title: 'extern "C"', body: 'Write it.', hint: 'Use a lambda.' });
     expect(alpha.questions.items[0]).toMatchObject({ id: 'Q1', question: 'Why?', answer: 'Because.' });
     expect(alpha.answerKey).toEqual([
@@ -147,6 +150,95 @@ describe('compileCourse', () => {
     expect(moved.reading?.body).toContain('### 2.1 Promotion');
     expect(moved.intro).toBe('Builds toward [Module 1](/modules/beta).');
     expect(moved.predict.items[0]!.id).toBe('sum');
+  });
+
+  it('grades predictions by exact output, by outcome or by choices, and bugs by findings', () => {
+    const graded = compileCourse(
+      reader({
+        'modules/alpha/predict.md': `:::predict{#out}
+\`\`\`cpp
+cout << 1;
+\`\`\`
+::answer
+\`1\`
+:::
+
+:::predict{#ub expect=ub}
+\`\`\`cpp
+int x = INT_MAX + 1;
+\`\`\`
+::answer
+UB: signed overflow.
+:::
+
+:::predict{#mc}
+How many faults?
+::choices
+- [ ] 1
+- [x] 64
+- [ ] \`262144\`
+::answer
+64, one per page.
+:::
+`,
+        'modules/alpha/bugs.md': `:::bug{#B1 findings=ub,unspecified}
+x
+::answer
+y
+:::
+`,
+      }),
+    );
+    const [out, ub, mc] = graded.modules[0]!.predict.items;
+    expect(out!.expect).toEqual({ kind: 'prints', output: '1' });
+    expect(ub!.expect).toEqual({ kind: 'ub' });
+    expect(mc!.expect).toEqual({ kind: 'choice', options: [{ text: '1', correct: false }, { text: '64', correct: true }, { text: '`262144`', correct: false }] });
+    expect(graded.modules[0]!.ub.items.map((item) => item.findings)).toEqual([['ub', 'unspecified']]);
+  });
+
+  it('rejects malformed grading data', () => {
+    expect(
+      problems({
+        'modules/alpha/predict.md': `:::predict{#a expect=maybe}
+x
+::answer
+y
+:::
+
+:::predict{#b}
+x
+::choices
+- just a bullet
+::answer
+y
+:::
+
+:::predict{#c}
+Explain.
+::answer
+Because.
+:::
+`,
+        'modules/alpha/bugs.md': `:::bug{#B1 findings=ub,oops}
+x
+::answer
+y
+:::
+
+:::bug{#B2}
+x
+::answer
+y
+:::
+`,
+      }),
+    ).toEqual([
+      'modules/alpha/bugs.md:1: #B1 has unknown findings oops (expected ub,unspecified,compile-error,defined-bug,none)',
+      'modules/alpha/bugs.md:7: #B2 needs findings=ub,unspecified,compile-error,defined-bug,none (one or more)',
+      'modules/alpha/predict.md:1: #a has expect=maybe (expected prints|ub|compile-error|unspecified, or a ::choices list)',
+      'modules/alpha/predict.md:7: #b: ::choices must be one task list ("- [x] right", "- [ ] wrong")',
+      "modules/alpha/predict.md:15: #c can't be graded: give it a ::choices list",
+    ]);
   });
 
   it('reports every problem with its file and line', () => {
@@ -178,7 +270,8 @@ Body.
       'modules/alpha/module.yaml:1: :mod[gamma] names no module in course.yaml',
       'modules/alpha/predict.md:1: #sum has no ::answer',
       'modules/alpha/predict.md:5: duplicate id #sum',
-      'modules/alpha/predict.md:9: unknown marker ::because (expected ::answer)',
+      "modules/alpha/predict.md:5: #sum can't be graded: give it a ::choices list",
+      'modules/alpha/predict.md:9: unknown marker ::because (expected ::choices or ::answer)',
       'modules/alpha/predict.md:13: text after a block: move it inside a :::predict block, or before the first one',
     ]);
   });

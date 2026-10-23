@@ -1,14 +1,14 @@
-:::bug{#U1}
+:::bug{#U1 findings=ub}
 ```cpp
 std::vector<int> v{1, 2, 3};
 std::vector<int> w = std::move(v);
 std::cout << v[0];
 ```
 ::answer
-`v` is valid but unspecified; in practice empty, so `v[0]` is out of bounds: UB. Only call operations without preconditions on moved-from objects, or reassign first.
+UB: `vector`'s move constructor leaves `v` empty, so `v[0]` is out of bounds. In general a moved-from object is only valid but unspecified: call only operations without preconditions on it, or reassign it first.
 :::
 
-:::bug{#U2}
+:::bug{#U2 findings=ub}
 ```cpp
 std::string&& make_name() {
     std::string s = "AAPL";
@@ -16,10 +16,10 @@ std::string&& make_name() {
 }
 ```
 ::answer
-Returns a reference to a local that's destroyed on return: dangling, UB on use. Return `std::string` by value.
+UB on use: it returns a reference to a local that's destroyed on return, so the reference dangles. Return `std::string` by value.
 :::
 
-:::bug{#U3}
+:::bug{#U3 findings=defined-bug}
 ```cpp run=none
 template <class T>
 void log_and_store(T&& x) {
@@ -28,20 +28,20 @@ void log_and_store(T&& x) {
 }
 ```
 ::answer
-If `x` was an rvalue, the first `forward` may move it into `store_`, and the logger sees a moved-from value. Forward only on the last use.
+A defined logic bug: if `x` was an rvalue, the first `forward` may move it into `store_`, and the logger sees a moved-from value. Forward only on the last use.
 :::
 
-:::bug{#U4}
+:::bug{#U4 findings=ub}
 ```cpp run=none
 std::vector<int> get_levels();
 auto&& first = get_levels()[0];
 std::cout << first;
 ```
 ::answer
-`operator[]` returns a reference into the temporary vector, which dies at the end of the statement. `first` dangles. Bind the vector to a variable first.
+UB: `operator[]` returns a reference into the temporary vector, which dies at the end of the statement, so `first` dangles. Bind the vector to a variable first.
 :::
 
-:::bug{#U5}
+:::bug{#U5 findings=defined-bug}
 ```cpp run=none
 Buffer& Buffer::operator=(Buffer&& o) noexcept {
     delete[] data_;
@@ -53,5 +53,5 @@ Buffer& Buffer::operator=(Buffer&& o) noexcept {
 // later: buf = std::move(buf);
 ```
 ::answer
-Self-move-assignment deletes the buffer, then keeps a pointer to it and nulls it: data loss and a dangling pointer in the general case. Guard with `if (this != &o)` or use move-and-swap.
+A defined bug (data loss): self-move-assignment deletes the buffer, then `o.data_ = nullptr` also nulls `this->data_`, leaving an empty buffer with a stale `size_` that makes any later element access UB. Guard with `if (this != &o)` or use move-and-swap.
 :::

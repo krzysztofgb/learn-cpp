@@ -58,8 +58,13 @@ Senders are lazy; `then`'s function runs only inside `sync_wait`.
 
 :::predict{#P5}
 A pool has 4 workers. You submit 4 tasks, and each task submits a subtask to the same pool and blocks on its future. What happens?
+::choices
+- [ ] All tasks finish, only more slowly
+- [x] Deadlock: all 4 workers wait forever
+- [ ] The subtasks run inline in the waiting workers, so all tasks finish
+- [ ] `get()` throws `future_error` once the pool detects the cycle
 ::answer
-Deadlock
+Deadlock.
 
 All 4 workers block waiting for subtasks that no free worker can run.
 :::
