@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { Exercise, Level, PredictItem, Question, UbItem } from '../course/types.ts';
 import { useCompileOptions } from '../hooks/useCompileOptions.ts';
 import { useRunner } from '../hooks/useRunner.ts';
@@ -13,11 +13,42 @@ import { Badge } from './arc/badge/badge.tsx';
 import { Checkbox } from './arc/checkbox/checkbox.tsx';
 import { CodeSettings } from './CodeSettings.tsx';
 
+/**
+ * "Try again" forgets the committed answer; the form comes back with every option and takes focus,
+ * so a keyboard user isn't left on a button that no longer exists.
+ */
+function useRetry(slug: string, part: 'predictions' | 'ub', id: string) {
+  const card = useRef<HTMLElement>(null);
+  const focusForm = useRef(false);
+  // After the render that brings the form back.
+  useEffect(() => {
+    if (!focusForm.current) return;
+    focusForm.current = false;
+    card.current?.querySelector<HTMLElement>('.commit-form :is(input, button, textarea, [role="radio"], [role="checkbox"])')?.focus();
+  });
+  const retry = () => {
+    focusForm.current = true;
+    actions.retry(slug, part, id);
+  };
+  return { card, retry };
+}
+
+function TryAgain({ onClick }: { onClick: () => void }) {
+  return (
+    <div className="answer-actions">
+      <Button size="sm" variant="ghost" onClick={onClick}>
+        Try again
+      </Button>
+    </div>
+  );
+}
+
 export function PredictCard({ slug, item }: { slug: string; item: PredictItem }) {
   const attempt = useModuleProgress(slug).predictions[item.id];
   const commit = (answer: string) => actions.commitPrediction(slug, item.id, answer);
+  const { card, retry } = useRetry(slug, 'predictions', item.id);
   return (
-    <article className="card" id={`predict-${item.id}`}>
+    <article className="card" id={`predict-${item.id}`} ref={card}>
       <header className="card-header">
         <h3>{item.label}</h3>
         {attempt && <Badge size="sm">Answered</Badge>}
@@ -34,6 +65,7 @@ export function PredictCard({ slug, item }: { slug: string; item: PredictItem })
             <strong>Answer:</strong> <InlineMarkdown text={item.answer.output} />
           </p>
           {item.answer.why && <Markdown text={item.answer.why} />}
+          <TryAgain onClick={retry} />
         </div>
       ) : (
         item.snippet ? (
@@ -48,8 +80,9 @@ export function PredictCard({ slug, item }: { slug: string; item: PredictItem })
 
 export function UbCard({ slug, item }: { slug: string; item: UbItem }) {
   const attempt = useModuleProgress(slug).ub[item.id];
+  const { card, retry } = useRetry(slug, 'ub', item.id);
   return (
-    <article className="card" id={`ub-${item.id}`}>
+    <article className="card" id={`ub-${item.id}`} ref={card}>
       <header className="card-header">
         <h3>{item.label}</h3>
         {attempt && <Badge size="sm">Answered</Badge>}
@@ -63,6 +96,7 @@ export function UbCard({ slug, item }: { slug: string; item: UbItem }) {
             You said: <span>{attempt.answer}</span>
           </p>
           <Markdown text={item.answer} />
+          <TryAgain onClick={retry} />
         </div>
       ) : (
         <FindingsForm onCommit={(answer) => actions.commitUb(slug, item.id, answer)} />
@@ -71,7 +105,7 @@ export function UbCard({ slug, item }: { slug: string; item: UbItem }) {
   );
 }
 
-/** The course grades exercises ★ (warm-up) to ★★★ (interview-hard); the words say it without the glyphs. */
+/** Exercise levels as the learner reads them. */
 const DIFFICULTY: Record<Level, string> = { 'warm-up': 'Warm-up', standard: 'Standard', 'interview-hard': 'Interview-hard' };
 
 const STARTER = '#include <print>\n\nint main() {\n    std::println("hello");\n}\n';

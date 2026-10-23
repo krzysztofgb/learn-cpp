@@ -142,6 +142,14 @@ export const actions = {
   commitUb(slug: string, id: string, answer: string) {
     updateModule(slug, (module) => ({ ...module, ub: { ...module.ub, [id]: { answer, at: Date.now() } } }));
   },
+  /** Forgets a committed answer, so the item can be answered again from scratch. */
+  retry(slug: string, part: 'predictions' | 'ub', id: string) {
+    updateModule(slug, (module) => {
+      const answers = { ...module[part] };
+      delete answers[id];
+      return { ...module, [part]: answers };
+    });
+  },
   saveExercise(slug: string, id: string, patch: ExerciseState) {
     updateModule(slug, (module) => ({ ...module, exercises: { ...module.exercises, [id]: { ...module.exercises[id], ...patch } } }));
   },

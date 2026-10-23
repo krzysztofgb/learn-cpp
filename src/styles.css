@@ -1054,6 +1054,12 @@ textarea.mono-input {
   background: var(--surface-muted);
 }
 
+.answer-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
 .answer > :last-child,
 .answer .prose > :last-child {
   margin-bottom: 0;
