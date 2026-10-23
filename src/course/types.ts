@@ -13,6 +13,8 @@ export interface Snippet {
   run: RunMode;
   /** Why the block can't run in the browser, or what differs there; shown next to it. */
   note?: string;
+  /** Clang and GCC disagree on it, so Compiler Explorer runs both. */
+  compareGcc?: true;
 }
 
 export interface ModuleInfo {

@@ -68,7 +68,7 @@ export function CodeBlock({ snippet, locked = false, sanitizers, settings, label
             </Button>
           )}
           {snippet.run !== 'none' && !locked && (
-            <a className="link-button small" href={godboltUrl(code, snippet.kind, { options, sanitizers: sanitizerSet })} target="_blank" rel="noreferrer">
+            <a className="link-button small" href={godboltUrl(code, snippet.kind, { options, sanitizers: sanitizerSet, gcc: snippet.compareGcc })} target="_blank" rel="noreferrer">
               Compiler Explorer ↗
             </a>
           )}

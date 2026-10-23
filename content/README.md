@@ -123,6 +123,7 @@ The info string after the language carries run metadata:
 | `run` | `local` (compile in the browser), `godbolt` (Compiler Explorer only), `none` (an excerpt) | `local` for C++ |
 | `kind` | `program` (has `main`) or `fragment` (wrapped in a `main` with common headers) | detected |
 | `note` | why it can't run here, or what differs in the browser; shown beside it | none |
+| `compare` | `gcc`: Compiler Explorer runs GCC beside Clang, for code the two compilers treat differently | Clang only |
 
 Compiler Explorer opens every C++ block with the learner's Debug/Release and C++ standard: Clang's assembly and the program's output, under AddressSanitizer and UBSan in Debug (ThreadSanitizer when the code uses threads or atomics).
 

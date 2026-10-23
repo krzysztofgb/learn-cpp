@@ -1,4 +1,4 @@
-// Code fences carry run metadata in their info string: ```cpp kind=fragment run=local note="…"
+// Code fences carry run metadata in their info string: ```cpp kind=fragment run=local compare=gcc note="…"
 import { hasMain, type SnippetKind } from '../compiler/wrap.ts';
 import type { RunMode, Snippet } from './types.ts';
 
@@ -21,5 +21,5 @@ export function snippetFromFence(info: string, code: string): Snippet {
   const { lang, attrs } = parseFenceInfo(info);
   const kind: SnippetKind = attrs.kind === 'program' || attrs.kind === 'fragment' ? attrs.kind : hasMain(code) ? 'program' : 'fragment';
   const run: RunMode = !isCppLang(lang) ? 'none' : RUN_MODES.includes(attrs.run as RunMode) ? (attrs.run as RunMode) : 'local';
-  return { code, lang, kind, run, ...(attrs.note ? { note: attrs.note } : {}) };
+  return { code, lang, kind, run, ...(attrs.note ? { note: attrs.note } : {}), ...(attrs.compare === 'gcc' ? { compareGcc: true as const } : {}) };
 }
