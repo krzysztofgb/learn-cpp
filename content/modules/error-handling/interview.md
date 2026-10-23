@@ -1,7 +1,7 @@
 :::question{#Q1}
 Name and define the exception safety guarantees.
 ::answer
-No-throw, strong (no change on failure), basic (valid but unspecified state, no leaks), none. See table 7.2.
+No-throw, strong (no change on failure), basic (valid but unspecified state, no leaks), none. See the table in :sec[error-handling/exception-safety-guarantees].
 :::
 
 :::question{#Q2}

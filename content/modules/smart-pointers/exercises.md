@@ -1,5 +1,5 @@
 :::exercise{#E1 level=warm-up title="Deleters"}
-Wrap `FILE*` in `unique_ptr` three ways (function pointer, lambda type, function object struct) and `static_assert` their sizes. Do the same for a POSIX file descriptor using a custom "pointer" type.
+Wrap `FILE*` in `unique_ptr` three ways (function pointer, lambda type, function object struct) and `static_assert` their sizes. Do the same for a POSIX file descriptor (on Windows, a `HANDLE` closed with `CloseHandle`) using a custom "pointer" type.
 :::
 
 :::exercise{#E2 level=standard title="`UniquePtr<T, D>`"}
@@ -7,7 +7,7 @@ Implement it with `[[no_unique_address]] D`, move operations, `release`, `reset`
 :::
 
 :::exercise{#E3 level=interview-hard title="`SharedPtr` and `WeakPtr`"}
-Implement both with a control block holding atomic strong and weak counts, a type-erased deleter, and a `make_shared`-style single allocation. Use relaxed increments and acq\_rel decrements, and write a comment justifying each memory order. Stress-test with TSan: 8 threads copying and dropping the same pointer.
+Implement both with a control block holding atomic strong and weak counts, a type-erased deleter, and a `make_shared`-style single allocation. Use relaxed increments and acq\_rel decrements, and write a comment justifying each memory order. Stress-test with ThreadSanitizer (Clang or GCC on Linux or macOS; MSVC doesn't have it): 8 threads copying and dropping the same pointer.
 ::hint
 On the final strong decrement, destroy the object, then decrement the weak count (the strong owners collectively hold one weak reference) and free the block when it reaches zero.
 :::

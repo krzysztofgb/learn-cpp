@@ -1,4 +1,4 @@
-Assume 64-bit macOS.
+Assume a 64-bit little-endian platform: x86-64 or ARM64, on Linux, macOS or Windows.
 
 :::predict{#P1}
 ```cpp

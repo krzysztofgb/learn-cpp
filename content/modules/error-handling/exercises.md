@@ -9,7 +9,9 @@ If `T pop()` removed the element and then copying the return value threw, the el
 :::
 
 :::exercise{#E3 level=standard title="From exceptions to `expected`"}
-Rewrite a three-stage parser (tokenize, parse fields, validate) from exceptions to `std::expected` using `and_then`. Compare the call sites with Go's `if err != nil` style.
+Rewrite a three-stage parser (tokenize, parse fields, validate) from exceptions to `std::expected` using `and_then`. Compare the call sites with the explicit check-after-every-call style, where each stage is followed by `if (!r) return std::unexpected(r.error());`.
+
+> **Coming from Go?** That explicit style is Go's `if err != nil { return err }`.
 :::
 
 :::exercise{#E4 level=standard title="Measure it"}

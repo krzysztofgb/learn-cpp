@@ -1,7 +1,7 @@
 :::question{#Q1}
 How are virtual functions implemented? Draw the object and vtable layout.
 ::answer
-Each object holds a vptr to its class's vtable of function pointers; a call loads the vptr, loads the slot, and calls indirectly. See 6.1.
+Each object holds a vptr to its class's vtable of function pointers; a call loads the vptr, loads the slot, and calls indirectly. See :sec[polymorphism/how-virtual-dispatch-is-implemented].
 :::
 
 :::question{#Q2}
@@ -53,9 +53,11 @@ No. The vtable needs a fixed set of slots, and a template has an unbounded set o
 :::
 
 :::question{#Q10}
-Compare C++ virtual functions with Go interfaces.
+Compare C++ virtual functions with fat-pointer interfaces, where the reference carries the table pointer instead of the object (as in Rust's `dyn Trait`).
 ::answer
-Both are runtime dispatch through tables of function pointers. C++ is nominal (explicit inheritance) and puts the vptr in every object; Go is structural and puts the table pointer in the interface value. Go builds the table pairing (itab) per type-interface pair, lazily.
+Both are runtime dispatch through tables of function pointers. C++ is nominal (a class must inherit from the base) and puts the vptr in every object, so objects grow by a pointer but references stay thin. A fat-pointer interface value is two pointers, data and table: the object is unchanged, and any type with the right functions can be wrapped after the fact, without a common base.
+
+> **Coming from Go?** Go interfaces are fat pointers and structural: a type satisfies an interface just by having its methods. The table (itab) is per type-interface pair; the compiler emits it when the conversion is known statically, and the runtime builds and caches it otherwise.
 :::
 
 :::question{#Q11}

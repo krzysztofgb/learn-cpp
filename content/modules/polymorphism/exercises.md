@@ -1,5 +1,5 @@
 :::exercise{#E1 level=warm-up title="See the layout"}
-Compile a small hierarchy with `clang++ -Xclang -fdump-record-layouts` and `-Xclang -fdump-vtable-layouts`. Annotate where the vptr sits, what each vtable slot holds, and how multiple inheritance adds a second vptr.
+Compile a small hierarchy with `clang++ -Xclang -fdump-record-layouts` and `-Xclang -fdump-vtable-layouts` (with MSVC, `/d1reportSingleClassLayout<Name>`). Annotate where the vptr sits, what each vtable slot holds, and how multiple inheritance adds a second vptr.
 :::
 
 :::exercise{#E2 level=standard title="Dispatch benchmark"}
@@ -9,9 +9,11 @@ With shuffled objects, the indirect branch is unpredictable for virtual calls, a
 :::
 
 :::exercise{#E3 level=standard title="Hand-rolled vtable"}
-Implement `Shape` polymorphism in C style: a struct holding a pointer to a static table of function pointers, plus the object data. Then implement Go-style interfaces: a fat pointer `{data*, table*}` that can wrap any type with `area()`. Compare `sizeof` and call sequences.
+Implement `Shape` polymorphism in C style: a struct holding a pointer to a static table of function pointers, plus the object data. Then implement a fat-pointer interface: a non-owning `{data*, table*}` pair that can wrap any type with `area()`, without that type inheriting from anything. Compare `sizeof` and call sequences.
+
+> **Coming from Go?** The fat pointer is a Go interface value, built by hand.
 ::hint
-C++ objects are one pointer larger (the vptr), but references to them are thin. Go objects are smaller, but interface values are two pointers.
+C++ objects are one pointer larger (the vptr), but references to them are thin. With fat pointers the objects stay smaller, but every interface value is two pointers.
 :::
 
 :::exercise{#E4 level=standard title="Diamond construction"}

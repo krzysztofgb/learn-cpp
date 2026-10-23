@@ -1,5 +1,5 @@
 :::exercise{#E1 level=warm-up title="Layout audit"}
-For four structs from a market data message definition, print `offsetof` and `sizeof` for every member, compile with `-Wpadded`, then reorder members to minimize size. Report bytes saved.
+For four structs from a market data message definition, print `offsetof` and `sizeof` for every member, compile with `-Wpadded` (GCC and Clang; on MSVC, enable warning C4820 with `/w14820`), then reorder members to minimize size. Report bytes saved.
 :::
 
 :::exercise{#E2 level=standard title="Big-endian reads"}
