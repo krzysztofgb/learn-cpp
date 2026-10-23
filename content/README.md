@@ -111,6 +111,18 @@ A note that contains backticks needs a tilde fence (`~~~cpp note="…"`), becaus
 
 A reference to a module or section that doesn't exist fails the build.
 
+## Asides and further reading
+
+- **Go comparisons** are optional notes for Go developers. Write them as a blockquote that starts with the bold label, and keep the surrounding text complete without them:
+
+  ```md
+  > **Coming from Go?** Go slices carry their length; a C++ array decays to a bare pointer.
+  ```
+
+  They render as a marked aside. Don't put Go comparisons anywhere else (intros, item text, answers).
+- **Platforms:** don't assume the reader's machine. Name macOS, Linux and Windows equivalents when a tool or API is platform-specific.
+- **Deeper dives:** end a notes section with one line of links when a matching lesson exists: `*Further reading:* [Lesson title](https://www.learncpp.com/cpp-tutorial/…/)`. Use learncpp.com for core language topics and the exact cppreference.com page for library, concurrency and other topics learncpp doesn't cover.
+
 ## answers.md
 
 Reference solutions and model outlines that don't belong to a single item. Each `##` heading becomes its own reveal in the Answer key tab.

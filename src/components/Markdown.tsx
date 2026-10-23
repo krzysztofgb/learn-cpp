@@ -37,6 +37,19 @@ const components: Components = {
       </a>
     );
   },
+  // A blockquote that opens with **Coming from Go?** is an optional note for Go developers (content/README.md).
+  blockquote({ node, children }) {
+    const first = node?.children.find((child): child is Element => child.type === 'element');
+    const label = first?.tagName === 'p' ? first.children.find((child): child is Element => child.type === 'element') : undefined;
+    if (label?.tagName === 'strong' && textOf(label).trim() === 'Coming from Go?') {
+      return (
+        <aside className="go-note" aria-label="Coming from Go">
+          {children}
+        </aside>
+      );
+    }
+    return <blockquote>{children}</blockquote>;
+  },
   table({ children }) {
     return (
       <div className="table-wrap">

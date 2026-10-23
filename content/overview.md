@@ -1,8 +1,10 @@
 ## How the course works
 
-The course has 30 modules in 8 phases, from first principles to C++26, written for an engineer who already knows Go and systems well. Each module has its own page and follows the same structure.
+The course has 30 modules in 8 phases, from first principles to C++26, written for an engineer who already knows systems programming in some language. Each module has its own page and follows the same structure.
 
-1. **Notes:** the concepts, with the rules stated precisely enough to answer interview follow-ups. Go comparisons appear where they help.
+> **Coming from Go?** Some notes include asides like this one that compare C++ with Go, for Go developers. They are optional: the text around them stands on its own, so skip them if Go isn't your background.
+
+1. **Notes:** the concepts, with the rules stated precisely enough to answer interview follow-ups, and links to learncpp.com or cppreference.com for a deeper dive.
 2. **Predict the output:** short snippets. Write down what prints, or name the UB, before checking the key.
 3. **Spot the UB:** code that compiles cleanly but is broken. Name the rule it violates.
 4. **Exercises:** graded Warm-up, Standard or Interview-hard. Compile each with the sanitizer flags from the Setup section.

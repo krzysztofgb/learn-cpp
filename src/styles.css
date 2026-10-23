@@ -540,6 +540,32 @@ kbd {
   text-decoration-color: currentColor;
 }
 
+/* "Coming from Go?" notes: optional asides for Go developers, set apart from the main text. */
+.go-note {
+  margin: 0 0 12px;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-panel);
+  background: var(--surface-muted);
+  color: var(--text-secondary);
+  font-size: 15px;
+}
+
+.go-note > :last-child {
+  margin-bottom: 0;
+}
+
+.go-note strong:first-child {
+  color: var(--foreground);
+}
+
+.prose blockquote {
+  margin: 0 0 12px;
+  padding-left: 14px;
+  border-left: 2px solid var(--border-strong);
+  color: var(--text-secondary);
+}
+
 .table-wrap {
   max-width: 100%;
   overflow-x: auto;
