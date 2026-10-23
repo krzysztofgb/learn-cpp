@@ -19,9 +19,9 @@ In the open-loop generator, compute each request's latency as completion time mi
 :::
 
 :::exercise{#E5 level=standard title="Timer costs"}
-Measure call overhead and resolution of `steady_clock::now()`, `mach_absolute_time()` and a direct `cntvct_el0` read on your Mac (and `rdtsc` on an x86 machine if available).
+Measure call overhead and resolution of `steady_clock::now()` on your machine, plus the platform's own counters: `rdtsc`/`rdtscp` on x86, a direct `cntvct_el0` read on ARM (and `mach_absolute_time()` on macOS), `QueryPerformanceCounter` on Windows. Try a second platform if you have one.
 :::
 
 :::exercise{#E6 level=interview-hard title="Profile and fix"}
-Profile your order book or ITCH decoder with Instruments (or `perf` on Linux), produce a flame graph, identify the top three costs, fix one, and show before/after histograms.
+Profile your order book or ITCH decoder with a sampling profiler (`perf` or hotspot on Linux, Instruments on macOS, VTune or Windows Performance Analyzer on Windows), produce a flame graph, identify the top three costs, fix one, and show before/after histograms.
 :::

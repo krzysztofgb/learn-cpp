@@ -23,7 +23,7 @@ Take one earlier benchmark (an order book or a parser), build it plain, with LTO
 :::
 
 :::exercise{#E6 level=interview-hard title="Fast order book"}
-Implement the design in :sec[low-latency-techniques/order-book-implementation-sketch] supporting add, cancel, modify and execute, plus best bid/ask queries. Drive it with a synthetic stream (e.g. 60% adds, 35% cancels, 5% executes, concentrated near the top of book) and target under 100 ns median per operation on your Mac. Report p50, p99 and p99.9.
+Implement the design in :sec[low-latency-techniques/order-book-implementation-sketch] supporting add, cancel, modify and execute, plus best bid/ask queries. Drive it with a synthetic stream (e.g. 60% adds, 35% cancels, 5% executes, concentrated near the top of book) and target under 100 ns median per operation on your machine. Report p50, p99 and p99.9.
 ::hint
 Typical bottlenecks are the ID map and cancel; an intrusive list makes cancel O(1) and the map lookup becomes the dominant cost.
 :::

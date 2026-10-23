@@ -23,7 +23,7 @@ Set `TCP_NODELAY`, or send header and body in one write (`writev`).
 :::
 
 :::predict{#P4}
-`htons(0x1234)` on your Mac, and on a big-endian machine?
+`htons(0x1234)` on a typical x86-64 or ARM machine (Apple Silicon, AWS Graviton), and on a big-endian machine?
 ::answer
 `0x3412` on little-endian; `0x1234` on big-endian
 

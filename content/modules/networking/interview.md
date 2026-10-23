@@ -25,7 +25,7 @@ The sender transmits once to a group address; routers replicate to subscribers t
 :::question{#Q5}
 Compare `select`, `poll`, `epoll`, `kqueue` and `io_uring`.
 ::answer
-See table 25.4: `select`/`poll` scan every fd on every call; `epoll`/`kqueue` maintain interest sets in the kernel and return only ready fds; `io_uring` submits and completes I/O through shared rings with batching and optional kernel polling.
+See :sec[networking/i-o-multiplexing]: `select`/`poll` scan every fd on every call; `epoll`/`kqueue` maintain interest sets in the kernel and return only ready fds; `io_uring` submits and completes I/O through shared rings with batching and optional kernel polling.
 :::
 
 :::question{#Q6}

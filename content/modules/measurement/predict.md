@@ -28,11 +28,11 @@ A closed-loop client sends one request per millisecond for 10 s. Once, the serve
 ::answer
 Roughly 900 ms
 
-About 1000 requests would have arrived during the stall with delays spread from \~0 to 1 s, about 9% of all requests, so p99 lands near the top of that range.
+About 1000 requests would have arrived during the stall with delays spread from \~0 to 1 s, about 10% of all requests, so p99 lands near the top of that range.
 :::
 
 :::predict{#P4}
-On your Mac you time a 5 ns function with two `mach_absolute_time()` calls around a single invocation. What values do you see?
+On an Apple Silicon Mac you time a 5 ns function with two `mach_absolute_time()` calls around a single invocation. What values do you see?
 ::answer
 0 or one tick (\~42 ns)
 

@@ -1,3 +1,3 @@
 title: Operating system
 topics: Virtual memory, page faults, `mmap`, syscall cost, scheduling, shared memory
-intro: "The kernel is the biggest source of latency jitter in a trading system: page faults, scheduling, interrupts and syscalls. Interviews test whether you know what each costs and how firms keep the OS out of the hot path. Linux is the production target; notes mention macOS where it differs."
+intro: "The kernel is the biggest source of latency jitter in a trading system: page faults, scheduling, interrupts and syscalls. Interviews test whether you know what each costs and how firms keep the OS out of the hot path. Linux is the production target; notes mention macOS and Windows where they differ."

@@ -1,3 +1,3 @@
 title: Networking
 topics: TCP vs UDP, `TCP_NODELAY`, multicast, epoll/kqueue/io_uring, reactor, kernel bypass, timestamping
-intro: "Market data arrives over UDP multicast and orders leave over TCP, so low-latency interviews cover both protocols, the sockets API, I/O multiplexing and kernel bypass. Your Go background helps here: you've used the sockets layer, just through `net` and the runtime's netpoller (which is epoll on Linux and kqueue on macOS underneath)."
+intro: "Market data arrives over UDP multicast and orders leave over TCP, so low-latency interviews cover both protocols, the sockets API, I/O multiplexing and kernel bypass."

@@ -9,7 +9,7 @@ Keep a per-connection read buffer; parse as many complete frames as available an
 :::
 
 :::exercise{#E3 level=standard title="Reactor"}
-Build a non-blocking server with kqueue on your Mac (and epoll on Linux behind a small interface) handling 1,000 clients. Implement both level- and edge-triggered handling and show the edge-triggered bug from P6.
+Build a non-blocking server handling 1,000 clients, with epoll on Linux and kqueue on macOS behind a small interface (on Windows, use WSL or a Linux VM for the epoll version). Implement both level- and edge-triggered handling and show the edge-triggered bug from P6.
 :::
 
 :::exercise{#E4 level=standard title="Multicast feed handler"}

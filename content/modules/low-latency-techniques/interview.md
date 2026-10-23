@@ -1,7 +1,7 @@
 :::question{#Q1}
 What would you avoid on a latency-critical path, and why?
 ::answer
-See table 22.1: allocation, syscalls, locks, exceptions, virtual calls, unpredictable branches, pointer chasing, inline logging, string keys and node-based containers.
+See :sec[low-latency-techniques/the-hot-path-checklist]: allocation, syscalls, locks, exceptions, virtual calls, unpredictable branches, pointer chasing, inline logging, string keys and node-based containers.
 :::
 
 :::question{#Q2}
@@ -55,7 +55,7 @@ Busy-polling gives the lowest, most consistent latency but burns a whole core; b
 :::question{#Q10}
 Walk me through a fast order book design.
 ::answer
-See 22.6: pooled orders, ID map, intrusive per-level lists, levels in an array or sorted vector, aggregate quantities, no allocation.
+See :sec[low-latency-techniques/order-book-implementation-sketch]: pooled orders, ID map, intrusive per-level lists, levels in an array or sorted vector, aggregate quantities, no allocation.
 :::
 
 :::question{#Q11}

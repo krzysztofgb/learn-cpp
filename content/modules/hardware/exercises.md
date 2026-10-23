@@ -1,5 +1,5 @@
 :::exercise{#E1 level=warm-up title="Map your memory hierarchy"}
-Write a pointer-chasing benchmark: a random cyclic permutation over buffers from 4 KB to 1 GB, measure ns per load, and plot latency vs size. Identify L1, L2, (L3) and DRAM on your Mac, and on an x86 cloud VM if you can.
+Write a pointer-chasing benchmark: a random cyclic permutation over buffers from 4 KB to 1 GB, measure ns per load, and plot latency vs size. Identify L1, L2, (L3) and DRAM on your machine, and on a machine of the other architecture (x86-64, or ARM such as Apple Silicon or AWS Graviton) if you can.
 ::hint
 Generate the permutation with Sattolo's algorithm so the chain visits every element in one cycle, and make each element a full cache line apart to defeat spatial prefetch.
 :::
@@ -13,7 +13,7 @@ Implement P6 with both layouts and also with a 16-byte `Order`. Explain results 
 :::
 
 :::exercise{#E4 level=standard title="Vectorization"}
-Write a dot product, confirm it vectorizes using the compiler remarks, break vectorization with possibly-aliasing pointers, fix it with `__restrict`, then write it with `std::simd` (or NEON intrinsics) and compare.
+Write a dot product, confirm it vectorizes using the compiler remarks, break vectorization with possibly-aliasing pointers, fix it with `__restrict`, then write it with `std::simd` (or your CPU's intrinsics: SSE/AVX on x86, NEON on ARM) and compare.
 :::
 
 :::exercise{#E5 level=interview-hard title="Matrix multiply"}
