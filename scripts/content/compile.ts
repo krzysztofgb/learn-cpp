@@ -52,11 +52,11 @@ export interface CompiledCourse {
 const LEVELS: Level[] = ['warm-up', 'standard', 'interview-hard'];
 const ID = /^[A-Za-z0-9][\w-]*$/;
 
-/** GitHub-style heading slug: lowercase words joined by hyphens. */
+/** Heading slug: lowercase words joined by hyphens; code and emphasis marks dropped ("`shared_ptr` internals" → shared-ptr-internals). */
 export function slugify(text: string): string {
   return text
     .toLowerCase()
-    .replace(/[`*_]/g, '')
+    .replace(/[`*]/g, '')
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-|-$/g, '');
 }

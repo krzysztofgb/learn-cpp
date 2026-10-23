@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { compileCourse, ContentError, type Reader } from './compile.ts';
+import { compileCourse, ContentError, slugify, type Reader } from './compile.ts';
 
 const FILES: Record<string, string> = {
   'course.yaml': `title: Test course
@@ -92,6 +92,13 @@ function problems(overrides: Record<string, string | undefined>): string[] {
   }
   return [];
 }
+
+describe('slugify', () => {
+  it('drops code and emphasis marks and joins words, underscores included, with hyphens', () => {
+    expect(slugify('`shared_ptr` internals')).toBe('shared-ptr-internals');
+    expect(slugify('SPSC ring buffer')).toBe('spsc-ring-buffer');
+  });
+});
 
 describe('compileCourse', () => {
   const { course, modules } = compileCourse(reader());
