@@ -42,9 +42,9 @@ The CAS succeeds because `head` equals `A` again, installing freed `B` as the he
 :::
 
 :::predict{#P5}
-Two threads each increment their own `std::atomic<long>` 100M times with relaxed `fetch_add`. In version 1 the counters are adjacent in a struct; in version 2 they're 128 bytes apart. Roughly how do the run times compare on your Mac?
+Two threads each increment their own `std::atomic<long>` 100M times with relaxed `fetch_add`. In version 1 the counters are adjacent in a struct; in version 2 they're 128 bytes apart. Roughly how do the run times compare on your machine?
 ::answer
 Adjacent is several times slower
 
-Every increment invalidates the other core's copy of the shared line. On Apple M-series, 128-byte separation is needed because lines are 128 bytes.
+Every increment invalidates the other core's copy of the shared line. Version 2 avoids that on x86 and most ARM servers (64-byte lines); on Apple Silicon, whose lines are 128 bytes, 128-byte separation is exactly what's needed.
 :::

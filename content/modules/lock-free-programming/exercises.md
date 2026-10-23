@@ -1,5 +1,5 @@
 :::exercise{#E1 level=warm-up title="False sharing"}
-Implement P5 and measure with no padding, 64-byte and 128-byte separation on your Mac. Explain why 64 isn't enough there.
+Implement P5 and measure with no padding, 64-byte and 128-byte separation on your machine. Explain the result from your machine's cache-line size: on an ARM machine with 128-byte lines (Apple Silicon), 64 isn't enough; on x86, see whether adjacent-line prefetching makes 128 faster than 64.
 :::
 
 :::exercise{#E2 level=standard title="SPSC queue"}

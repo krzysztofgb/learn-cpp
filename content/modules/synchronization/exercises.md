@@ -4,8 +4,10 @@ Increment a shared counter 10M times total from 1, 2, 4 and 8 threads using a mu
 The atomic version gets slower as threads are added because the cache line bounces; per-thread counters scale nearly linearly. Mutex is worst due to sleeps.
 :::
 
-:::exercise{#E2 level=standard title="Go-style channel"}
-Implement `Channel<T>` with a bounded buffer, a mutex and two condition variables: `send` blocks when full, `recv` blocks when empty and returns `std::optional<T>` (empty after `close()` once drained). Verify with TSan under heavy load.
+:::exercise{#E2 level=standard title="Bounded channel"}
+Implement `Channel<T>`, a bounded channel: a fixed-capacity queue shared between threads that blocks producers when full and consumers when empty, and can be closed. Use a buffer, a mutex and two condition variables: `send` blocks when full, `recv` blocks when empty and returns `std::optional<T>` (empty after `close()` once drained). Verify with TSan under heavy load.
+
+> **Coming from Go?** This is a buffered Go channel (`make(chan T, n)`), with `recv` returning an empty optional where Go's `v, ok := <-ch` gives `ok == false`.
 ::hint
 `close()` sets a flag under the lock and calls `notify_all` on both condition variables; `recv` waits for `!empty || closed`.
 :::
@@ -17,7 +19,7 @@ Spinlocks win for tiny sections when threads aren't oversubscribed; they lose ba
 :::
 
 :::exercise{#E4 level=standard title="Deadlock lab"}
-Implement U6, reproduce the deadlock with two threads transferring in opposite directions, inspect it with `lldb` (`thread backtrace all`), and fix it with `std::scoped_lock`.
+Implement U6, reproduce the deadlock with two threads transferring in opposite directions, inspect every thread's stack in a debugger (`thread backtrace all` in LLDB, `thread apply all bt` in GDB, the Parallel Stacks window in Visual Studio), and fix it with `std::scoped_lock`.
 :::
 
 :::exercise{#E5 level=standard title="Worker group"}

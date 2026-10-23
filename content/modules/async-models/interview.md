@@ -41,9 +41,11 @@ Separate pools for blocking work, asynchronous I/O with completion callbacks or 
 :::
 
 :::question{#Q8}
-Compare Go's goroutine scheduler with a C++ thread pool.
+Compare an M:N scheduler of lightweight user-space threads with a C++ thread pool.
 ::answer
-Go multiplexes goroutines onto OS threads with per-processor run queues and stealing, preempts goroutines, and parks them on blocking calls. A C++ pool runs tasks to completion, can't preempt, and blocking ties up a worker unless you use coroutines or async I/O.
+An M:N runtime multiplexes many lightweight threads, each with a small stack, onto a few OS threads with per-thread run queues and stealing, preempts them, and parks them on blocking calls so the OS thread runs something else. A C++ pool runs tasks to completion, can't preempt, and blocking ties up a worker unless you use coroutines or async I/O.
+
+> **Coming from Go?** That M:N runtime is Go's: goroutines on per-processor (P) run queues, stolen between Ps, preempted, and parked when they block.
 :::
 
 :::question{#Q9}

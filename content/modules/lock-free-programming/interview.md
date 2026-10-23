@@ -25,7 +25,7 @@ Hazard pointers: per-pointer protection, bounded memory, costlier reads. Epochs:
 :::question{#Q5}
 Implement an SPSC queue on the whiteboard and justify every memory order.
 ::answer
-See 19.4: each side loads its own index relaxed, the other side's with acquire, and publishes its own with release after touching the slot.
+See :sec[lock-free-programming/spsc-ring-buffer]: each side loads its own index relaxed, the other side's with acquire, and publishes its own with release after touching the slot.
 :::
 
 :::question{#Q6}

@@ -11,9 +11,11 @@ The function body becomes a state machine; locals move into a heap frame; the re
 :::
 
 :::question{#Q3}
-Coroutines vs threads vs goroutines?
+How do C++ coroutines compare with threads and with stackful coroutines (fibers)?
 ::answer
-Threads are OS-scheduled with their own stacks (MB-scale, microsecond switches). Goroutines are runtime-scheduled with small growable stacks and can block anywhere. C++ coroutines are stackless state machines that suspend only at `co_` points, costing a frame allocation and nanoseconds to switch, but need an external scheduler.
+Threads are OS-scheduled with their own stacks (MB-scale, microsecond switches). Stackful coroutines (fibers) are scheduled in user space, each with its own smaller stack, and can suspend from any call depth. C++ coroutines are stackless state machines that suspend only at `co_` points, costing a frame allocation and nanoseconds to switch, but need an external scheduler.
+
+> **Coming from Go?** Goroutines are stackful coroutines with small growable stacks, multiplexed onto OS threads by the Go runtime, which parks them at any blocking call.
 :::
 
 :::question{#Q4}

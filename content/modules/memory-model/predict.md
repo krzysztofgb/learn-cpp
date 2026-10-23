@@ -13,7 +13,7 @@ Can `r1 == 1 && r2 == 0`?
 ::answer
 Yes
 
-Not observed (TSO keeps store-store and load-load order), unless the compiler reorders
+On x86, not observed (TSO keeps store-store and load-load order), unless the compiler reorders; on ARM, observable.
 :::
 
 :::predict{#P2}
@@ -35,7 +35,7 @@ Can `r1 == 0 && r2 == 0`? What changes with `seq_cst`?
 ::answer
 Yes; with `seq_cst`, no
 
-Observed (store buffer)
+Observed on both x86 and ARM (store buffer)
 :::
 
 :::predict{#P4}
